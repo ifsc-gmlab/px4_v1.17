@@ -81,12 +81,11 @@
  ************************************************************************************/
 
 /************************************************************************************
- * Name: stm32_boardinitialize
+ * Name: adc_devinit
  *
  * Description:
- *   All STM32 architectures must provide the following entry point.  This entry point
- *   is called early in the intitialization -- after all memory has been configured
- *   and mapped but before any devices have been initialized.
+ *   All STM32 architectures must provide the following interface to work with
+ *   examples/adc.
  *
  ************************************************************************************/
 
