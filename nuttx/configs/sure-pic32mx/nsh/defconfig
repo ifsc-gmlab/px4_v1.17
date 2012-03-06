@@ -720,6 +720,8 @@ CONFIG_PL2303_TXBUFSIZE=512
 #
 # CONFIG_CDCACM
 #   Enable compilation of the USB serial driver
+# CONFIG_CDCACM_CONSOLE
+#   Configures the CDC/ACM serial port as the console device.
 # CONFIG_CDCACM_EP0MAXPACKET
 #   Endpoint 0 max packet size. Default 64
 # CONFIG_CDCACM_EPINTIN
@@ -765,6 +767,7 @@ CONFIG_PL2303_TXBUFSIZE=512
 #   Size of the serial receive/transmit buffers. Default 256.
 #
 CONFIG_CDCACM=n
+CONFIG_CDCACM_CONSOLE=n
 #CONFIG_CDCACM_EP0MAXPACKET
 #CONFIG_CDCACM_EPINTIN
 #CONFIG_CDCACM_EPINTIN_FSSIZE
