@@ -126,11 +126,20 @@ static ssize_t nxcon_write(FAR struct file *filep, FAR const char *buffer,
   FAR struct nxcon_state_s *priv;
   char ch;
   int lineheight;
+  int ret;
 
   /* Recover our private state structure */
 
   DEBUGASSERT(filep && filep->f_priv);
   priv = (FAR struct nxcon_state_s *)filep->f_priv;
+
+  /* Get exclusive access */
+
+  ret = sem_wait(&priv->exclsem);
+  if (ret < 0)
+    {
+      return ret;
+    }
 
   /* Loop writing each character to the display */
 
@@ -185,6 +194,7 @@ static ssize_t nxcon_write(FAR struct file *filep, FAR const char *buffer,
       nxcon_putc(priv, (uint8_t)ch);
     }
 
+  sem_post(&priv->exclsem);
   return buflen;
 }
 
