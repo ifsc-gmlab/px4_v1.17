@@ -98,6 +98,8 @@ FAR struct nxcon_state_s *
   priv->minor   = minor;
   memcpy(&priv->wndo, wndo, sizeof( struct nxcon_window_s));
 
+  sem_init(&priv->exclsem, 0, 1);
+
   /* Select the font */
 
   priv->font = nxf_getfonthandle(wndo->fontid);
@@ -107,10 +109,32 @@ FAR struct nxcon_state_s *
       goto errout;
     }
 
+  FAR const struct nx_font_s *fontset;
+
+  /* Get information about the font set being used and save this in the
+   * state structure
+   */
+
+  fontset         = nxf_getfontset(priv->font);
+  priv->fheight   = fontset->mxheight;
+  priv->fwidth    = fontset->mxwidth;
+  priv->spwidth   = fontset->spwidth;
+
+  /* Set up the text caches */
+
+#ifdef CONFIG_NXCONSOLE_FONTCACHE
+  priv->maxchars  = CONFIG_NXCONSOLE_BMCACHE;
+  priv->maxglyphs = CONFIG_NXCONSOLE_GLCACHE;
+#endif
+
+  /* Set the initial display position */
+
+  nxcon_home(priv);
+
   /* Register the driver */
 
   snprintf(devname, NX_DEVNAME_SIZE, NX_DEVNAME_FORMAT, minor);
-  ret = register_driver(devname, &g_nxcondrvrops, 0666, priv);
+  ret = register_driver(devname, &g_nxcon_drvrops, 0666, priv);
   if (ret < 0)
     {
       gdbg("Failed to register %s\n", devname);
