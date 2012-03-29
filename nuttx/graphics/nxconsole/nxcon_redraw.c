@@ -117,7 +117,7 @@ void nxcon_redraw(NXCONSOLE handle, FAR const struct nxgl_rect_s *rect, bool mor
 
   do
     {
-      ret = sem_wait(&priv->exclsem);
+      ret = nxcon_semwait(priv);
 
       /* Check for errors */
 
@@ -148,5 +148,5 @@ void nxcon_redraw(NXCONSOLE handle, FAR const struct nxgl_rect_s *rect, bool mor
     {
       nxcon_fillchar(priv, rect, &priv->bm[i]);
     }
-  ret = sem_post(&priv->exclsem);
+  ret = nxcon_sempost(priv);
 }
