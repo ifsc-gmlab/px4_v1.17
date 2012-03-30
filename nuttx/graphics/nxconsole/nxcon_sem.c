@@ -1,5 +1,5 @@
 /****************************************************************************
- * nuttx/graphics/nxconsole/nxcon_unregister.c
+ * nuttx/graphics/nxconsole/nxcon_sem.c
  *
  *   Copyright (C) 2012 Gregory Nutt. All rights reserved.
  *   Author: Gregory Nutt <gnutt@nuttx.org>
