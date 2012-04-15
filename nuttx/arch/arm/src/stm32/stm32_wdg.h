@@ -62,24 +62,45 @@ extern "C" {
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
- 
+
 /****************************************************************************
- * Name: stm32_wdginitialize
+ * Name: stm32_iwdginitialize
  *
  * Description:
- *   Initialize the watchdog time.  The watchdog timer is intialized and
- *   registers as /dev/watchdog0.  The initial state of the watchdog time
- *   is disabled.
+ *   Initialize the IWDG watchdog time.  The watchdog timer is intialized and
+ *   registers as 'devpath.  The initial state of the watchdog time is
+ *   disabled.
  *
  * Input Parameters:
- *   None
+ *   devpath - The full path to the watchdog.  This should be of the form
+ *     /dev/watchdog0
+ *   lsifreq - The calibrated LSI clock frequency
  *
  * Returned Values:
  *   None
  *
  ****************************************************************************/
 
-EXTERN void stm32_wdginitialize(void);
+EXTERN void stm32_iwdginitialize(FAR const char *devpath, uint32_t lsifreq);
+
+/****************************************************************************
+ * Name: stm32_wwdginitialize
+ *
+ * Description:
+ *   Initialize the WWDG watchdog time.  The watchdog timer is intialized and
+ *   registers as 'devpath.  The initial state of the watchdog time is
+ *   disabled.
+ *
+ * Input Parameters:
+ *   devpath - The full path to the watchdog.  This should be of the form
+ *     /dev/watchdog0
+ *
+ * Returned Values:
+ *   None
+ *
+ ****************************************************************************/
+
+EXTERN void stm32_wwdginitialize(FAR const char *devpath);
 
 #undef EXTERN
 #if defined(__cplusplus)
