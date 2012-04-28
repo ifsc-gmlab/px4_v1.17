@@ -43,6 +43,7 @@
 #include <nuttx/config.h>
 
 #include "crlepalettebitmap.hxx"
+#include "inxwindow.hxx"
 #include "cnxapplication.hxx"
 
 /****************************************************************************
@@ -69,18 +70,21 @@ namespace NxWM
 
   class CNxConsole : public CNxApplication
   {
-    public:
-      /**
-       * CNxConsole constructor
-       */
-
-      CNxConsole(void);
-
+    protected:
       /**
        * CNxConsole destructor
        */
 
       ~CNxConsole(void);
+
+    public:
+      /**
+       * CNxConsole constructor
+       *
+       * @param window.  The application window
+       */
+
+      CNxConsole(NXWidgets::INxWindow *window);
 
       /**
        * Get the icon associated with the application

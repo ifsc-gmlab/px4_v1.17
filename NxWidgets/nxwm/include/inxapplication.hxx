@@ -42,8 +42,6 @@
  
 #include <nuttx/config.h>
 
-#include "ibitmap.hxx"
-
 /****************************************************************************
  * Pre-Processor Definitions
  ****************************************************************************/
@@ -68,6 +66,12 @@ namespace NxWM
        */
 
       virtual NXWidgets::INxBitmap *getIcon(void) = 0;
+
+      /**
+       * Start the application.
+       */
+
+      virtual run(void) = 0;
   };
 }
 
