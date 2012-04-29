@@ -51,19 +51,13 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Bitmap Glyph References
+ * Implementation Classes
  ****************************************************************************/
 
 #if defined(__cplusplus)
 
 namespace NxWM
 {
-  extern const struct NxWidgets::SRlePaletteBitmap g_nshBitmap;
-
-/****************************************************************************
- * Implementation Classes
- ****************************************************************************/
-
   /**
    * This class implements the NxConsole application.
    */
