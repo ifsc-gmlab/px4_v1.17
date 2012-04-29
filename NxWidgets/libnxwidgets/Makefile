@@ -36,8 +36,7 @@
 -include $(TOPDIR)/.config
 -include $(TOPDIR)/Make.defs
 
-NXWDIR := ${shell pwd | sed -e 's/ /\\ /g'}
-
+NXWIDGETDIR := ${shell pwd | sed -e 's/ /\\ /g'}
 
 ASRCS =
 CSRCS =
@@ -76,8 +75,12 @@ OBJS = $(AOBJS) $(COBJS) $(CXXOBJS)
 
 BIN = libnxwidgets$(LIBEXT)
 
-CFLAGS += -I include
-CXXFLAGS += -I include
+ifeq ($(WINTOOL),y)
+INCDIROPT = -w
+endif
+
+CFLAGS += ${shell $(TOPDIR)/tools/incdir.sh $(INCDIROPT) "$(CC)" $(NXWIDGETDIR)/include}
+CXXFLAGS += ${shell $(TOPDIR)/tools/incdir.sh $(INCDIROPT) "$(CC)" $(NXWIDGETDIR)/include}
 DEPPATH = --dep-path src
 VPATH = src
 
@@ -97,7 +100,7 @@ check_nuttx:
 	@( \
 		if [ -z "$(TOPDIR)" ]; then \
 			echo "The path to the nuttx directory must be provided on the command line."; \
-			echo "Usage: make -C $(NXWDIR) TOPDIR=\"<nuttx directory>\""; \
+			echo "Usage: make -C $(NXWIDGETDIR) TOPDIR=\"<nuttx directory>\""; \
 			exit 1; \
 		fi; \
 		if [ ! -d "$(TOPDIR)" ]; then \
