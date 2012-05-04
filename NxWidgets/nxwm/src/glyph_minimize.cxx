@@ -70,18 +70,28 @@ using namespace NxWM;
 
 #if CONFIG_NXWIDGETS_BPP == 24 ||  CONFIG_NXWIDGETS_BPP == 32
 
-static const uint32_t g_minimizeLut[BITMAP_NLUTCODES] =
+static const uint32_t g_minimizeNormalLut[BITMAP_NLUTCODES] =
 {
   0x2448b4, 0x486cd8, 0x0024b4, 0x0024d8, 0x242490, 0x0000b4, 0xfcfcfc, 0xd8fcfc  /* Codes 0-7 */
+};
+
+static const uint32_t g_minimizeBrightLut[BITMAP_NLUTCODES] =
+{
+  0x5a75c6, 0x7590e1, 0x3f5ac6, 0x3f5ae1, 0x5a5aab, 0x3f3fc6, 0xfcfcfc, 0xe1fcfc  /* Codes 0-7 */
 };
 
 /* RGB16 (565) Colors (four of the colors in this map are duplicates) */
 
 #elif CONFIG_NXWIDGETS_BPP == 16
 
-static const uint16_t g_minimizeLut[BITMAP_NLUTCODES] =
+static const uint16_t g_minimizeNormalLut[BITMAP_NLUTCODES] =
 {
   0x2256, 0x4b7b, 0x0136, 0x013b, 0x2132, 0x0016, 0xffff, 0xdfff  /* Codes 0-7 */
+};
+
+static const uint16_t g_minimizeBrightLut[BITMAP_NLUTCODES] =
+{
+  0x5bb8, 0x749c, 0x3ad8, 0x3adc, 0x5ad5, 0x39f8, 0xffff, 0xe7ff  /* Codes 0-7 */
 };
 
 /* 8-bit color lookups.  NOTE:  This is really dumb!  The lookup index is 8-bits and it used
@@ -96,18 +106,28 @@ static const uint16_t g_minimizeLut[BITMAP_NLUTCODES] =
 
 /* 8-bit Greyscale */
 
-static const uint8_t g_minimizeLut[BITMAP_NLUTCODES] =
+static const uint8_t g_minimizeNormalLut[BITMAP_NLUTCODES] =
 {
   0x49, 0x6d, 0x29, 0x2d, 0x30, 0x14, 0xfc, 0xf1  /* Codes 0-7 */
+};
+
+static const uint8_t g_minimizeBrightLut[BITMAP_NLUTCODES] =
+{
+  0x76, 0x91, 0x5e, 0x61, 0x63, 0x4e, 0xfc, 0xf3  /* Codes 0-7 */
 };
 
 #  else /* CONFIG_NXWIDGETS_GREYSCALE */
 
 /* RGB8 (332) Colors */
 
-static const nxgl_mxpixel_t g_minimizeLut[BITMAP_NLUTCODES] =
+static const nxgl_mxpixel_t g_minimizeNormalLut[BITMAP_NLUTCODES] =
 {
   0x2a, 0x4f, 0x06, 0x07, 0x26, 0x02, 0xff, 0xdf  /* Codes 0-7 */
+};
+
+static const uint8_t g_minimizeBrightLut[BITMAP_NLUTCODES] =
+{
+  0x4f, 0x73, 0x2b, 0x2b, 0x4a, 0x27, 0xff, 0xff  /* Codes 0-7 */
 };
 
 #  endif
@@ -152,8 +172,8 @@ const struct NXWidgets::SRlePaletteBitmap NxWM::g_minimizeBitmap =
   BITMAP_NCOLUMNS,       // width  - Width in pixels 
   BITMAP_NROWS,          // height - Height in rows
   {                      // lut    - Pointer to the beginning of the Look-Up Table (LUT)
-    g_minimizeLut,       //          Index 0: Unselected LUT
-    g_minimizeLut,       //          Index 1: Selected LUT
+    g_minimizeNormalLut, //          Index 0: Unselected LUT
+    g_minimizeBrightLut, //          Index 1: Selected LUT
   },
   g_minimizeRleEntries  // data   - Pointer to the beginning of the RLE data
 };
