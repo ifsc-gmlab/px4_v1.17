@@ -49,6 +49,9 @@
 #include "cimage.hxx"
 #include "clabel.hxx"
 #include "crlepalettebitmap.hxx"
+#include "cwindoweventhandler.hxx"
+
+#include "iapplicationwindow.hxx"
 
 /****************************************************************************
  * Pre-Processor Definitions
@@ -63,33 +66,14 @@
 namespace NxWM
 {
   /**
-   * This callback class is used by the application to get notification of toolbar
-   * related events.
-   */
-
-  class IApplicationCallback
-  {
-  public:
-    /**
-     * Called when the window minimize button is pressed.
-     */
-
-    virtual void minimize(void) = 0;
-
-    /**
-     * Called when the window minimize close is pressed.
-     */
-
-    virtual void close(void) = 0;
-  };
-
-  /**
    * This class represents that application window.  This class contains that the
    * framed window and its toolbar.  It manages callbacks from the toolbar minimize
    * and close buttions and passes these to the application via callbacks.
    */
 
-  class CApplicationWindow : private NXWidgets::CWidgetEventHandler
+  class CApplicationWindow : public IApplicationWindow,
+                             private NXWidgets::CWidgetEventHandler,
+                             private NXWidgets::CWindowEventHandler
   {
   protected:
     NXWidgets::CNxTkWindow       *m_window;         /**< The framed window used by the application */
@@ -101,6 +85,24 @@ namespace NxWM
     NXWidgets::CRlePaletteBitmap *m_stopBitmap;     /**< The stop icon bitmap */
     NXWidgets::CNxFont           *m_windowFont;     /**< The font used to rend the window label */
     IApplicationCallback         *m_callback;       /**< Toolbar action callbacks */
+
+    /**
+     * Handle an NX window mouse input event.
+     *
+     * @param e The event data.
+     */
+
+#ifdef CONFIG_NX_MOUSE
+    void handleMouseEvent(void);
+#endif
+
+    /**
+     * Handle a NX window keyboard input event.
+     */
+
+#ifdef CONFIG_NX_KBD
+    void handleKeyboardEvent(void);
+#endif
 
     /**
      * Handle a mouse button click event.
@@ -154,10 +156,7 @@ namespace NxWM
      * @return.  The window used by this application
      */
 
-    inline NXWidgets::CNxTkWindow *getWindow(void) const
-    {
-      return m_window;
-    }
+    NXWidgets::INxWindow *getWindow(void) const;
 
     /**
      * Set the window label
@@ -165,40 +164,21 @@ namespace NxWM
      * @param appname.  The name of the application to place on the window
      */
 
-    inline void setWindowLabel(NXWidgets::CNxString &appname)
-    {
-      m_windowLabel->setText(appname);
-    }
+    void setWindowLabel(NXWidgets::CNxString &appname);
 
     /**
      * Register to receive callbacks when toolbar icons are selected
      */
 
-    void registerCallbacks(IApplicationCallback *callback)
-    {
-      m_callback = callback;
-    }
+    void registerCallbacks(IApplicationCallback *callback);
 
     /**
      * Simulate a mouse click on the minimize icon.  This inline method is only
      * used during automated testing of NxWM.
      */
 
-#ifdef CONFIG_NXWM_UNITTEST
-    inline void clickMinimizeIcon(int index)
-    {
-      // Get the size and position of the widget
-
-      struct nxgl_size_s imageSize;
-      m_minimizeImage->getSize(imageSize);
-
-      struct nxgl_point_s imagePos;
-      m_minimizeImage->getPos(imagePos);
-
-      // And click the image at its center
-
-      m_minimizeImage->click(imagePos.x + (imageSize.w >> 1), imagePos.y + (imageSize.h >> 1));
-    }
+#if defined(CONFIG_NXWM_UNITTEST) && !defined(CONFIG_NXWM_TOUCHSCREEN)
+    void clickMinimizeIcon(int index);
 #endif
 
     /**
@@ -206,21 +186,8 @@ namespace NxWM
      * used during automated testing of NxWM.
      */
 
-#ifdef CONFIG_NXWM_UNITTEST
-    inline void clickStopIcon(int index)
-    {
-      // Get the size and position of the widget
-
-      struct nxgl_size_s imageSize;
-      m_stopImage->getSize(imageSize);
-
-      struct nxgl_point_s imagePos;
-      m_stopImage->getPos(imagePos);
-
-      // And click the image at its center
-
-      m_stopImage->click(imagePos.x + (imageSize.w >> 1), imagePos.y + (imageSize.h >> 1));
-    }
+#if defined(CONFIG_NXWM_UNITTEST) && !defined(CONFIG_NXWM_TOUCHSCREEN)
+    void clickStopIcon(int index);
 #endif
   };
 }
