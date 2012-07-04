@@ -47,8 +47,7 @@
 #include "up_arch.h"
 #include "up_internal.h"
 
-#include "lpc43_internal.h"
-#include "lpc4330_xplorer_internal.h"
+#include "xplorer_internal.h"
 
 /************************************************************************************
  * Definitions
