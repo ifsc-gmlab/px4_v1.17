@@ -47,13 +47,13 @@
  ************************************************************************************/
 /* Register Offsets *****************************************************************/
 
-#define LPC32_PD0_SLEEP0_HWENA_OFFSET 0x0000 /* Hardware sleep event enable register */
-#define LPC32_PD0_SLEEP0_MODE_OFFSET  0x001c /* Power-down mode control register */
+#define LPC43_PD0_SLEEP0_HWENA_OFFSET 0x0000 /* Hardware sleep event enable register */
+#define LPC43_PD0_SLEEP0_MODE_OFFSET  0x001c /* Power-down mode control register */
 
 /* Register Addresses ***************************************************************/
 
-#define LPC32_PD0_SLEEP0_HWENA        (LPC43_PMC_BASE+LPC32_PD0_SLEEP0_HWENA_OFFSET)
-#define LPC32_PD0_SLEEP0_MODE         (LPC43_PMC_BASE+LPC32_PD0_SLEEP0_MODE_OFFSET)
+#define LPC43_PD0_SLEEP0_HWENA        (LPC43_PMC_BASE+LPC43_PD0_SLEEP0_HWENA_OFFSET)
+#define LPC43_PD0_SLEEP0_MODE         (LPC43_PMC_BASE+LPC43_PD0_SLEEP0_MODE_OFFSET)
 
 /* Register Bit Definitions *********************************************************/
 
