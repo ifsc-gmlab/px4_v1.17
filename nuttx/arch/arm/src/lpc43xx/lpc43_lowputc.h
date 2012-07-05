@@ -33,8 +33,8 @@
  *
  ****************************************************************************/
 
-#ifndef __ARCH_ARM_SRC_LPC43XX_LOWSETUP_H
-#define __ARCH_ARM_SRC_LPC43XX_LOWSETUP_H
+#ifndef __ARCH_ARM_SRC_LPC43XX_LPC43_LOWSETUP_H
+#define __ARCH_ARM_SRC_LPC43XX_LPC43_LOWSETUP_H
 
 /****************************************************************************
  * Included Files
@@ -85,4 +85,4 @@ EXTERN void lpc43_lowsetup(void);
 #endif
 
 #endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_LPC43XX_LOWSETUP_H */
+#endif /* __ARCH_ARM_SRC_LPC43XX_LPC43_LOWSETUP_H */
