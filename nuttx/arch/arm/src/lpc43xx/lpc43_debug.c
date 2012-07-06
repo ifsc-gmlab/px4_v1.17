@@ -1,5 +1,5 @@
 /****************************************************************************
- *  arch/arm/src/lpc43/lpc43_pinconfig.c
+ *  arch/arm/src/lpc43/lpc43_pin_config.c
  *
  *   Copyright (C) 2012 Gregory Nutt. All rights reserved.
  *   Author: Gregory Nutt <gnutt@nuttx.org>
@@ -63,7 +63,7 @@
  * Public Functions
  ****************************************************************************/
 /****************************************************************************
- * Function:  lpc43_dumppinconfig
+ * Function:  lpc43_pin_dump
  *
  * Description:
  *   Dump all pin configuration registers associated with the provided pin
@@ -71,21 +71,21 @@
  *
  ****************************************************************************/
 
-int lpc43_dumppinconfig(uint32_t pinconf, const char *msg)
+int lpc43_pin_dump(uint32_t pinconf, const char *msg)
 {
 #warning "Missing logic"
   return -ENOSYS;
 }
 
 /********************************************************************************************
- * Function:  lpc43_dumpgpio
+ * Function:  lpc43_gpio_dump
  *
  * Description:
  *   Dump all pin configuration registers associated with the provided base address
  *
  ********************************************************************************************/
 
-int lpc43_dumpgpio(uint16_t gpiocfg, const char *msg)
+int lpc43_gpio_dump(uint16_t gpiocfg, const char *msg)
 {
 #warning "Missing logic"
   return -ENOSYS;
