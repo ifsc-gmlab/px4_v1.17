@@ -252,6 +252,14 @@ CONFIG_PHY_SPEED100=n
 CONFIG_PHY_FDUPLEX=y
 
 #
+# I2C configuration
+#
+CONFIG_I2C=n
+CONFIG_I2C_POLLED=y
+CONFIG_I2C_TRANSFER=y
+CONFIG_I2C_TRACE=n
+
+#
 # General build options
 #
 # CONFIG_RRLOAD_BINARY - make the rrload binary format used with
@@ -282,6 +290,10 @@ CONFIG_HAVE_LIBM=n
 # CONFIG_DEBUG_VERBOSE - enables verbose debug output
 # CONFIG_DEBUG_SYMBOLS - build without optimization and with
 #   debug symbols (needed for use with a debugger).
+# CONFIG_HAVE_CXX - Enable support for C++
+# CONFIG_HAVE_CXXINITIALIZE - The platform-specific logic includes support
+#   for initialization of static C++ instances for this architecture
+#   and for the selected toolchain (via up_cxxinitialize()).
 # CONFIG_MM_REGIONS - If the architecture includes multiple
 #   regions of memory to allocate from, this specifies the
 #   number of memory regions that the memory manager must
@@ -343,9 +355,6 @@ CONFIG_HAVE_LIBM=n
 # CONFIG_SDCLONE_DISABLE. Disable cloning of all socket
 #   desciptors by task_create() when a new task is started. If
 #   set, all sockets will appear to be closed in the new task.
-# CONFIG_NXFLAT. Enable support for the NXFLAT binary format.
-#  This format will support execution of NuttX binaries located
-#  in a ROMFS filesystem (see examples/nxflat).
 # CONFIG_SCHED_WORKQUEUE.  Create a dedicated "worker" thread to
 #  handle delayed processing from interrupt handlers.  This feature
 #  is required for some drivers but, if there are not complaints,
@@ -364,6 +373,8 @@ CONFIG_HAVE_LIBM=n
 #  thread.  Default: CONFIG_IDLETHREAD_STACKSIZE.
 # CONFIG_SIG_SIGWORK - The signal number that will be used to wake-up
 #  the worker thread.  Default: 4
+# CONFIG_SCHED_WAITPID - Enable the waitpid() API
+# CONFIG_SCHED_ATEXIT - Enabled the atexit() API
 #
 #CONFIG_APPS_DIR=
 CONFIG_DEBUG=n
@@ -371,18 +382,20 @@ CONFIG_DEBUG_VERBOSE=n
 CONFIG_DEBUG_SYMBOLS=n
 CONFIG_DEBUG_SCHED=n
 
+CONFIG_HAVE_CXX=n
+CONFIG_HAVE_CXXINITIALIZE=n
 CONFIG_MM_REGIONS=2
 CONFIG_ARCH_LOWPUTC=y
 CONFIG_RR_INTERVAL=200
 CONFIG_SCHED_INSTRUMENTATION=n
 CONFIG_TASK_NAME_SIZE=0
-CONFIG_START_YEAR=2010
-CONFIG_START_MONTH=6
-CONFIG_START_DAY=20
+CONFIG_START_YEAR=2012
+CONFIG_START_MONTH=7
+CONFIG_START_DAY=11
 CONFIG_GREGORIAN_TIME=n
 CONFIG_JULIAN_TIME=n
 CONFIG_DEV_CONSOLE=y
-CONFIG_DEV_LOWCONSOLE=n
+CONFIG_DEV_LOWCONSOLE=y
 CONFIG_MUTEX_TYPES=n
 CONFIG_PRIORITY_INHERITANCE=n
 CONFIG_SEM_PREALLOCHOLDERS=0
@@ -390,12 +403,62 @@ CONFIG_SEM_NNESTPRIO=0
 CONFIG_FDCLONE_DISABLE=n
 CONFIG_FDCLONE_STDIO=n
 CONFIG_SDCLONE_DISABLE=y
-CONFIG_NXFLAT=n
 CONFIG_SCHED_WORKQUEUE=n
-CONFIG_SCHED_WORKPRIORITY=50
+CONFIG_SCHED_WORKPRIORITY=192
 CONFIG_SCHED_WORKPERIOD=(50*1000)
-CONFIG_SCHED_WORKSTACKSIZE=1024
+CONFIG_SCHED_WORKSTACKSIZE=2048
 CONFIG_SIG_SIGWORK=4
+CONFIG_SCHED_WAITPID=n
+CONFIG_SCHED_ATEXIT=n
+
+#
+# System Logging
+#
+# CONFIG_SYSLOG - Enables the System Logging feature.
+# CONFIG_RAMLOG - Enables the RAM logging feature
+# CONFIG_RAMLOG_CONSOLE - Use the RAM logging device as a system console.
+#   If this feature is enabled (along with CONFIG_DEV_CONSOLE), then all
+#   console output will be re-directed to a circular buffer in RAM.  This
+#   is useful, for example, if the only console is a Telnet console.  Then
+#   in that case, console output from non-Telnet threads will go to the
+#   circular buffer and can be viewed using the NSH 'dmesg' command.
+# CONFIG_RAMLOG_SYSLOG - Use the RAM logging device for the syslogging
+#   interface.  If this feature is enabled (along with CONFIG_SYSLOG),
+#   then all debug output (only) will be re-directed to the circular
+#   buffer in RAM.  This RAM log can be view from NSH using the 'dmesg'
+#   command.
+# CONFIG_RAMLOG_NPOLLWAITERS - The number of threads than can be waiting
+#   for this driver on poll().  Default: 4
+#
+# If CONFIG_RAMLOG_CONSOLE or CONFIG_RAMLOG_SYSLOG is selected, then the
+# following may also be provided:
+#
+# CONFIG_RAMLOG_CONSOLE_BUFSIZE - Size of the console RAM log.  Default: 1024
+#
+
+CONFIG_SYSLOG=n
+CONFIG_RAMLOG=n
+CONFIG_RAMLOG_CONSOLE=n
+CONFIG_RAMLOG_SYSLOG=n
+#CONFIG_RAMLOG_NPOLLWAITERS
+#CONFIG_RAMLOG_CONSOLE_BUFSIZE
+
+#
+# Settings for NXFLAT
+#
+# CONFIG_NXFLAT. Enable support for the NXFLAT binary format.
+#  This format will support execution of NuttX binaries located
+#  in a ROMFS filesystem (see examples/nxflat).
+# CONFIG_NXFLAT_DUMPBUFFER. Dump a most buffers that NXFFLAT deals
+#  with.  CONFIG_DEBUG, CONFIG_DEBUG_VERBOSE, and
+#  CONFIG_DEBUG_BINFMT have to be defined or
+#  CONFIG_NXFLAT_DUMPBUFFER does nothing.
+# CONFIG_SYMTAB_ORDEREDBYNAME. Select if the system symbol table
+#  is ordered by symbol name
+#
+CONFIG_NXFLAT=n
+CONFIG_NXFLAT_DUMPBUFFER=n
+CONFIG_SYMTAB_ORDEREDBYNAME=y
 
 #
 # The following can be used to disable categories of
@@ -463,6 +526,14 @@ CONFIG_ARCH_BZERO=n
 # CONFIG_NAME_MAX - The maximum size of a file name.
 # CONFIG_STDIO_BUFFER_SIZE - Size of the buffer to allocate
 #   on fopen. (Only if CONFIG_NFILE_STREAMS > 0)
+# CONFIG_STDIO_LINEBUFFER - If standard C buffered I/O is enabled
+#   (CONFIG_STDIO_BUFFER_SIZE > 0), then this option may be added
+#   to force automatic, line-oriented flushing the output buffer
+#   for putc(), fputc(), putchar(), puts(), fputs(), printf(),
+#   fprintf(), and vfprintf().  When a newline is encountered in
+#   the output string, the output buffer will be flushed.  This
+#   (slightly) increases the NuttX footprint but supports the kind
+#   of behavior that people expect for printf().
 # CONFIG_NUNGET_CHARS - Number of characters that can be
 #   buffered by ungetc() (Only if CONFIG_NFILE_STREAMS > 0)
 # CONFIG_PREALLOC_MQ_MSGS - The number of pre-allocated message
@@ -488,6 +559,7 @@ CONFIG_NFILE_DESCRIPTORS=8
 CONFIG_NFILE_STREAMS=8
 CONFIG_NAME_MAX=32
 CONFIG_STDIO_BUFFER_SIZE=256
+CONFIG_STDIO_LINEBUFFER=n
 CONFIG_NUNGET_CHARS=2
 CONFIG_PREALLOC_MQ_MSGS=4
 CONFIG_MQ_MAXMSGSIZE=32
@@ -500,8 +572,49 @@ CONFIG_PREALLOC_TIMERS=4
 #
 # CONFIG_FS_FAT - Enable FAT filesystem support
 # CONFIG_FAT_SECTORSIZE - Max supported sector size
+# CONFIG_FAT_LCNAMES - Enable use of the NT-style upper/lower case 8.3
+#   file name support.
+# CONFIG_FAT_LFN - Enable FAT long file names.  NOTE:  Microsoft claims
+#   patents on FAT long file name technology.  Please read the
+#   disclaimer in the top-level COPYING file and only enable this
+#   feature if you understand these issues.
+# CONFIG_FAT_MAXFNAME - If CONFIG_FAT_LFN is defined, then the
+#   default, maximum long file name is 255 bytes.  This can eat up
+#   a lot of memory (especially stack space).  If you are willing
+#   to live with some non-standard, short long file names, then
+#   define this value.  A good choice would be the same value as
+#   selected for CONFIG_NAME_MAX which will limit the visibility
+#   of longer file names anyway.
+# CONFIG_FS_NXFFS: Enable NuttX FLASH file system (NXFF) support.
+# CONFIG_NXFFS_ERASEDSTATE: The erased state of FLASH. 
+#   This must have one of the values of 0xff or 0x00.
+#   Default: 0xff.
+# CONFIG_NXFFS_PACKTHRESHOLD: When packing flash file data,
+#   don't both with file chunks smaller than this number of data bytes.
+# CONFIG_NXFFS_MAXNAMLEN: The maximum size of an NXFFS file name.
+#   Default: 255.
+# CONFIG_NXFFS_PACKTHRESHOLD: When packing flash file data,
+#   don't both with file chunks smaller than this number of data bytes.
+#   Default: 32.
+# CONFIG_NXFFS_TAILTHRESHOLD: clean-up can either mean
+#   packing files together toward the end of the file or, if file are
+#   deleted at the end of the file, clean up can simply mean erasing
+#   the end of FLASH memory so that it can be re-used again.  However,
+#   doing this can also harm the life of the FLASH part because it can
+#   mean that the tail end of the FLASH is re-used too often. This
+#   threshold determines if/when it is worth erased the tail end of FLASH
+#   and making it available for re-use (and possible over-wear).
+#   Default: 8192.
 # CONFIG_FS_ROMFS - Enable ROMFS filesystem support
-CONFIG_FS_FAT=y
+# CONFIG_FS_RAMMAP - For file systems that do not support XIP, this
+#   option will enable a limited form of memory mapping that is
+#   implemented by copying whole files into memory.
+#
+CONFIG_FS_FAT=n
+CONFIG_FAT_LCNAMES=n
+CONFIG_FAT_LFN=n
+CONFIG_FAT_MAXFNAME=32
+CONFIG_FS_NXFFS=n
 CONFIG_FS_ROMFS=n
 
 #
@@ -596,6 +709,28 @@ CONFIG_NET_BROADCAST=n
 #
 CONFIG_NET_DHCP_LIGHT=n
 CONFIG_NET_RESOLV_ENTRIES=4
+
+#
+# FTP Server
+#
+# CONFIG_FTPD_VENDORID - The vendor name to use in FTP communications.
+#   Default: "NuttX"
+# CONFIG_FTPD_SERVERID - The server name to use in FTP communications.
+#   Default: "NuttX FTP Server"
+# CONFIG_FTPD_CMDBUFFERSIZE - The maximum size of one command.  Default:
+#   128 bytes.
+# CONFIG_FTPD_DATABUFFERSIZE - The size of the I/O buffer for data
+#   transfers.  Default: 512 bytes.
+# CONFIG_FTPD_WORKERSTACKSIZE - The stacksize to allocate for each
+#   FTP daemon worker thread.  Default:  2048 bytes.
+#
+# Other required configuration settings:  Of course TCP networking support
+# is required.  But here are a couple that are less obvious:
+#
+# CONFIG_DISABLE_PTHREAD - pthread support is required
+# CONFIG_DISABLE_POLL - poll() support is required
+#
+CONFIG_FTPD_CMDBUFFERSIZE=2048
 
 #
 # USB Device Configuration
@@ -757,6 +892,8 @@ CONFIG_EXAMPLES_OSTEST_NBARRIER_THREADS=3
 # CONFIG_NSH_DISABLEBG - Disable background commands
 # CONFIG_NSH_ROMFSETC - Use startup script in /etc
 # CONFIG_NSH_CONSOLE - Use serial console front end
+# CONFIG_NSH_CONDEV - Select the serial device used to support
+#   the NSH console.  Default: stdin and stdout
 # CONFIG_NSH_TELNET - Use telnetd console front end
 # CONFIG_NSH_ARCHINIT - Platform provides architecture
 #   specific initialization (nsh_archinitialize()).
@@ -787,6 +924,7 @@ CONFIG_NSH_DISABLESCRIPT=n
 CONFIG_NSH_DISABLEBG=n
 CONFIG_NSH_ROMFSETC=n
 CONFIG_NSH_CONSOLE=y
+#CONFIG_NSH_CONDEV="/dev/ttyS1"
 CONFIG_NSH_TELNET=n
 CONFIG_NSH_ARCHINIT=y
 CONFIG_NSH_IOBUFFER_SIZE=512
@@ -812,6 +950,40 @@ CONFIG_NSH_MMCSDSLOTNO=0
 CONFIG_NSH_MMCSDMINOR=0
 
 #
+# I2C tool settings
+#
+# CONFIG_I2CTOOL_BUILTIN - Build the tools as an NSH built-in command
+# CONFIG_I2CTOOL_MINBUS - Smallest bus index supported by the hardware (default 0).
+# CONFIG_I2CTOOL_MAXBUS - Largest bus index supported by the hardware (default 3)
+# CONFIG_I2CTOOL_MINADDR - Minium device address (default: 0x03)
+# CONFIG_I2CTOOL_MAXADDR - Largest device address (default: 0x77)
+# CONFIG_I2CTOOL_MAXREGADDR - Largest register address (default: 0xff)
+# CONFIG_I2CTOOL_DEFFREQ - Default frequency (default: 1000000)
+#
+CONFIG_I2CTOOL_BUILTIN=y
+CONFIG_I2CTOOL_MINBUS=1
+CONFIG_I2CTOOL_MAXBUS=3
+#CONFIG_I2CTOOL_MINADDR
+#CONFIG_I2CTOOL_MAXADDR
+#CONFIG_I2CTOOL_MAXREGADDR
+CONFIG_I2CTOOL_DEFFREQ=100000
+
+#
+# Settings for examples/buttons
+#
+# CONFIG_EXAMPLE_BUTTONS_MIN and CONFIG_EXAMPLE_BUTTONS_MAX
+#   Lowest and highest button number (0-7)
+# CONFIG_EXAMPLE_IRQBUTTONS_MIN and CONFIG_EXAMPLE_IRQBUTTONS_MAX
+#   Lowest and highest interrupting button number (-7)
+# CONFIG_EXAMPLE_BUTTONS_NAMEn - Name for button n
+#
+CONFIG_EXAMPLE_BUTTONS_MIN=0
+CONFIG_EXAMPLE_BUTTONS_MAX=0
+CONFIG_EXAMPLE_IRQBUTTONS_MIN=0
+CONFIG_EXAMPLE_IRQBUTTONS_MAX=0
+CONFIG_EXAMPLE_BUTTONS_NAME1="SW2"
+
+#
 # Settings for examples/usbserial
 #
 # CONFIG_EXAMPLES_USBSERIAL_INONLY
@@ -833,6 +1005,117 @@ CONFIG_EXAMPLES_USBSERIAL_TRACECLASS=n
 CONFIG_EXAMPLES_USBSERIAL_TRACETRANSFERS=n
 CONFIG_EXAMPLES_USBSERIAL_TRACECONTROLLER=n
 CONFIG_EXAMPLES_USBSERIAL_TRACEINTERRUPTS=n
+
+#
+# Settings for examples/adc
+#
+# CONFIG_ADC - Enabled ADC support
+# CONFIG_NSH_BUILTIN_APPS - Build the ADC test as an NSH built-in function.
+#   Default: Built as a standalone problem
+#
+# CONFIG_EXAMPLES_ADC_DEVPATH - The path to the ADC device. Default: /dev/adc0
+# CONFIG_EXAMPLES_ADC_NSAMPLES - If CONFIG_NSH_BUILTIN_APPS
+#   is defined, then the number of samples is provided on the command line
+#   and this value is ignored.  Otherwise, this number of samples is
+#   collected and the program terminates.  Default:  Samples are collected
+#   indefinitely.
+# CONFIG_EXAMPLES_ADC_GROUPSIZE - The number of samples to read at once.
+#   Default: 4
+
+#
+# Settings for examples/can
+#
+# CONFIG_CAN - Enables CAN support.
+# CONFIG_CAN_LOOPBACK - A CAN driver may or may not support a loopback
+#   mode for testing. The STM32 CAN driver does support loopback mode.
+# CONFIG_NSH_BUILTIN_APPS - Build the CAN test as an NSH built-in function.
+#   Default: Built as a standalone problem
+#
+# CONFIG_EXAMPLES_CAN_DEVPATH - The path to the CAN device. Default: /dev/can0
+# CONFIG_EXAMPLES_CAN_NMSGS - If CONFIG_NSH_BUILTIN_APPS
+#   is defined, then the number of loops is provided on the command line
+#   and this value is ignored.  Otherwise, this number of CAN message is
+#   collected and the program terminates.  Default:  If built as an NSH
+#   built-in, the default is 32.  Otherwise messages are sent and received
+#   indefinitely.
+
+#
+# Settings for examples/watchdog
+#
+# This test depends on these specific Watchdog/NSH configurations settings (your
+# specific watchdog hardware settings might require additional settings).
+#
+#   CONFIG_WATCHDOG- Enables watchdog timer support support.
+#   CONFIG_NSH_BUILTIN_APPS - Build the watchdog time test as an NSH
+#     built-in function. Default: Not built!  The example can only be used
+#     as an NSH built-in application
+#
+# The STM32 also needs one of the following enabled:
+#
+#  CONFIG_STM32_WWDG=y, OR
+#  CONFIG_STM32_IWDG=y (but not both)
+#
+# Specific configuration options for this example include:
+#
+# CONFIG_EXAMPLES_WATCHDOG_DEVPATH - The path to the Watchdog device.
+#   Default: /dev/watchdog0
+# CONFIG_EXAMPLES_WATCHDOG_PINGTIME - Time in milliseconds that the example
+#   will ping the watchdog before letting the watchdog expire. Default: 5000
+#   milliseconds
+# CONFIG_EXAMPLES_WATCHDOG_PINGDELAY - Time delay between pings in
+#   milliseconds. Default: 500 milliseconds.
+# CONFIG_EXAMPLES_WATCHDOG_TIMEOUT - The watchdog timeout value in
+#   milliseconds before the watchdog timer expires.  Default:  2000
+#   milliseconds.
+#
+# CONFIG_EXAMPLES_WATCHDOG_DEVPATH
+# CONFIG_EXAMPLES_WATCHDOG_PINGTIME
+# CONFIG_EXAMPLES_WATCHDOG_PINGDELAY
+# CONFIG_EXAMPLES_WATCHDOG_TIMEOUT
+
+#
+# Settings for examples/pwm
+#
+# CONFIG_PWM - Enables PWM support.
+# CONFIG_NSH_BUILTIN_APPS - Build the PWM test as an NSH built-in function.
+#   Default: Not built!  The example can only be used as an NSH built-in
+#   application
+#
+# CONFIG_EXAMPLES_PWM_DEVPATH - The path to the PWM device. Default: /dev/pwm0
+# CONFIG_EXAMPLES_PWM_FREQUENCY - The initial PWM frequency.  Default: 100 Hz
+# CONFIG_EXAMPLES_PWM_DUTYPCT - The initial PWM duty as a percentage.  Default: 50%
+# CONFIG_EXAMPLES_PWM_DURATION - The initial PWM pulse train duration in sectonds.
+#    as a percentage.  Default: 5 seconds
+
+#
+# Settings for examples/ftpd
+#
+#  CONFIG_EXAMPLES_FTPD_PRIO - Priority of the FTP daemon.
+#    Default: SCHED_PRIORITY_DEFAULT
+#  CONFIG_EXAMPLES_FTPD_STACKSIZE - Stack size allocated for the
+#    FTP daemon. Default: 2048
+#  CONFIG_EXAMPLES_FTPD_NONETINIT - Define to suppress configuration of the
+#    network by apps/examples/ftpd.  You would need to suppress network
+#    configuration if the network is configuration prior to running the
+#    example.
+#
+# NSH always initializes the network so if CONFIG_NSH_BUILTIN_APPS is
+# defined, so is CONFIG_EXAMPLES_FTPD_NONETINIT (se it does not explicitly
+# need to be defined in that case):
+#
+#  CONFIG_NSH_BUILTIN_APPS - Build the FTPD daemon example test as an
+#    NSH built-in function.  By default the FTPD daemon will be built
+#    as a standalone application.
+#
+# If CONFIG_EXAMPLES_FTPD_NONETINIT is not defined, then the following may
+# be specified to customized the network configuration:
+#
+#  CONFIG_EXAMPLE_FTPD_NOMAC - If the hardware has no MAC address of its
+#    own, define this =y to provide a bogus address for testing.
+#  CONFIG_EXAMPLE_FTPD_IPADDR - The target IP address.  Default 10.0.0.2
+#  CONFIG_EXAMPLE_FTPD_DRIPADDR - The default router address. Default
+#    10.0.0.1
+#  CONFIG_EXAMPLE_FTPD_NETMASK - The network mask.  Default: 255.255.255.0
 
 #
 # Stack and heap information
