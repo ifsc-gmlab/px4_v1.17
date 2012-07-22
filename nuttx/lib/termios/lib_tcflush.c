@@ -84,7 +84,5 @@
 
 int tcflush(int fd, int cmd)
 {
-  /* Not yet implemented */
-
   return ioctl(fd, TCFLSH, (unsigned long)cmd);
 }
