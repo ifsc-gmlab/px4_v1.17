@@ -74,6 +74,15 @@
  *   NOTE 1: NuttX does not control input/output baud independently.  Both
  *   must be the same.  The POSIX standard interfaces, cfisetispeed() and
  *   cfisetospeed() are defined to be cfsetspeed() in termios.h.
+ *
+ *   NOTE 3:  A consequence of NOTE 1 is that you should never attempt to
+ *   set the input and output baud to different values.
+ *
+ *   Also, the following POSIX requirement cannot be supported: "If the input
+ *   baud rate stored in the termios structure pointed to by termios_p is 0,
+ *   the input baud rate given to the hardware will be the same as the output
+ *   baud rate stored in the termios structure."
+ *
  *   NOTE 2.  In Nuttx, the speed_t is defined to be uint32_t and the baud
  *   encodings of termios.h are the actual baud values themselves.  Therefore,
  *   any baud value can be provided as the speed argument here.  However, if
@@ -87,7 +96,7 @@
  *     termiosp->c_ispeed = baud;
  *
  *     cfsetospeed(termiosp, BOTHER);
- *    termiosp->c_ospeed = baud;
+ *     termiosp->c_ospeed = baud;
  *
  * Input Parameters:
  *   termiosp - The termiosp argument is a pointer to a termios structure.
