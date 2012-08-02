@@ -42,7 +42,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include <nuttx/ramlog.h>
+#include <nuttx/syslog.h>
 
 #include "lib_internal.h"
 
@@ -62,12 +62,10 @@
 
 static void syslogstream_putc(FAR struct lib_outstream_s *this, int ch)
 {
-  /* At present, the RAM log is the only supported logging device */
+  /* Write the character to the supported logging device */
 
-#ifdef CONFIG_RAMLOG_SYSLOG
-  (void)ramlog_putc(ch);
+  (void)syslog_putc(ch);
   this->nput++;
-#endif
 }
 
 /****************************************************************************
