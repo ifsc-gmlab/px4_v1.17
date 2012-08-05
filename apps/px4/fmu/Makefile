@@ -35,4 +35,8 @@
 # Interface driver for the PX4FMU board
 #
 
+APPNAME		 = fmu
+PRIORITY	 = SCHED_PRIORITY_DEFAULT
+STACKSIZE	 = 2048
+
 include $(APPDIR)/mk/app.mk
