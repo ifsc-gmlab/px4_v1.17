@@ -36,7 +36,6 @@
 #
 
 CSRCS		 = hx_stream.c \
-		   mixer.c \
 		   perf_counter.c
 
 #
