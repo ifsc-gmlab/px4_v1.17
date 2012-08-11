@@ -42,7 +42,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <uORB.h>
+#include "../uORB.h"
 
 /**
  * @addtogroup topics
