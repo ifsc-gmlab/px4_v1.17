@@ -56,8 +56,9 @@
 
 #define MAX_MOTOR_COUNT 16
 
-void multirotor_control_attitude(const struct vehicle_attitude_setpoint_s *att_sp, const struct vehicle_attitude_s *att, const struct vehicle_status_s *status,
-	bool verbose, float* roll_output, float* pitch_output, float* yaw_output, float* thrust_output)
+void multirotor_control_attitude(const struct vehicle_attitude_setpoint_s *att_sp,
+	const struct vehicle_attitude_s *att, const struct vehicle_status_s *status,
+	struct actuator_controls_s *actuators, bool verbose)
 {
 	static uint64_t last_run = 0;
 	const float deltaT = (hrt_absolute_time() - last_run) / 1000000.0f;
@@ -218,13 +219,18 @@ void multirotor_control_attitude(const struct vehicle_attitude_setpoint_s *att_s
 		roll_controller.saturated = 1;
 	}
 
-	*roll_output = roll_control;
-	*pitch_output = pitch_control;
-	*yaw_output = yaw_rate_control;
-	*thrust_output = motor_thrust;
+	actuators->control[0] = roll_control;
+	actuators->control[1] = pitch_control;
+	actuators->control[2] = yaw_rate_control;
+	actuators->control[3] = motor_thrust;
 }
 
-void ardrone_mixing_and_output(int ardrone_write, float roll_control, float pitch_control, float yaw_control, float motor_thrust, bool verbose) {
+void ardrone_mixing_and_output(int ardrone_write, const struct actuator_controls_s *actuators, bool verbose) {
+
+	float roll_control = actuators->control[0];
+	float pitch_control = actuators->control[1];
+	float yaw_control = actuators->control[2];
+	float motor_thrust = actuators->control[3];
 
 	unsigned int motor_skip_counter = 0;
 
