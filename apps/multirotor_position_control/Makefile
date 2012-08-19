@@ -32,14 +32,11 @@
 ############################################################################
 
 #
-# Makefile to build uORB
+# Makefile to build multirotor position control
 #
 
-APPNAME		 = ardrone_control
-PRIORITY	 = SCHED_PRIORITY_MAX - 15
+APPNAME		 = multirotor_position_control
+PRIORITY	 = SCHED_PRIORITY_MAX - 25
 STACKSIZE	 = 2048
-
-# explicit list of sources - not everything is built currently
-CSRCS		 = ardrone_control.c ardrone_motor_control.c ardrone_control_helper.c rate_control.c attitude_control.c pid.c
 
 include $(APPDIR)/mk/app.mk
