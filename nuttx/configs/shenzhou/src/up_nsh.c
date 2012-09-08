@@ -45,32 +45,13 @@
 #include <debug.h>
 #include <errno.h>
 
-#ifdef CONFIG_STM32_SPI1
-#  include <nuttx/spi.h>
-#  include <nuttx/mtd.h>
-#endif
-
-#ifdef CONFIG_STM32_SDIO
-#  include <nuttx/sdio.h>
-#  include <nuttx/mmcsd.h>
-#endif
-
-#ifdef CONFIG_STM32_OTGFS
-#  include "stm32_usbhost.h"
-#endif
-
 #include "stm32_internal.h"
 #include "shenzhou-internal.h"
 
 /****************************************************************************
  * Pre-Processor Definitions
  ****************************************************************************/
-
 /* Configuration ************************************************************/
-
-/* For now, don't build in any SPI1 support -- NSH is not using it */
-
-#undef CONFIG_STM32_SPI1
 
 /* Assume that we support everything until convinced otherwise */
 
@@ -78,11 +59,25 @@
 #define HAVE_USBDEV   1
 #define HAVE_USBHOST  1
 
-/* Can't support MMC/SD features if mountpoints are disabled or if SDIO support
- * is not enabled.
- */
+/* Configuration ************************************************************/
+/* SPI1 connects to the SD CARD (and to the SPI FLASH) */
 
-#if defined(CONFIG_DISABLE_MOUNTPOINT) || !defined(CONFIG_STM32_SDIO)
+#define STM32_MMCSDSPIPORTNO   1  /* SPI1 */
+#define STM32_MMCSDSLOTNO      0  /* Only one slot */
+
+#ifndef CONFIG_STM32_SPI1
+#  undef HAVE_MMCSD
+#endif
+
+/* Can't support MMC/SD features if mountpoints are disabled */
+
+#ifndef CONFIG_DISABLE_MOUNTPOINT
+#  undef NSH_HAVEMMCSD
+#endif
+
+/* Can't support MMC/SD features if mountpoints are disabled) */
+
+#if defined(CONFIG_DISABLE_MOUNTPOINT)
 #  undef HAVE_MMCSD
 #endif
 
@@ -95,13 +90,26 @@
 
 /* Default MMC/SD SLOT number */
 
-#  if defined(CONFIG_NSH_MMCSDSLOTNO) && CONFIG_NSH_MMCSDSLOTNO != 0
-#    error "Only one MMC/SD slot"
-#    undef CONFIG_NSH_MMCSDSLOTNO
+#  if defined(CONFIG_NSH_MMCSDSLOTNO) && CONFIG_NSH_MMCSDSLOTNO != STM32_MMCSDSLOTNO
+#    error "Only one MMC/SD slot:  Slot 0"
+#    undef  CONFIG_NSH_MMCSDSLOTNO
+#    define CONFIG_NSH_MMCSDSLOTNO STM32_MMCSDSLOTNO
 #  endif
 
 #  ifndef CONFIG_NSH_MMCSDSLOTNO
-#    define CONFIG_NSH_MMCSDSLOTNO 0
+#    define CONFIG_NSH_MMCSDSLOTNO STM32_MMCSDSLOTNO
+#  endif
+
+/* Verify configured SPI port number */
+
+#  if defined(CONFIG_NSH_MMCSDSPIPORTNO) && CONFIG_NSH_MMCSDSPIPORTNO != STM32_MMCSDSPIPORTNO
+#    error "Only one MMC/SD port:  SPI1"
+#    undef  CONFIG_NSH_MMCSDSPIPORTNO
+#    define CONFIG_NSH_MMCSDSPIPORTNO STM32_MMCSDSPIPORTNO
+#  endif
+
+#  ifndef CONFIG_NSH_MMCSDSPIPORTNO
+#    define CONFIG_NSH_MMCSDSPIPORTNO STM32_MMCSDSPIPORTNO
 #  endif
 #endif
 
@@ -154,58 +162,27 @@
 
 int nsh_archinitialize(void)
 {
-#ifdef CONFIG_STM32_SPI1
-  FAR struct spi_dev_s *spi;
-  FAR struct mtd_dev_s *mtd;
-#endif
-#ifdef HAVE_MMCSD
-  FAR struct sdio_dev_s *sdio;
-#endif
 #if defined(HAVE_MMCSD) || defined(HAVE_USBHOST)
   int ret;
 #endif
 
-  /* Configure SPI-based devices */
-
-#ifdef CONFIG_STM32_SPI1
-#  warning "Missing support for the SPI FLASH"
-#endif
-
-  /* Mount the SDIO-based MMC/SD block driver */
+  /* Initialize the SPI-based MMC/SD slot */
 
 #ifdef HAVE_MMCSD
-  /* First, get an instance of the SDIO interface */
-
-  sdio = sdio_initialize(CONFIG_NSH_MMCSDSLOTNO);
-  if (!sdio)
+  ret = stm32_sdinitialze(CONFIG_NSH_MMCSDMINOR);
+  if (ret < 0)
     {
-      message("nsh_archinitialize: Failed to initialize SDIO slot %d\n",
-              CONFIG_NSH_MMCSDSLOTNO);
-      return -ENODEV;
-    }
-
-  /* Now bind the SDIO interface to the MMC/SD driver */
-
-  ret = mmcsd_slotinitialize(CONFIG_NSH_MMCSDMINOR, sdio);
-  if (ret != OK)
-    {
-      message("nsh_archinitialize: Failed to bind SDIO to the MMC/SD driver: %d\n", ret);
+      message("nsh_archinitialize: Failed to initialize MMC/SD slot %d: %d\n",
+              CONFIG_NSH_MMCSDSLOTNO, ret);
       return ret;
     }
-  
-  /* Then let's guess and say that there is a card in the slot.  I need to check to
-   * see if the STM3240G-EVAL board supports a GPIO to detect if there is a card in
-   * the slot.
-   */
-
-   sdio_mediachange(sdio, true);
 #endif
 
-#ifdef HAVE_USBHOST
   /* Initialize USB host operation.  stm32_usbhost_initialize() starts a thread
    * will monitor for USB connection and disconnection events.
    */
 
+#ifdef HAVE_USBHOST
   ret = stm32_usbhost_initialize();
   if (ret != OK)
     {
