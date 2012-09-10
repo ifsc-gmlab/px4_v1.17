@@ -44,7 +44,7 @@
 #include <stdio.h>
 #include <debug.h>
 
-#include "shenzhou_internal.h"
+#include "shenzhou-internal.h"
 
 /****************************************************************************
  * Pre-Processor Definitions
