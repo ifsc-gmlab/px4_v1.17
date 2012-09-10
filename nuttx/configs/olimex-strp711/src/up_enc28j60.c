@@ -151,12 +151,51 @@
 #  define ENC_GPIO0_NETINT   (1 << 6) /* Interrupt (P0.6) */
 
 /****************************************************************************
+ * Private Function Prototypes
+ ****************************************************************************/
+
+static int  up_attach(FAR struct enc_lower_s *lower, xcpt_t handler);
+static void up_enable(FAR struct enc_lower_s *lower);
+static void up_disable(FAR struct enc_lower_s *lower);
+
+/****************************************************************************
  * Private Data
  ****************************************************************************/
+
+/* The ENC28J60 normal provides interrupts to the MCU via a GPIO pin.  The
+ * following structure provides an MCU-independent mechanixm for controlling
+ * the ENC28J60 GPIO interrupt.
+ */
+
+static const struct enc_lower_s g_enclower =
+{
+  .attach  = up_attach,
+  .enable  = up_enable,
+  .disable = up_disable
+};
 
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
+
+/****************************************************************************
+ * Name: struct enc_lower_s methods
+ ****************************************************************************/
+
+static int up_attach(FAR struct enc_lower_s *lower, xcpt_t handler)
+{
+  return irq_attach(ENC28J60_IRQ, handler)
+}
+
+static void up_enable(FAR struct enc_lower_s *lower)
+{
+  up_enable_irq(ENC28J60_IRQ);
+}
+
+static void up_disable(FAR struct enc_lower_s *lower)
+{
+  up_disable_irq(ENC28J60_IRQ);
+}
 
 /****************************************************************************
  * Public Functions
@@ -198,7 +237,7 @@ void up_netinitialize(void)
 
   /* Bind the SPI port to the ENC28J60 driver */
 
-  ret = enc_initialize(spi, ENC28J60_DEVNO, ENC28J60_IRQ);
+  ret = enc_initialize(spi, ENC28J60_DEVNO, &g_enclower);
   if (ret < 0)
     {
       nlldbg("Failed to bind SPI port %d ENC28J60 device %d: %d\n",
