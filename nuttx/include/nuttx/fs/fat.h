@@ -106,7 +106,7 @@ EXTERN int fat_setattrib(const char *path, fat_attrib_t setbits, fat_attrib_t cl
  ****************************************************************************/
 
 EXTERN FAR void *fat_dma_alloc(size_t size);
-EXTERN void fat_dma_free(FAR void *memory);
+EXTERN void fat_dma_free(FAR void *memory, size_t size);
 
 #undef EXTERN
 #ifdef __cplusplus
