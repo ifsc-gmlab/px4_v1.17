@@ -1,21 +1,21 @@
 /****************************************************************************
  *
- *   Copyright (C) 2008-2012 PX4 Development Team. All rights reserved.
- *   Author: @author Lorenz Meier <lm@inf.ethz.ch>
+ *	 Copyright (C) 2008-2012 PX4 Development Team. All rights reserved.
+ *	 Author: @author Lorenz Meier <lm@inf.ethz.ch>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *		notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ *		notice, this list of conditions and the following disclaimer in
+ *		the documentation and/or other materials provided with the
+ *		distribution.
  * 3. Neither the name PX4 nor the names of its contributors may be
- *    used to endorse or promote products derived from this software
- *    without specific prior written permission.
+ *		used to endorse or promote products derived from this software
+ *		without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -57,31 +57,27 @@
  */
 enum MANUAL_CONTROL_MODE
 {
-  DIRECT = 0,
-  ROLLPOS_PITCHPOS_YAWRATE_THROTTLE = 1,
-	ROLLRATE_PITCHRATE_YAWRATE_THROTTLE = 2,
-  ROLLPOS_PITCHPOS_YAWPOS_THROTTLE = 3
+	MANUAL_CONTROL_MODE_DIRECT = 0,
+	MANUAL_CONTROL_MODE_ATT_YAW_RATE = 1,
+	MANUAL_CONTROL_MODE_ATT_YAW_POS = 2,
+	MANUAL_CONTROL_MODE_MULTIROTOR_SIMPLE = 3 /**< roll / pitch rotated aligned to the takeoff orientation, throttle stabilized, yaw pos */
 };
 
 struct manual_control_setpoint_s {
+	uint64_t timestamp;
 
-  enum MANUAL_CONTROL_MODE mode;     /**< The current control inputs mode */
-  float roll;                   /**< roll / roll rate input */
-  float pitch;
-  float yaw;
-  float throttle;
+	enum MANUAL_CONTROL_MODE mode;		 /**< The current control inputs mode */
+	float roll;			 /**< ailerons roll / roll rate input */
+	float pitch;     /**< elevator / pitch / pitch rate */
+	float yaw;       /**< rudder / yaw rate / yaw */
+	float throttle;  /**< throttle / collective thrust / altitude */
 
-  float override_mode_switch;
+	float override_mode_switch;
 
-  float ailerons;
-  float elevator;
-  float rudder;
-  float flaps;
-
-  float aux1_cam_pan;
-  float aux2_cam_tilt;
-  float aux3_cam_zoom;
-  float aux4_cam_roll;
+	float aux1_cam_pan_flaps;
+	float aux2_cam_tilt;
+	float aux3_cam_zoom;
+	float aux4_cam_roll;
 
 }; /**< manual control inputs */
 
