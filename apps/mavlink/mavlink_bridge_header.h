@@ -62,28 +62,12 @@
  */
 extern mavlink_system_t mavlink_system;
 
-
-mqd_t gps_queue;
-int uart;
-
-
 /**
  * @brief Send multiple chars (uint8_t) over a comm channel
  *
  * @param chan MAVLink channel to use, usually MAVLINK_COMM_0 = UART0
  * @param ch Character to send
  */
-static inline void mavlink_send_uart_bytes(mavlink_channel_t chan, uint8_t *ch, uint16_t length)
-{
-	ssize_t ret;
-
-	if (chan == MAVLINK_COMM_0) {
-		ret = write(uart, ch, (size_t)(sizeof(uint8_t) * length));
-
-		if (ret != length) {
-			printf("[mavlink] Error: Written %u instead of %u\n", ret, length);
-		}
-	}
-}
+extern void mavlink_send_uart_bytes(mavlink_channel_t chan, uint8_t *ch, int length);
 
 #endif /* MAVLINK_BRIDGE_HEADER_H */
