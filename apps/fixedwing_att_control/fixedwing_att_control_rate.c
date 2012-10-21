@@ -155,8 +155,7 @@ int fixedwing_att_control_rates(const struct vehicle_rates_setpoint_s *rate_sp,
 	}
 
 	/* Roll Rate (PI) */
-	float roll_rate_error = rate_sp->roll - rates[0];
-	actuators->control[0] = pid_calculate(&roll_rate_controller, rate_sp->roll, rates[0], 0, deltaT);;
+	actuators->control[0] = pid_calculate(&roll_rate_controller, rate_sp->roll, rates[0], 0, deltaT);
 
 
 	actuators->control[1] = 0;
