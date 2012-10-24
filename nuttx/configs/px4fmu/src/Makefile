@@ -43,7 +43,7 @@ AOBJS		= $(ASRCS:.S=$(OBJEXT))
 CSRCS		= up_boot.c up_leds.c up_spi.c \
 		  drv_gpio.c \
 		  drv_led.c drv_eeprom.c \
-		  up_pwm_servo.c up_usbdev.c
+		  up_usbdev.c
 
 ifeq ($(CONFIG_ADC),y)
 CSRCS		+= up_adc.c
