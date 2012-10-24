@@ -1,0 +1,9 @@
+#
+# For a description of the syntax of this configuration file,
+# see misc/tools/kconfig-language.txt.
+#
+
+config ELF_DUMPBUFFER
+	bool "Dump ELF buffers"
+	default n
+	depends on DEBUG && DEBUG_VERBOSE

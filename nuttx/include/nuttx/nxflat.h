@@ -1,7 +1,7 @@
 /****************************************************************************
  * include/nuttx/nxflat.h
  *
- *   Copyright (C) 2009 Gregory Nutt. All rights reserved.
+ *   Copyright (C) 2009, 2012 Gregory Nutt. All rights reserved.
  *   Author: Gregory Nutt <gnutt@nuttx.org>
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,22 +110,22 @@ extern "C" {
  * These are APIs exported by libnxflat (and may be used outside of NuttX):
  ****************************************************************************/
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_verifyheader
  *
  * Description:
- *   Given the header from a possible NXFLAT executable, verify that it
- *   is an NXFLAT executable.
+ *   Given the header from a possible NXFLAT executable, verify that it is
+ *   an NXFLAT executable.
  *
  * Returned Value:
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_verifyheader(const struct nxflat_hdr_s *header);
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_init
  *
  * Description:
@@ -136,12 +136,12 @@ EXTERN int nxflat_verifyheader(const struct nxflat_hdr_s *header);
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_init(const char *filename,
                        struct nxflat_loadinfo_s *loadinfo);
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_uninit
  *
  * Description:
@@ -152,11 +152,11 @@ EXTERN int nxflat_init(const char *filename,
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_uninit(struct nxflat_loadinfo_s *loadinfo);
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_load
  *
  * Description:
@@ -170,11 +170,11 @@ EXTERN int nxflat_uninit(struct nxflat_loadinfo_s *loadinfo);
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_load(struct nxflat_loadinfo_s *loadinfo);
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_read
  *
  * Description:
@@ -184,12 +184,12 @@ EXTERN int nxflat_load(struct nxflat_loadinfo_s *loadinfo);
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_read(struct nxflat_loadinfo_s *loadinfo, char *buffer,
                        int readsize, int offset);
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_bind
  *
  * Description:
@@ -202,13 +202,13 @@ EXTERN int nxflat_read(struct nxflat_loadinfo_s *loadinfo, char *buffer,
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 struct symtab_s;
 EXTERN int nxflat_bind(FAR struct nxflat_loadinfo_s *loadinfo,
                        FAR const struct symtab_s *exports, int nexports);
 
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_unload
  *
  * Description:
@@ -219,14 +219,14 @@ EXTERN int nxflat_bind(FAR struct nxflat_loadinfo_s *loadinfo,
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_unload(struct nxflat_loadinfo_s *loadinfo);
 
 /****************************************************************************
  * These are APIs used internally only by NuttX:
  ****************************************************************************/
-/***********************************************************************
+/****************************************************************************
  * Name: nxflat_initialize
  *
  * Description:
@@ -239,7 +239,7 @@ EXTERN int nxflat_unload(struct nxflat_loadinfo_s *loadinfo);
  *   0 (OK) is returned on success and a negated errno is returned on
  *   failure.
  *
- ***********************************************************************/
+ ****************************************************************************/
 
 EXTERN int nxflat_initialize(void);
 
