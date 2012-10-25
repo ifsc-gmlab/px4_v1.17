@@ -80,15 +80,22 @@ int elf_unload(struct elf_loadinfo_s *loadinfo)
 
   if (loadinfo->alloc)
     {
-      kfree((void*)loadinfo->alloc);
+      kfree((FAR void *)loadinfo->alloc);
       loadinfo->alloc     = 0;
       loadinfo->allocsize = 0;
     }
 
   if (loadinfo->shdr)
     {
-      kfree((void*)loadinfo->shdr);
+      kfree((FAR void *)loadinfo->shdr);
       loadinfo->shdr      = NULL;
+    }
+
+  if (loadinfo->iobuffer)
+    {
+      kfree((FAR void *)loadinfo->iobuffer);
+      loadinfo->iobuffer  = NULL;
+      loadinfo->buflen    = 0;
     }
 
   return OK;
