@@ -42,7 +42,11 @@
 #include <unistd.h>
 #include <debug.h>
 #include <errno.h>
+
+#include <nuttx/kmalloc.h>
 #include <nuttx/binfmt/elf.h>
+
+#include "libelf.h"
 
 /****************************************************************************
  * Pre-Processor Definitions
@@ -75,6 +79,12 @@
 
 int elf_uninit(struct elf_loadinfo_s *loadinfo)
 {
+  /* Free all working buffers */
+
+  elf_freebuffers(loadinfo);
+
+  /* Close the ELF file */
+
   if (loadinfo->filfd >= 0)
     {
       close(loadinfo->filfd);
@@ -83,3 +93,43 @@ int elf_uninit(struct elf_loadinfo_s *loadinfo)
   return OK;
 }
 
+/****************************************************************************
+ * Name: elf_freebuffers
+ *
+ * Description:
+ *  Release all working buffers.
+ *
+ * Returned Value:
+ *   0 (OK) is returned on success and a negated errno is returned on
+ *   failure.
+ *
+ ****************************************************************************/
+
+int elf_freebuffers(struct elf_loadinfo_s *loadinfo)
+{
+  /* Release all working allocations  */
+
+  if (loadinfo->shdr)
+    {
+      kfree((FAR void *)loadinfo->shdr);
+      loadinfo->shdr      = NULL;
+    }
+
+#ifdef CONFIG_ELF_CONSTRUCTORS
+  if (loadinfo->ctors)
+    {
+      kfree((FAR void *)loadinfo->ctors);
+      loadinfo->ctors     = NULL;
+      loadinfo->nctors    = 0;
+    }
+#endif
+
+  if (loadinfo->iobuffer)
+    {
+      kfree((FAR void *)loadinfo->iobuffer);
+      loadinfo->iobuffer  = NULL;
+      loadinfo->buflen    = 0;
+    }
+
+  return OK;
+}
