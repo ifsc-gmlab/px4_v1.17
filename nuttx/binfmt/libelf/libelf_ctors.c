@@ -75,7 +75,7 @@
  * Name: elf_loadctors
  *
  * Description:
- *  Load points to static constructors into an in-memory array.
+ *  Load pointers to static constructors into an in-memory array.
  *
  * Input Parameters:
  *   loadinfo - Load state information
@@ -96,8 +96,8 @@ int elf_loadctors(FAR struct elf_loadinfo_s *loadinfo)
 
   DEBUGASSERT(loadinfo->ctors == NULL);
 
-  /* Allocate an I/O buffer.  This buffer is used by elf_sectname() to
-   * accumulate the variable length symbol name.
+  /* Allocate an I/O buffer if necessary.  This buffer is used by
+   * elf_sectname() to accumulate the variable length symbol name.
    */
 
   ret = elf_allocbuffer(loadinfo);
@@ -110,7 +110,7 @@ int elf_loadctors(FAR struct elf_loadinfo_s *loadinfo)
   /* Find the index to the section named ".ctors."  NOTE:  On old ABI system,
    * .ctors is the name of the section containing the list of constructors;
    * On newer systems, the similar section is called .init_array.  It is 
-   * expected that the linker script will force the sectino name to be ".ctors"
+   * expected that the linker script will force the section name to be ".ctors"
    * in either case.
    */
 
@@ -136,10 +136,10 @@ int elf_loadctors(FAR struct elf_loadinfo_s *loadinfo)
    */
 
   ctorsize         = shdr->sh_size;
-  loadinfo->nctors = ctorsize / sizeof(elf_ctor_t);
+  loadinfo->nctors = ctorsize / sizeof(binfmt_ctor_t);
 
-  bvdbg("ctoridx=%d ctorsize=%d sizeof(elf_ctor_t)=%d nctors=%d\n",
-        ctoridx, ctorsize,  sizeof(elf_ctor_t), loadinfo->nctors);
+  bvdbg("ctoridx=%d ctorsize=%d sizeof(binfmt_ctor_t)=%d nctors=%d\n",
+        ctoridx, ctorsize,  sizeof(binfmt_ctor_t), loadinfo->nctors);
 
   /* Check if there are any constructors.  It is not an error if there
    * are none.
@@ -149,7 +149,7 @@ int elf_loadctors(FAR struct elf_loadinfo_s *loadinfo)
     {
       /* Check an assumption that we made above */
 
-      DEBUGASSERT(shdr->sh_size == loadinfo->nctors * sizeof(elf_ctor_t));
+      DEBUGASSERT(shdr->sh_size == loadinfo->nctors * sizeof(binfmt_ctor_t));
 
       /* In the old ABI, the .ctors section is not allocated.  In that case,
        * we need to allocate memory to hold the .ctors and then copy the
@@ -161,18 +161,16 @@ int elf_loadctors(FAR struct elf_loadinfo_s *loadinfo)
 
       if ((shdr->sh_flags & SHF_ALLOC) == 0)
         {
-          /* Not loaded -> Old ABI. */
-
-          loadinfo->newabi = false;
-
           /* Allocate memory to hold a copy of the .ctor section */
 
-          loadinfo->ctors  = (elf_ctor_t*)kmalloc(ctorsize);
-          if (!loadinfo->ctors)
+          loadinfo->ctoralloc = (binfmt_ctor_t*)kmalloc(ctorsize);
+          if (!loadinfo->ctoralloc)
             {
               bdbg("Failed to allocate memory for .ctors\n");
               return -ENOMEM;
             }
+
+          loadinfo->ctors = (binfmt_ctor_t *)loadinfo->ctoralloc;
 
           /* Read the section header table into memory */
 
@@ -194,23 +192,20 @@ int elf_loadctors(FAR struct elf_loadinfo_s *loadinfo)
               FAR uintptr_t *ptr = (uintptr_t *)((FAR void *)(&loadinfo->ctors)[i]);
 
               bvdbg("ctor %d: %08lx + %08lx = %08lx\n",
-                    i, *ptr, loadinfo->alloc, *ptr + loadinfo->alloc);
+                    i, *ptr, loadinfo->elfalloc, *ptr + loadinfo->elfalloc);
 
-              *ptr += loadinfo->alloc;
+              *ptr += loadinfo->elfalloc;
             }
         }
       else
         {
-          /* Loaded -> New ABI. */
-
-          loadinfo->newabi = true;
 
           /* Save the address of the .ctors (actually, .init_array) where it was
            * loaded into memory.  Since the .ctors lie in allocated memory, they
            * will be relocated via the normal mechanism.
            */
  
-          loadinfo->ctors = (elf_ctor_t*)shdr->sh_addr;
+          loadinfo->ctors = (binfmt_ctor_t*)shdr->sh_addr;
         }
     }
 
