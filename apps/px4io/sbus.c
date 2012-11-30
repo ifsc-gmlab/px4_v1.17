@@ -41,18 +41,39 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <termios.h>
 
 #include <drivers/drv_hrt.h>
 
+#define DEBUG
 #include "px4io.h"
-#include "protocol.h"
 
-void
-sbus_init(unsigned mode)
+static int sbus_fd = -1;
+
+int
+sbus_init(const char *device)
 {
+	if (sbus_fd < 0)
+		sbus_fd = open(device, O_RDONLY);
+
+	if (sbus_fd >= 0) {
+		struct termios t;
+
+		/* 100000bps, even parity, two stop bits */
+		tcgetattr(sbus_fd, &t);
+		cfsetspeed(&t, 100000);
+		t.c_cflag |= (CSTOPB | PARENB);
+		tcsetattr(sbus_fd, TCSANOW, &t);
+
+		debug("Sbus: ready");
+	} else {
+		debug("Sbus: open failed");
+	}
+
+	return sbus_fd;
 }
 
 void
-sbus_input(int fd)
+sbus_input(void)
 {
 }
