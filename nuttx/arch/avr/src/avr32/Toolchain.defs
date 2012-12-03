@@ -39,6 +39,11 @@
 # Since all of the supported toolchains are variants of the Atmel-patched
 # GCC, the only interesting question to answer here is whether or not
 # the build is hosted on Windows, and how to override the configuration.
+#
+# NOTE: There is a logic error in the following:  CONFIG_HOST_WINDOWS means
+# that we are operating on a Windows platform.  But in the case where we
+# have an AVR32 toolchain built under Cygwin, the correct setting would be
+# GNU, not AVRTOOLSW.
 # 
 
 CROSSDEV = avr32-
