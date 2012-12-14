@@ -161,8 +161,8 @@ void up_initialize(void)
 
   /* Initialize the serial device driver */
 
-#ifdef USE_LOWUARTINIT
-  up_lowuartinit();
+#ifdef USE_LOWSERIALINIT
+  up_lowserialinit();
 #endif
 
   /* Initialize the console device driver */
