@@ -49,6 +49,10 @@ ASRCS		=
 AOBJS		= $(ASRCS:.S=$(OBJEXT))
 CSRCS		= 
 
+ifeq ($(CONFIG_LCD_UG2864AMBAG01),y)
+CSRCS += up_ug2864ambag01.c up_spi1.c
+endif
+
 COBJS		= $(CSRCS:.c=$(OBJEXT))
 
 SRCS		= $(ASRCS) $(CSRCS)
