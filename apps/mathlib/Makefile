@@ -32,9 +32,8 @@
 ############################################################################
 
 #
-# System math library
+# Math library
 #
-
 CXXSRCS		 = math/test/test.cpp \
 		   math/Vector.cpp \
 		   math/Vector3.cpp \
@@ -51,9 +50,7 @@ CXXHDRS		 = math/test/test.hpp \
 		   math/Dcm.hpp \
 		   math/Matrix.hpp
 
-#
 # XXX this really should be a CONFIG_* test
-#
 ifeq ($(TARGET),px4fmu)
 INCLUDES	+= math/arm
 CXXSRCS		+= math/arm/Vector.cpp \
