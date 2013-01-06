@@ -34,14 +34,16 @@
 #
 # Control library
 #
-CXXSRCS		+= block/Block.cpp \
+CSRCS		 = test_params.c
+
+CXXSRCS		 = block/Block.cpp \
 		   block/BlockParam.cpp \
 		   block/UOrbPublication.cpp \
 		   block/UOrbSubscription.cpp \
 		   blocks.cpp \
 		   fixedwing.cpp
 
-CXXHDRS		+= block/Block.hpp \
+CXXHDRS		 = block/Block.hpp \
 		   block/BlockParam.hpp \
 		   block/UOrbPublication.hpp \
 		   block/UOrbSubscription.hpp \
