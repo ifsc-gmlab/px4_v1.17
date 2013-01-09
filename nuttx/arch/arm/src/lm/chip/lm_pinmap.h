@@ -44,8 +44,10 @@
 
 /* Include the pin mapping file for the specific Stellaris chip */
 
-#ifdef CONFIG_ARCH_CHIP_LM3S
+#if defined(CONFIG_ARCH_CHIP_LM3S)
 #  include "chip/lm3s_pinmap.h"
+#elif defined(CONFIG_ARCH_CHIP_LM4F)
+#  include "chip/lm4f_pinmap.h"
 #else
 #  error "Unsupported Stellaris PIN mapping"
 #endif
