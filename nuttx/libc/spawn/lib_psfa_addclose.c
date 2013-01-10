@@ -56,8 +56,8 @@
  * Description:
  *   The posix_spawn_file_actions_addclose() function adds a close operation
  *   to the list of operations associated with the object referenced by
- *   file_actions, for subsequent use in a call to posix_spawn(2) or
- *   posix_spawnp(2).  The descriptor referred to by fd is closed as if
+ *   file_actions, for subsequent use in a call to posix_spawn() or
+ *   posix_spawnp().  The descriptor referred to by fd is closed as if
  *   close() had been called on it prior to the new child process starting
  *   execution.
  *
