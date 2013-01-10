@@ -1,22 +1,6 @@
 #!/bin/bash
 
-usage="Usage: $0 [-t <tmp-file>] <test-dir-path>"
-
-# Check for the optional tempory file name
-
-tmpfile=varlist.tmp
-if [ "X${1}" = "X-t" ]; then
-	shift
-	tmpfile=$1
-	shift
-
-	if [ -z "$tmpfile" ]; then
-		echo "ERROR: Missing <tmpfile>"
-		echo ""
-		echo $usage
-		exit 1
-	fi
-fi
+usage="Usage: $0 <test-dir-path>"
 
 # Check for the required ROMFS directory path
 
