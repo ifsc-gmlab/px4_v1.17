@@ -43,7 +43,6 @@
 #include <spawn.h>
 #include <assert.h>
 #include <errno.h>
-#include <errno.h>
 
 /****************************************************************************
  * Global Functions
@@ -58,7 +57,7 @@
  *   call to posix_spawn() or posix_spawnp().
  *
  * Input Parameters:
- *   attr - The address spawn attributes to be initialized.
+ *   attr - The address of the spawn attributes to be initialized.
  *
  * Returned Value:
  *   On success, these functions return 0; on failure they return an error
