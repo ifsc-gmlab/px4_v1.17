@@ -105,6 +105,7 @@ vfork:
 	mov		r0, sp					/* Save the value of the stack on entry */
 	sub		sp, sp, #VFORK_SIZEOF	/* Allocate the structure on the stack */
 
+	/* CPU registers */
 	/* Save the volatile registers */
 
 	str		r4, [sp, #VFORK_R4_OFFSET]
@@ -120,6 +121,8 @@ vfork:
 	str		fp, [sp, #VFORK_FP_OFFSET]
 	str		r0, [sp, #VFORK_SP_OFFSET]
 	str		lr, [sp, #VFORK_LR_OFFSET]
+
+	/* Floating point registers (not yet) */
 
 	/* Then, call up_vfork(), passing it a pointer to the stack structure */
 
