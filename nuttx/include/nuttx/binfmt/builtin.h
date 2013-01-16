@@ -1,10 +1,15 @@
 /****************************************************************************
  * include/nuttx/binfmt/builtin.h
  *
+ * Originally by:
+ *
  *   Copyright (C) 2011 Uros Platise. All rights reserved.
- *   Copyright (C) 2011-2012 Gregory Nutt. All rights reserved.
- *   Authors: Uros Platise <uros.platise@isotel.eu>
- *            Gregory Nutt <gnutt@nuttx.org>
+ *   Author: Uros Platise <uros.platise@isotel.eu>
+ *
+ * With subsequent updates, modifications, and general maintenance by:
+ *
+ *   Copyright (C) 2012-2013 Gregory Nutt.  All rights reserved.
+ *   Author: Gregory Nutt <gnutt@nuttx.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,7 +48,7 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
-#include <apps/apps.h>
+#include <sys/types.h>
 
 /****************************************************************************
  * Public Types
@@ -68,13 +73,79 @@ extern "C" {
 #define EXTERN extern
 #endif
 
+/* The g_builtins[] array holds information about each builtin function. If
+ * support for builtin functions is enabled in the NuttX configuration, then
+ * this arrary (along with the number_builtins() function) must be provided
+ * by the application code.
+ */
+
 EXTERN const struct builtin_s g_builtins[];
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
 
-EXTERN int number_builtins(void);
+/****************************************************************************
+ * Utility Functions Provided to Applications by binfmt/libbuiltin
+ ****************************************************************************/
+/****************************************************************************
+ * Name: builtin_isavail
+ *
+ * Description:
+ *   Checks for availabiliy of application registerred during compile time.
+ *
+ * Input Parameter:
+ *   filename - Name of the linked-in binary to be started.
+ *
+ * Returned Value:
+ *   This is an end-user function, so it follows the normal convention:
+ *   Returns index of builtin application. If it is not found then it
+ *   returns -1 (ERROR) and sets errno appropriately.
+ *
+ ****************************************************************************/
+
+int builtin_isavail(FAR const char *appname);
+
+/****************************************************************************
+ * Name: builtin_getname
+ *
+ * Description:
+ *   Returns pointer to a name of built-in application pointed by the
+ *   index.
+ *
+ * Input Parameter:
+ *   index, from 0 and on ...
+ *
+ * Returned Value:
+ *   Returns valid pointer pointing to the app name if index is valid.
+ *   Otherwise NULL is returned.
+ *
+ ****************************************************************************/
+
+FAR const char *builtin_getname(int index);
+
+/****************************************************************************
+ * Data Set Access Functions Provided to Applications by binfmt/libbuiltin
+ ****************************************************************************/
+/****************************************************************************
+ * Name: number_builtins
+ *
+ * Description:
+ *   Returns the number of builtin functions in the g_builtins[] array.  If
+ *   support for builtin functions is enabled in the NuttX configuration,
+ *   then this function (along with g_builtins[]) must be provided by the
+ *   application code.
+ *
+ * Input Parameter:
+ *   None
+ *
+ * Returned Value:
+ *   The number of entries in the g_builtins[] array.  This function does
+ *   not return failures.
+ *
+ ****************************************************************************/
+
+int number_builtins(void);
 
 #undef EXTERN
 #if defined(__cplusplus)
