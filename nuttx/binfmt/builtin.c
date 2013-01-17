@@ -136,6 +136,7 @@ static int builtin_loadbinary(struct binary_s *binp)
 
   binp->entrypt   = g_builtins[index].main;
   binp->stacksize = g_builtins[index].stacksize;
+  binp->priority  = g_builtins[index].priority;
   return OK;
 }
 
