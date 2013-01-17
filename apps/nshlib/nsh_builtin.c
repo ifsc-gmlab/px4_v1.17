@@ -51,6 +51,7 @@
 #endif
 
 #include <stdbool.h>
+#include <signal.h>
 #include <errno.h>
 #include <string.h>
 
@@ -129,19 +130,33 @@ int nsh_builtin(FAR struct nsh_vtbl_s *vtbl, FAR const char *cmd,
   ret = exec_builtin(cmd, (FAR const char **)argv, redirfile, oflags);
   if (ret >= 0)
     {
-      /* The application was successfully started (but still blocked because
-       * the scheduler is locked).  If the application was not backgrounded,
-       * then we need to wait here for the application to exit.  These really
-       * only works works with the following options:
+      /* The application was successfully started with pre-emption disabled.
+       * In the simplest cases, the application will not have run because the
+       * the scheduler is locked.  but in the case were I/O redirected, a 
+       * proxy task ran and, as result, so may have the application.
+       *
+       * If the application did not run and if the application was not
+       * backgrounded, then we need to wait here for the application to
+       * exit.  This only works works with the following options:
        *
        * - CONFIG_NSH_DISABLEBG - Do not run commands in background
        * - CONFIG_SCHED_WAITPID - Required to run external commands in
        *     foreground
-       *
-       * These concepts do not apply cleanly to the external applications.
        */
 
 #ifdef CONFIG_SCHED_WAITPID
+
+      /* Check if the application is still running */
+
+      if (kill(ret, 0) < 0)
+        {
+          /* It is not running.  In this case, we have no idea if the
+           * application ran successfully or not.  Let's assume that is
+           * did.
+           */
+
+          return 0;
+        }
 
       /* CONFIG_SCHED_WAITPID is selected, so we may run the command in
        * foreground unless we were specifically requested to run the command
