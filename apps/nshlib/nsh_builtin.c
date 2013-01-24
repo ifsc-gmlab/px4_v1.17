@@ -116,8 +116,8 @@ int nsh_builtin(FAR struct nsh_vtbl_s *vtbl, FAR const char *cmd,
 {
   int ret = OK;
 
-  /* Lock the scheduler to prevent the application from running until the
-   * waitpid() has been called.
+  /* Lock the scheduler in an attempt to prevent the application from
+   * running until waitpid() has been called.
    */
 
   sched_lock();
@@ -129,16 +129,20 @@ int nsh_builtin(FAR struct nsh_vtbl_s *vtbl, FAR const char *cmd,
   ret = exec_builtin(cmd, (FAR const char **)argv, redirfile, oflags);
   if (ret >= 0)
     {
-      /* The application was successfully started (but still blocked because
-       * the scheduler is locked).  If the application was not backgrounded,
-       * then we need to wait here for the application to exit.  These really
-       * only works works with the following options:
+      /* The application was successfully started with pre-emption disabled.
+       * In the simplest cases, the application will not have run because the
+       * the scheduler is locked.  But in the case where I/O was redirected, a 
+       * proxy task ran and broke our lock.  As result, the application may
+       * have aso ran if its priority was higher than than the priority of
+       * this thread.
+       *
+       * If the application did not run to completion and if the application
+       * was not backgrounded, then we need to wait here for the application
+       * to exit.  This only works works with the following options:
        *
        * - CONFIG_NSH_DISABLEBG - Do not run commands in background
        * - CONFIG_SCHED_WAITPID - Required to run external commands in
        *     foreground
-       *
-       * These concepts do not apply cleanly to the external applications.
        */
 
 #ifdef CONFIG_SCHED_WAITPID
@@ -154,15 +158,46 @@ int nsh_builtin(FAR struct nsh_vtbl_s *vtbl, FAR const char *cmd,
         {
           int rc = 0;
 
-          /* Wait for the application to exit.  Since we have locked the
-           * scheduler above, we know that the application has not yet
-           * started and there is no possibility that it has already exited.
-           * The scheduler will be unlocked while waitpid is waiting and the
-           * application will be able to run.
+          /* Wait for the application to exit.  We did lock the scheduler
+           * above, but that does not guarantee that the application did not
+           * already run to completion in the case where I/O was redirected.
+           * Here the scheduler will be unlocked while waitpid is waiting
+           * and if the application has not yet run, it will now be able to
+           * do so.
+           *
+           * Also, if CONFIG_SCHED_HAVE_PARENT is defined waitpid() might fail
+           * even if task is still active:  If the I/O was re-directed by a 
+           * proxy task, then the ask is a child of the proxy, and not this
+           * task.  waitpid() fails with ECHILD in either case.
            */
 
           ret = waitpid(ret, &rc, 0);
-          if (ret >= 0)
+          if (ret < 0)
+            {
+              /* If the child thread does not exist, waitpid() will return
+               * the error ECHLD.  Since we know that the task was successfully
+               * started, this must be one of the cases described above; we
+               * have to assume that the task already exit'ed.  In this case,
+               * we have no idea if the application ran successfully or not
+               * (because NuttX does not retain exit status of child tasks).
+               * Let's assume that is did run successfully.
+               */
+
+              int errcode = errno;
+              if (errcode == ECHILD)
+                {
+                  ret = OK;
+                }
+              else
+                {
+                  nsh_output(vtbl, g_fmtcmdfailed, cmd, "waitpid",
+                             NSH_ERRNO_OF(errcode));
+                }
+            }
+
+          /* Waitpid completed the wait successfully */
+
+          else
             {
               /* We can't return the exact status (nsh has nowhere to put it)
                * so just pass back zero/nonzero in a fashion that doesn't look 
