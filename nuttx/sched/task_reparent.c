@@ -138,11 +138,11 @@ int task_reparent(pid_t ppid, pid_t chpid)
   child = task_removechild(otcb, chpid);
   if (child)
     {
-      /* Has the new parent supressed child exit status? */
+      /* Has the new parent's task group supressed child exit status? */
 
-      if ((ptcb->flags && TCB_FLAG_NOCLDWAIT) == 0)
+      if ((ptcb->group->tg_flags && GROUP_FLAG_NOCLDWAIT) == 0)
         {
-          /* No.. Add the child status entry to the new parent TCB */
+          /* No.. Add the child status entry to the new parent's task group */
 
           task_addchild(ptcb, child);
         }
@@ -159,11 +159,11 @@ int task_reparent(pid_t ppid, pid_t chpid)
     }
   else
     {
-      /* This would not be an error if the original parent has
+      /* This would not be an error if the original parent's task group has
        * suppressed child exit status.
        */
 
-      ret = ((otcb->flags && TCB_FLAG_NOCLDWAIT) == 0) ? -ENOENT : OK;
+      ret = ((otcb->group->tg_flags && GROUP_FLAG_NOCLDWAIT) == 0) ? -ENOENT : OK;
     }
 #else
   DEBUGASSERT(otcb->nchildren > 0);
