@@ -42,6 +42,7 @@
 #include <sched.h>
 #include <assert.h>
 #include <signal.h>
+#include <errno.h>
 #include <debug.h>
 
 #include "os_internal.h"
@@ -74,10 +75,10 @@
  * Name: group_signal
  *
  * Description:
- *   Send a signal to every member of the group to which task belongs.
+ *   Send a signal to every member of the group.
  *
  * Parameters:
- *   tcb - The tcb of one task in the task group that needs to be signalled.
+ *   group - The task group that needs to be signalled.
  *
  * Return Value:
  *   0 (OK) on success; a negated errno value on failure.
@@ -88,15 +89,13 @@
  *
  *****************************************************************************/
 
-int group_signal(FAR _TCB *tcb, FAR siginfo_t *info)
+int group_signal(FAR struct task_group_s *group, FAR siginfo_t *info)
 {
 #ifdef HAVE_GROUP_MEMBERS
-  FAR struct task_group_s *group;
   FAR _TCB *gtcb;
   int i;
 
-  DEBUGASSERT(tcb && tcb->group && info);
-  group = tcb->group;
+  DEBUGASSERT(group && info);
 
   /* Make sure that pre-emption is disabled to that we signal all of teh
    * members of the group before any of them actually run.
@@ -130,8 +129,35 @@ int group_signal(FAR _TCB *tcb, FAR siginfo_t *info)
   sched_unlock();
   return OK;
 #else
-  return sig_received(tcb, info);
+  return -ENOSYS;
 #endif
 }
 
+/*****************************************************************************
+ * Name: group_signalmember
+ *
+ * Description:
+ *   Send a signal to every member of the group to which task belongs.
+ *
+ * Parameters:
+ *   tcb - The tcb of one task in the task group that needs to be signalled.
+ *
+ * Return Value:
+ *   0 (OK) on success; a negated errno value on failure.
+ *
+ * Assumptions:
+ *   Called during task terminatino in a safe context.  No special precautions
+ *   are required here.
+ *
+ *****************************************************************************/
+
+int group_signalmember(FAR _TCB *tcb, FAR siginfo_t *info)
+{
+#ifdef HAVE_GROUP_MEMBERS
+  DEBUGASSERT(tcb);
+  return group_signal(tcb->group, info);
+#else
+  return sig_received(tcb, info);
+#endif
+}
 #endif /* HAVE_TASK_GROUP && !CONFIG_DISABLE_SIGNALS */
