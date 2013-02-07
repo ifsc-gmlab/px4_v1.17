@@ -33,17 +33,20 @@
  *
  ****************************************************************************/
 
-/* @file U-Blox protocol definitions */
+/* @file gps_helper.h */
 
 #ifndef GPS_HELPER_H
 #define GPS_HELPER_H
 
+#include <uORB/uORB.h>
+#include <uORB/topics/vehicle_gps_position.h>
+
 class GPS_Helper
 {
 public:
-	virtual void			reset(void) = 0;
-	virtual void			configure(const int &fd, bool &baudrate_changed, unsigned &baudrate) = 0;
-	virtual void 			parse(uint8_t, struct vehicle_gps_position_s*, bool &config_needed, bool &pos_updated) = 0;
+	virtual int				configure(const int &fd, unsigned &baud) = 0;
+	virtual int 			receive(const int &fd, struct vehicle_gps_position_s &gps_position) = 0;
+	int 					set_baudrate(const int &fd, unsigned baud);
 };
 
 #endif /* GPS_HELPER_H */
