@@ -50,5 +50,5 @@ extern volatile bool thread_should_exit;
 /**
  * Translate the custom state into standard mavlink modes and state.
  */
-extern void get_mavlink_mode_and_state(const struct vehicle_status_s *v_status, const struct actuator_armed_s *armed,
+extern void get_mavlink_mode_and_state(const struct vehicle_status_s *v_status, const struct actuator_safety_s *safety,
 	uint8_t *mavlink_state, uint8_t *mavlink_mode);
