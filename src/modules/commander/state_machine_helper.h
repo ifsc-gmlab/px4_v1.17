@@ -49,7 +49,12 @@
 #include <uORB/topics/actuator_safety.h>
 #include <uORB/topics/vehicle_control_mode.h>
 
+
 void navigation_state_update(int status_pub, struct vehicle_status_s *current_status, const int mavlink_fd);
+
+bool is_multirotor(const struct vehicle_status_s *current_status);
+
+bool is_rotary_wing(const struct vehicle_status_s *current_status);
 
 //int do_arming_state_update(int status_pub, struct vehicle_status_s *current_status, const int mavlink_fd, arming_state_t new_state);
 
