@@ -54,6 +54,8 @@ public:
 	Vector3(const float *data);
 	virtual ~Vector3();
 	Vector3 cross(const Vector3 &b) const;
+	Vector3 operator %(const Vector3 &v) const;
+	float operator *(const Vector3 &v) const;
 
 	/**
 	 * accessors
