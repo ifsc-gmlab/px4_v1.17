@@ -105,7 +105,7 @@ attitude_estimator_ekf start
 #
 # Load mixer and start controllers (depends on px4io)
 #
-mixer load /dev/pwm_output /etc/mixers/FMU_quad_+.mix
+mixer load /dev/pwm_output /etc/mixers/FMU_quad_x.mix
 pwm -u 400 -m 0xff
 multirotor_att_control start
  
