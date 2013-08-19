@@ -1,11 +1,16 @@
 #!nsh
 #
-# Flight startup script for PX4FMU+PX4IO
+# Flight startup script for PX4FMU+PX4IO on an F330 quad.
 #
  
 # disable USB and autostart
 set USB no
 set MODE custom
+
+#
+# Start the ORB (first app to start)
+#
+uorb start
 
 #
 # Load default params for this platform
@@ -49,7 +54,7 @@ usleep 5000
 # Start the commander (depends on orb, mavlink)
 #
 commander start
- 
+
 #
 # Start PX4IO interface (depends on orb, commander)
 #
