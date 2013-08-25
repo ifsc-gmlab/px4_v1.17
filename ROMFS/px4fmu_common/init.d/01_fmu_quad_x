@@ -1,28 +1,6 @@
 #!nsh
-#
-# Flight startup script for PX4FMU with PWM outputs.
-#
- 
-# disable USB and autostart
-set USB no
-set MODE custom
- 
-echo "[init] doing PX4FMU Quad startup..."
- 
-#
-# Start the ORB
-#
-uorb start
- 
-#
-# Load microSD params
-#
-echo "[init] loading microSD params"
-param select /fs/microsd/params
-if [ -f /fs/microsd/params ]
-then
-	param load /fs/microsd/params
-fi
+
+echo "[init] 01_fmu_quad_x: PX4FMU Quad X with PWM outputs"
 
 #
 # Load default params for this platform
@@ -52,11 +30,10 @@ fi
 
 #
 # Force some key parameters to sane values
-# MAV_TYPE     1 = fixed wing, 2 = quadrotor, 13 = hexarotor
-#              see https://pixhawk.ethz.ch/mavlink/
+# MAV_TYPE     2 = quadrotor
 #
 param set MAV_TYPE 2
- 
+
 #
 # Start MAVLink
 #
@@ -64,19 +41,24 @@ mavlink start -d /dev/ttyS0 -b 57600
 usleep 5000
 
 #
-# Start common for all multirotors apps
-#
-sh /etc/init.d/rc.multirotor
-
-#
 # Start PWM output
 #
 fmu mode_pwm
-mixer load /dev/pwm_output /etc/mixers/FMU_quad_x.mix
-pwm -u 400 -m 0xff
- 
-# Try to get an USB console
-nshterm /dev/ttyACM0 &
 
+#
+# Load mixer
+#
+mixer load /dev/pwm_output /etc/mixers/FMU_quad_x.mix
+
+#
+# Set PWM output frequency
+#
+pwm -u 400 -m 0xff
+
+#
+# Start common for all multirotors apps
+#
+sh /etc/init.d/rc.multirotor
+ 
 # Exit, because /dev/ttyS0 is needed for MAVLink
-#exit
+exit
