@@ -37,10 +37,12 @@
  *
  */
 
+#include "../ecl.h"
 #include "ecl_roll_controller.h"
 
 ECL_RollController::ECL_RollController() :
 	_last_run(0),
+	_tc(0.1f),
 	_last_output(0.0f),
 	_integrator(0.0f),
 	_rate_error(0.0f),
@@ -52,6 +54,15 @@ ECL_RollController::ECL_RollController() :
 float ECL_RollController::control(float roll_setpoint, float roll, float roll_rate,
 				  float scaler, bool lock_integrator, float airspeed_min, float airspeed_max, float aspeed)
 {
+	/* get the usual dt estimate */
+	uint64_t dt_micros = ecl_elapsed_time(&_last_run);
+	_last_run = ecl_absolute_time();
+
+	float dt = (dt_micros > 500000) ? 0.0f : dt_micros / 1000000;
+
+
+
+
 	return 0.0f;
 }
 
