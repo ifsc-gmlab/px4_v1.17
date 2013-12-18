@@ -1,6 +1,8 @@
 /****************************************************************************
  *
- *   Copyright (C) 2012 PX4 Development Team. All rights reserved.
+ *   Copyright (C) 2013 PX4 Development Team. All rights reserved.
+ *   Author: Will Perone <will.perone@gmail.com>
+ *           Anton Babushkin <anton.babushkin@me.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,43 +36,252 @@
 /**
  * @file Vector3.hpp
  *
- * math 3 vector
+ * 3D Vector
  */
 
-#pragma once
+#ifndef VECTOR3_HPP
+#define VECTOR3_HPP
 
-#include "Vector.hpp"
+#include <math.h>
+#include "../CMSIS/Include/arm_math.h"
 
 namespace math
 {
 
-class __EXPORT Vector3 :
-	public Vector
-{
+template <typename T>
+class Vector3 {
 public:
-	Vector3();
-	Vector3(const Vector &right);
-	Vector3(float x, float y, float z);
-	Vector3(const float *data);
-	virtual ~Vector3();
-	Vector3 cross(const Vector3 &b) const;
+	T x, y, z;
+	arm_matrix_instance_f32 arm_col;
 
 	/**
-	 * accessors
+	 * trivial ctor
 	 */
-	void setX(float x) { (*this)(0) = x; }
-	void setY(float y) { (*this)(1) = y; }
-	void setZ(float z) { (*this)(2) = z; }
-	const float &getX() const { return (*this)(0); }
-	const float &getY() const { return (*this)(1); }
-	const float &getZ() const { return (*this)(2); }
-};
-    
-class __EXPORT Vector3f :
-	public Vector3
-{
+	Vector3<T>() {
+		arm_col = {3, 1, &x};
+	}
+
+	/**
+	 * setting ctor
+	 */
+	Vector3<T>(const T x0, const T y0,  const T z0): x(x0), y(y0), z(z0) {
+		arm_col = {3, 1, &x};
+	}
+
+	/**
+	 * setting ctor
+	 */
+	Vector3<T>(const T data[3]): x(data[0]), y(data[1]), z(data[2]) {
+		arm_col = {3, 1, &x};
+	}
+
+	/**
+	 * setter
+	 */
+	void set(const T x0, const T y0, const T z0) {
+		x = x0;
+		y = y0;
+		z = z0;
+	}
+
+	/**
+	 * access to elements by index
+	 */
+	T operator ()(unsigned int i) {
+		return *(&x + i);
+	}
+
+	/**
+	 * access to elements by index
+	 */
+	const T operator ()(unsigned int i) const {
+		return *(&x + i);
+	}
+
+	/**
+	 * test for equality
+	 */
+	bool operator ==(const Vector3<T> &v) {
+		return (x == v.x && y == v.y && z == v.z);
+	}
+
+	/**
+	 * test for inequality
+	 */
+	bool operator !=(const Vector3<T> &v) {
+		return (x != v.x || y != v.y || z != v.z);
+	}
+
+	/**
+	 * set to value
+	 */
+	const Vector3<T> &operator =(const Vector3<T> &v) {
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		return *this;
+	}
+
+	/**
+	 * negation
+	 */
+	const Vector3<T> operator -(void) const {
+		return Vector3<T>(-x, -y, -z);
+	}
+
+	/**
+	 * addition
+	 */
+	const Vector3<T> operator +(const Vector3<T> &v) const {
+		return Vector3<T>(x + v.x, y + v.y, z + v.z);
+	}
+
+	/**
+	 * subtraction
+	 */
+	const Vector3<T> operator -(const Vector3<T> &v) const {
+		return Vector3<T>(x - v.x, y - v.y, z - v.z);
+	}
+
+	/**
+	 * uniform scaling
+	 */
+	const Vector3<T> operator *(const T num) const {
+		Vector3<T> temp(*this);
+		return temp *= num;
+	}
+
+	/**
+	 * uniform scaling
+	 */
+	const Vector3<T> operator /(const T num) const {
+		Vector3<T> temp(*this);
+		return temp /= num;
+	}
+
+	/**
+	 * addition
+	 */
+	const Vector3<T> &operator +=(const Vector3<T> &v) {
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return *this;
+	}
+
+	/**
+	 * subtraction
+	 */
+	const Vector3<T> &operator -=(const Vector3<T> &v) {
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return *this;
+	}
+
+	/**
+	 * uniform scaling
+	 */
+	const Vector3<T> &operator *=(const T num) {
+		x *= num;
+		y *= num;
+		z *= num;
+		return *this;
+	}
+
+	/**
+	 * uniform scaling
+	 */
+	const Vector3<T> &operator /=(const T num) {
+		x /= num;
+		y /= num;
+		z /= num;
+		return *this;
+	}
+
+	/**
+	 * dot product
+	 */
+	T operator *(const Vector3<T> &v) const {
+		return x * v.x + y * v.y + z * v.z;
+	}
+
+	/**
+	 * cross product
+	 */
+	const Vector3<T> operator %(const Vector3<T> &v) const {
+		Vector3<T> temp(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+		return temp;
+	}
+
+	/**
+	 * gets the length of this vector squared
+	 */
+	float length_squared() const {
+		return (*this * *this);
+	}
+
+	/**
+	 * gets the length of this vector
+	 */
+	float length() const {
+		return (T)sqrt(*this * *this);
+	}
+
+	/**
+	 * normalizes this vector
+	 */
+	void normalize() {
+		*this /= length();
+	}
+
+	/**
+	 * returns the normalized version of this vector
+	 */
+	Vector3<T> normalized() const {
+		return *this / length();
+	}
+
+	/**
+	 * reflects this vector about n
+	 */
+	void reflect(const Vector3<T> &n)
+	{
+		Vector3<T> orig(*this);
+		project(n);
+		*this = *this * 2 - orig;
+	}
+
+	/**
+	 * projects this vector onto v
+	 */
+	void project(const Vector3<T> &v) {
+		*this = v * (*this * v) / (v * v);
+	}
+
+	/**
+	 * returns this vector projected onto v
+	 */
+	Vector3<T> projected(const Vector3<T> &v) {
+		return v * (*this * v) / (v * v);
+	}
+
+	/**
+	 * computes the angle between 2 arbitrary vectors
+	 */
+	static inline float angle(const Vector3<T> &v1, const Vector3<T> &v2) {
+		return acosf((v1 * v2) / (v1.length() * v2.length()));
+	}
+
+	/**
+	 * computes the angle between 2 arbitrary normalized vectors
+	 */
+	static inline float angle_normalized(const Vector3<T> &v1, const Vector3<T> &v2) {
+		return acosf(v1 * v2);
+	}
 };
 
-int __EXPORT vector3Test();
-} // math
+typedef Vector3<float> Vector3f;
+}
 
+#endif // VECTOR3_HPP
