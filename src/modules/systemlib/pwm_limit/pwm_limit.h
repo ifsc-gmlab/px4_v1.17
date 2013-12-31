@@ -46,6 +46,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+__BEGIN_DECLS
+
 /*
  * time for the ESCs to initialize
  * (this is not actually needed if PWM is sent right after boot)
@@ -56,17 +58,17 @@
  */
 #define RAMP_TIME_US 2500000
 
+enum pwm_limit_state {
+	PWM_LIMIT_STATE_OFF = 0,
+	PWM_LIMIT_STATE_INIT,
+	PWM_LIMIT_STATE_RAMP,
+	PWM_LIMIT_STATE_ON
+};
+
 typedef struct {
-	enum {
-		LIMIT_STATE_OFF = 0,
-		LIMIT_STATE_INIT,
-		LIMIT_STATE_RAMP,
-		LIMIT_STATE_ON
-	} state;
+	enum pwm_limit_state state;
 	uint64_t time_armed;
 } pwm_limit_t;
-
-__BEGIN_DECLS
 
 __EXPORT void pwm_limit_init(pwm_limit_t *limit);
 
