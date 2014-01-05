@@ -41,16 +41,21 @@
 #define GEOFENCE_H_
 
 #include <uORB/topics/fence.h>
+#include <controllib/block/BlockParam.hpp>
 
 #define GEOFENCE_FILENAME "/fs/microsd/etc/geofence.txt"
 
 class Geofence {
 private:
-	struct fence_s	_fence;
 	orb_advert_t	_fence_pub;			/**< publish fence topic */
 
 	float			_altitude_min;
 	float			_altitude_max;
+
+	unsigned 			_verticesCount;
+
+	/* Params */
+	control::BlockParamInt param_geofence_on;
 public:
 	Geofence();
 	~Geofence();
@@ -64,12 +69,7 @@ public:
 	 * @return true: craft is inside fence, false:craft is outside fence
 	 */
 	bool inside(const struct vehicle_global_position_s *craft);
-
-
-	/**
-	 * Load fence parameters.
-	 */
-	bool loadFromDm(unsigned vertices);
+	bool inside(double lat, double lon, float altitude);
 
 	int clearDm();
 
@@ -83,6 +83,10 @@ public:
 	void publishFence(unsigned vertices);
 
 	int loadFromFile(const char *filename);
+
+	bool isEmpty() {return _verticesCount == 0;}
+
+	void updateParams();
 };
 
 
