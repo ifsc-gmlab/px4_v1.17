@@ -41,6 +41,7 @@
 #define GEOFENCE_H_
 
 #include <uORB/topics/fence.h>
+#include <controllib/block/BlockParam.hpp>
 
 #define GEOFENCE_FILENAME "/fs/microsd/etc/geofence.txt"
 
@@ -52,6 +53,9 @@ private:
 	float			_altitude_max;
 
 	unsigned 			_verticesCount;
+
+	/* Params */
+	control::BlockParamInt param_geofence_on;
 public:
 	Geofence();
 	~Geofence();
@@ -81,6 +85,8 @@ public:
 	int loadFromFile(const char *filename);
 
 	bool isEmpty() {return _verticesCount == 0;}
+
+	void updateParams();
 };
 
 
