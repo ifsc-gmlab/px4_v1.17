@@ -1,6 +1,9 @@
 #!nsh
-
-echo "[init] EasyStar"
+#
+# MPX EasyStar Plane
+#
+# Maintainers: ???
+#
 
 if [ $DO_AUTOCONFIG == yes ]
 then
@@ -32,5 +35,5 @@ then
 	param set RC_SCALE_PITCH 1.0
 fi
  
-set FRAME_TYPE fw
+set VEHICLE_TYPE fw
 set FRAME_GEOMETRY RET
