@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (C) 2012 PX4 Development Team. All rights reserved.
+ *   Copyright (C) 2013-2014 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,7 @@
  * @file state_table.h
  * 
  * Finite-State-Machine helper class for state table
+ * @author: Julian Oes <julian@oes.ch>
  */
 
 #ifndef __SYSTEMLIB_STATE_TABLE_H
@@ -43,7 +44,7 @@
 class StateTable
 {
 public:
-	typedef void (StateTable::*Action)();
+	typedef bool (StateTable::*Action)();
 	struct Tran {
 		Action action;
 		unsigned nextState;
@@ -53,17 +54,23 @@ public:
 	: myTable(table), myNsignals(nSignals), myNstates(nStates) {}
 	
 	#define NO_ACTION &StateTable::doNothing
-	#define ACTION(_target) static_cast<StateTable::Action>(_target)
+	#define ACTION(_target) StateTable::Action(_target)
 
 	virtual ~StateTable() {}
 	
 	void dispatch(unsigned const sig) {
-		register Tran const *t = myTable + myState*myNsignals + sig;
-		(this->*(t->action))();
-
-		myState = t->nextState;
+		/* get transition using state table */
+		Tran const *t = myTable + myState*myNsignals + sig;
+		/* first up change state, this allows to do further dispatchs in the state functions */
+		
+		/* now execute state function, if it runs with success, accept new state */
+		if ((this->*(t->action))()) {
+			myState = t->nextState;
+		}
 	}
-	void doNothing() {}
+	bool doNothing() {
+		return true;
+	}
 protected:
 	unsigned myState;
 private:
