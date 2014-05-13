@@ -46,7 +46,11 @@
 #include "drv_sensor.h"
 #include "drv_orb_dev.h"
 
+#ifdef CONFIG_ARCH_BOARD_AEROCORE
+#define GPS_DEFAULT_UART_PORT "/dev/ttyS0"
+#else
 #define GPS_DEFAULT_UART_PORT "/dev/ttyS3"
+#endif
 
 #define GPS_DEVICE_PATH	"/dev/gps"
 
