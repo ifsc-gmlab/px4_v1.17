@@ -58,16 +58,6 @@
  */
 PARAM_DEFINE_FLOAT(MIS_TAKEOFF_ALT, 10.0f);
 
-/**
- * Loiter radius after/during mission (FW only)
- *
- * Default value of loiter radius (fixedwing only).
- *
- * @unit meters
- * @min 0.0
- * @group Mission
- */
-PARAM_DEFINE_FLOAT(MIS_LOITER_RAD, 50.0f);
 
 /**
  * Enable onboard mission
