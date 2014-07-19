@@ -37,6 +37,7 @@
  * Parameters for navigator in general
  *
  * @author Julian Oes <julian@oes.ch>
+ * @author Thomas Gubler <thomasgubler@gmail.com>
  */
 
 #include <nuttx/config.h>
@@ -64,3 +65,13 @@ PARAM_DEFINE_FLOAT(NAV_LOITER_RAD, 50.0f);
  * @group Mission
  */
 PARAM_DEFINE_FLOAT(NAV_ACC_RAD, 25.0f);
+
+/**
+ * Set OBC mode for data link loss
+ *
+ * If set to 1 the behaviour on data link loss is set to a mode according to the OBC rules
+ *
+ * @min 0
+ * @group Mission
+ */
+PARAM_DEFINE_INT32(NAV_DLL_OBC, 0);
