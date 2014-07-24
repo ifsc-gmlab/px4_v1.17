@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 /**
- * @file datalinkloss.cpp
+ * @file datalinkloss.h
  * Helper class for Data Link Loss Mode acording to the OBC rules
  *
  * @author Thomas Gubler <thomasgubler@gmail.com>
