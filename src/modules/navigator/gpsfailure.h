@@ -43,7 +43,11 @@
 #include <controllib/blocks.hpp>
 #include <controllib/block/BlockParam.hpp>
 
-#include <uORB/Subscription.hpp>
+#include <uORB/uORB.h>
+#include <uORB/Publication.hpp>
+#include <uORB/topics/vehicle_attitude_setpoint.h>
+
+#include <drivers/drv_hrt.h>
 
 #include "navigator_mode.h"
 #include "mission_block.h"
@@ -65,12 +69,19 @@ public:
 
 private:
 	/* Params */
+	control::BlockParamFloat _param_loitertime;
+	control::BlockParamFloat _param_openlooploiter_roll;
+	control::BlockParamFloat _param_openlooploiter_pitch;
+	control::BlockParamFloat _param_openlooploiter_thrust;
 
 	enum GPSFState {
 		GPSF_STATE_NONE = 0,
 		GPSF_STATE_LOITER = 1,
 		GPSF_STATE_TERMINATE = 2,
+		GPSF_STATE_END = 3,
 	} _gpsf_state;
+
+	hrt_abstime _timestamp_activation; //*< timestamp when this mode was activated */
 
 	/**
 	 * Set the GPSF item
