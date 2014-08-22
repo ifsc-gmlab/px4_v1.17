@@ -141,7 +141,7 @@ GpsFailure::set_gpsf_item()
 	case GPSF_STATE_TERMINATE: {
 		/* Request flight termination from the commander */
 		pos_sp_triplet->flight_termination = true;
-		warnx("request flight termination");
+		warnx("gps fail: request flight termination");
 	}
 	default:
 		break;
