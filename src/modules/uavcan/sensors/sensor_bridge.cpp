@@ -37,11 +37,14 @@
 
 #include "sensor_bridge.hpp"
 #include "gnss.hpp"
+#include "mag.hpp"
 
 IUavcanSensorBridge* IUavcanSensorBridge::make(uavcan::INode &node, const char *bridge_name)
 {
 	if (!std::strncmp("gnss", bridge_name, MaxNameLen)) {
 		return new UavcanGnssBridge(node);
+	} else if (!std::strncmp("mag", bridge_name, MaxNameLen)) {
+		return new UavcanMagnetometerBridge(node);
 	} else {
 		return nullptr;
 	}
