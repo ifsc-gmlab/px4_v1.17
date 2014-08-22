@@ -38,6 +38,7 @@
 #include "sensor_bridge.hpp"
 #include "gnss.hpp"
 #include "mag.hpp"
+#include "baro.hpp"
 
 IUavcanSensorBridge* IUavcanSensorBridge::make(uavcan::INode &node, const char *bridge_name)
 {
@@ -45,6 +46,8 @@ IUavcanSensorBridge* IUavcanSensorBridge::make(uavcan::INode &node, const char *
 		return new UavcanGnssBridge(node);
 	} else if (!std::strncmp(UavcanMagnetometerBridge::NAME, bridge_name, MAX_NAME_LEN)) {
 		return new UavcanMagnetometerBridge(node);
+	} else if (!std::strncmp(UavcanBarometerBridge::NAME, bridge_name, MAX_NAME_LEN)) {
+		return new UavcanBarometerBridge(node);
 	} else {
 		return nullptr;
 	}
