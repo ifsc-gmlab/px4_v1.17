@@ -36,6 +36,7 @@
  *
  * PX4 Middleware Wrapper Node Handle
  */
+#pragma once
 
 namespace px4
 {
