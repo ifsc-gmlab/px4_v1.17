@@ -34,7 +34,7 @@
 
 /**
  * @file mc_att_control_base.h
- * 
+ *
  * @author Roman Bapst <bapstr@ethz.ch>
  *
  */
@@ -83,12 +83,7 @@ public:
 	 */
 	void control_attitude(float dt);
 	void control_attitude_rates(float dt);
-	
-	 // setters and getters for interface with euroc-gazebo simulator
-	void set_attitude(const Eigen::Quaternion<double> attitude);
-	void set_attitude_rates(const Eigen::Vector3d& angular_rate);
-	void set_attitude_reference(const Eigen::Vector4d& control_attitude_thrust_reference);
-	void get_mixer_input(Eigen::Vector4d& motor_inputs);
+
 	void set_actuator_controls();
 
 protected:
@@ -104,8 +99,6 @@ protected:
 	struct vehicle_control_mode_s _v_control_mode; /**< vehicle control mode */
 	struct actuator_controls_s _actuators; /**< actuator controls */
 	struct actuator_armed_s _armed; /**< actuator arming status */
-
-	perf_counter_t _loop_perf; /**< loop performance counter */
 
 	math::Vector<3> _rates_prev; /**< angular rates on previous step */
 	math::Vector<3> _rates_sp; /**< angular rates setpoint */
@@ -130,8 +123,10 @@ protected:
 		float man_yaw_max;
 		math::Vector<3> acro_rate_max; /**< max attitude rates in acro mode */
 	} _params;
-	
-	void vehicle_attitude_setpoint_poll();	//provisional
+
+	bool _publish_att_sp;
+
+	virtual void vehicle_attitude_setpoint_poll() = 0;
 
 };
 
