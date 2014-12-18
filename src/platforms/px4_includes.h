@@ -59,6 +59,7 @@
 #include <px4/vehicle_control_mode.h>
 #include <px4/actuator_armed.h>
 #include <px4/parameter_update.h>
+#include <px4/parameter_status.h>
 #endif
 
 #else
@@ -76,6 +77,7 @@
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/actuator_armed.h>
 #include <uORB/topics/parameter_update.h>
+#include <uORB/topics/vehicle_status.h>
 #include <systemlib/err.h>
 #include <systemlib/param/param.h>
 #include <systemlib/systemlib.h>
