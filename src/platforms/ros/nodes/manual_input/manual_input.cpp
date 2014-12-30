@@ -45,10 +45,9 @@
 ManualInput::ManualInput() :
 	_n(),
 	_sub_joy(_n.subscribe("joy", 10, &ManualInput::JoyCallback, this)),
-	_man_ctrl_sp_pub(_n.advertise<px4::manual_control_setpoint>("manual_control_setpoint", 1000))
+	_man_ctrl_sp_pub(_n.advertise<px4::manual_control_setpoint>("manual_control_setpoint", 10))
 {
 }
-
 
 void ManualInput::JoyCallback(const sensor_msgs::JoyConstPtr& msg)
 {
