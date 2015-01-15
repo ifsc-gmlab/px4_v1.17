@@ -44,6 +44,8 @@
 #include "LandDetector.h"
 #include <uORB/topics/vehicle_local_position.h>
 #include <uORB/topics/airspeed.h>
+#include <uORB/topics/parameter_update.h>
+#include <systemlib/param/param.h>
 
 class FixedwingLandDetector : public LandDetector
 {
@@ -66,18 +68,33 @@ protected:
 	**/
 	void updateSubscriptions();
 
-	//Algorithm parameters (TODO: should probably be externalized)
-	static constexpr uint64_t FW_LAND_DETECTOR_TRIGGER_TIME = 2000000;  /**< usec that landing conditions have to hold
-                                                                             before triggering a land */
-	static constexpr float FW_LAND_DETECTOR_VELOCITY_MAX = 5.0f;        /**< maximum horizontal movement m/s*/
-	static constexpr float FW_LAND_DETECTOR_CLIMBRATE_MAX = 10.00f;     /**< +- climb rate in m/s*/
-	static constexpr float FW_LAND_DETECTOR_AIRSPEED_MAX = 10.00f;      /**< airspeed max m/s*/
+private:
+	/**
+	* @brief download and update local parameter cache
+	**/
+	void updateParameterCache(const bool force);
+
+	/**
+	* @brief Handles for interesting parameters
+	**/
+	struct {
+		param_t maxVelocity;
+		param_t maxClimbRate;
+		param_t maxAirSpeed;
+	}		_paramHandle;
+
+	struct {
+		float maxVelocity;
+		float maxClimbRate;
+		float maxAirSpeed;
+	} _params;
 
 private:
 	int                                     _vehicleLocalPositionSub;   /**< notification of local position */
 	struct vehicle_local_position_s         _vehicleLocalPosition;      /**< the result from local position subscription */
 	int                                     _airspeedSub;
 	struct airspeed_s                       _airspeed;
+	int 									_parameterSub;
 
 	float _velocity_xy_filtered;
 	float _velocity_z_filtered;
