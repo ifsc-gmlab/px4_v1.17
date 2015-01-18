@@ -62,11 +62,13 @@ SubscriberExample::SubscriberExample() :
 
 	/* Do some subscriptions */
 	/* Function */
-	PX4_SUBSCRIBE(_n, rc_channels, rc_channels_callback_function, _interval);
-	/* Class Method */
-	PX4_SUBSCRIBE(_n, rc_channels, SubscriberExample::rc_channels_callback, this, 1000);
-	/* No callback */
-	_sub_rc_chan = PX4_SUBSCRIBE(_n, rc_channels, 500);
+	// PX4_SUBSCRIBE(_n, rc_channels, rc_channels_callback_function, _interval);
+	_n.subscribe<px4_rc_channels>(rc_channels_callback_function);
+
+	// [> Class Method <]
+	// PX4_SUBSCRIBE(_n, rc_channels, SubscriberExample::rc_channels_callback, this, 1000);
+	// [> No callback <]
+	// _sub_rc_chan = PX4_SUBSCRIBE(_n, rc_channels, 500);
 
 	PX4_INFO("subscribed");
 }
@@ -78,5 +80,5 @@ SubscriberExample::SubscriberExample() :
 void SubscriberExample::rc_channels_callback(const PX4_TOPIC_T(rc_channels) &msg) {
 	PX4_INFO("Subscriber callback: [%llu], value of _sub_rc_chan: [%llu]",
 			msg.timestamp_last_valid,
-			_sub_rc_chan->get().timestamp_last_valid);
+			_sub_rc_chan->get().data().timestamp_last_valid);
 }
