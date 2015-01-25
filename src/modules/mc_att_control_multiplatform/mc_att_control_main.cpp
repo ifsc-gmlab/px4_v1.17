@@ -52,11 +52,9 @@
  * If rotation matrix setpoint is invalid it will be generated from Euler angles for compatibility with old position controllers.
  */
 
-#include <string.h>
-#include <cstdlib>
 #include "mc_att_control.h"
 
-static bool thread_running = false;     /**< Deamon status flag */
+bool thread_running = false;     /**< Deamon status flag */
 static int daemon_task;             /**< Handle of deamon task / thread */
 namespace px4
 {
