@@ -51,12 +51,21 @@ from geometry_msgs.msg import PoseStamped, Quaternion
 from tf.transformations import quaternion_from_euler
 from mavros.srv import CommandBool
 
+from manual_input import ManualInput
+
+#
+# Tests flying a path in offboard control by sending position setpoints
+# over MAVROS.
+#
+# For the test to be successful it needs to reach all setpoints in a certain time.
+# FIXME: add flight path assertion (needs transformation from ROS frame to NED)
+#
 class OffboardPosctlTest(unittest.TestCase):
 
     def setUp(self):
         rospy.init_node('test_node', anonymous=True)
         rospy.wait_for_service('mavros/cmd/arming', 30)
-        rospy.Subscriber('vehicle_control_mode', vehicle_control_mode, self.vehicle_control_mode_callback)
+        rospy.Subscriber('px4_multicopter/vehicle_control_mode', vehicle_control_mode, self.vehicle_control_mode_callback)
         rospy.Subscriber("mavros/position/local", PoseStamped, self.position_callback)
         self.pubSpt = rospy.Publisher('mavros/setpoint/local_position', PoseStamped, queue_size=10)
         self.cmdArm = rospy.ServiceProxy("mavros/cmd/arming", CommandBool)
@@ -93,7 +102,6 @@ class OffboardPosctlTest(unittest.TestCase):
         pos = PoseStamped()
         pos.header = Header() 
         pos.header.frame_id = "base_footprint"
-        pos.header.stamp = rospy.Time.now()
         pos.pose.position.x = x
         pos.pose.position.y = y
         pos.pose.position.z = z
@@ -107,6 +115,8 @@ class OffboardPosctlTest(unittest.TestCase):
         # does it reach the position in X seconds?
         count = 0
         while(count < timeout):
+            # update timestamp for each published SP
+            pos.header.stamp = rospy.Time.now()
             self.pubSpt.publish(pos)
             
             if(self.is_at_position(pos.pose.position.x, pos.pose.position.y, pos.pose.position.z, 0.5)):
@@ -120,15 +130,20 @@ class OffboardPosctlTest(unittest.TestCase):
         return self.cmdArm(value=True)
 
     #
-    # Test offboard POSCTL
+    # Test offboard position control
     #
     def test_posctl(self):
+        # FIXME: this must go ASAP when arming is implemented
+        manIn = ManualInput()
+        manIn.arm()
+        manIn.offboard()
+
         self.assertTrue(self.arm(), "Could not arm")
         self.rateSec.sleep()
         self.rateSec.sleep()
         self.assertTrue(self.controlMode.flag_armed, "flag_armed is not set after 2 seconds")
 
-        # prepare flight path assertion
+        # prepare flight path
         positions = (
             (0,0,0),
             (2,2,2),
@@ -155,5 +170,5 @@ class OffboardPosctlTest(unittest.TestCase):
 
 if __name__ == '__main__':
     import rostest
-    rostest.rosrun(PKG, 'posctl_test', OffboardPosctlTest)
+    rostest.rosrun(PKG, 'mavros_offboard_posctl_test', OffboardPosctlTest)
     #unittest.main()
