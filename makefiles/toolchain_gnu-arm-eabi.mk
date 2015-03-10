@@ -107,7 +107,7 @@ endif
 ifeq ($(CONFIG_BOARD),)
 $(error Board config does not define CONFIG_BOARD)
 endif
-ARCHDEFINES		+= -DCONFIG_ARCH_BOARD_$(CONFIG_BOARD)
+ARCHDEFINES		+= -DCONFIG_ARCH_BOARD_$(CONFIG_BOARD) -D__PX4_NUTTX
 
 # optimisation flags
 #
