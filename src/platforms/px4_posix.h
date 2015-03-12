@@ -47,6 +47,13 @@
 #define  PX4_F_RDONLY 1
 #define  PX4_F_WRONLY 2
 
+#define PX4_DIOC_GETPRIV        1
+#define PX4_DEVIOCSPUBBLOCK     2
+#define PX4_DEVIOCGPUBBLOCK     3
+
+#define PX4_ERROR  (-1)
+#define PX4_OK  0
+
 __BEGIN_DECLS
 
 extern int px4_errno;
