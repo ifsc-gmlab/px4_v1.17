@@ -55,8 +55,8 @@
 #define PX4_DEVIOCSPUBBLOCK     3
 #define PX4_DEVIOCGPUBBLOCK     4
 
-//#define PX4_DEBUG(...)
-#define PX4_DEBUG(...) printf(__VA_ARGS__)
+#define PX4_DEBUG(...)
+//#define PX4_DEBUG(...) printf(__VA_ARGS__)
 
 __BEGIN_DECLS
 
