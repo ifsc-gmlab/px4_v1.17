@@ -49,6 +49,9 @@
 #define CONFIG_SCHED_LPWORK 1
 #define CONFIG_ARCH_BOARD_LINUXTEST 1
 
+/** time in ms between checks for work in work queues **/
+#define CONFIG_SCHED_WORKPERIOD 10
+
 #define px4_errx(x, ...) errx(x, __VA_ARGS__)
 
 #endif
