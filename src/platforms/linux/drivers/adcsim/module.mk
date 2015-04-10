@@ -35,7 +35,7 @@
 # STM32 ADC driver
 #
 
-MODULE_COMMAND	= adc
+MODULE_COMMAND	= adcsim
 
 SRCS		= adcsim.cpp
 
