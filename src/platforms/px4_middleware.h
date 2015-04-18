@@ -60,6 +60,9 @@ extern bool task_should_exit;
  * Returns true if the app/task should continue to run
  */
 __EXPORT inline bool ok() { return !task_should_exit; }
+#elif defined(__PX4_QURT)
+// FIXME - usleep not supported by DSPAL
+inline void usleep(uint64_t sleep_interval) { }
 #else
 /**
  * Linux needs to have globally unique checks for thread/task status

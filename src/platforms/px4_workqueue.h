@@ -41,7 +41,7 @@
 #include <nuttx/arch.h>
 #include <nuttx/wqueue.h>
 #include <nuttx/clock.h>
-#elif defined(__PX4_LINUX)
+#elif defined(__PX4_LINUX) || defined(__PX4_QURT)
 
 #include <stdint.h>
 #include <queue.h>
