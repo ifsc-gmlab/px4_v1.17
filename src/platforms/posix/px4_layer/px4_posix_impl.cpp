@@ -55,32 +55,20 @@ extern void hrt_init(void);
 
 __END_DECLS
 
-extern struct wqueue_s gwork[NWORKERS];
-
 namespace px4
 {
+
+void init_once(void);
+
+void init_once(void)
+{
+	work_queues_init();
+	hrt_init();
+}
 
 void init(int argc, char *argv[], const char *app_name)
 {
 	printf("App name: %s\n", app_name);
-
-	// Create high priority worker thread
-	g_work[HPWORK].pid = px4_task_spawn_cmd("wkr_high",
-			       SCHED_DEFAULT,
-			       SCHED_PRIORITY_MAX,
-			       2000,
-			       work_hpthread,
-			       (char* const*)NULL);
-
-	// Create low priority worker thread
-	g_work[LPWORK].pid = px4_task_spawn_cmd("wkr_low",
-			       SCHED_DEFAULT,
-			       SCHED_PRIORITY_MIN,
-			       2000,
-			       work_lpthread,
-			       (char* const*)NULL);
-
-	hrt_init();
 }
 
 }
