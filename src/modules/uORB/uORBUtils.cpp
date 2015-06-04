@@ -61,3 +61,21 @@ int uORB::Utils::node_mkpath
 
   return OK;
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int uORB::Utils::node_mkpath(char *buf, Flavor f,
+                               const std::string& orbMsgName )
+{
+  unsigned len;
+
+  unsigned index = 0;
+
+  len = snprintf(buf, orb_maxpath, "/%s/%s%d", (f == PUBSUB) ? "obj" : "param",
+                 orbMsgName.c_str(), index );
+
+  if (len >= orb_maxpath)
+    return -ENAMETOOLONG;
+
+  return OK;
+}
