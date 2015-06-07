@@ -52,6 +52,9 @@ endif
 ifeq ($(PX4_TARGET_OS),posix)
 SRCS += uORBTest_UnitTest.cpp
 endif
+ifeq ($(PX4_TARGET_OS),posix-arm)
+SRCS += uORBTest_UnitTest.cpp
+endif
 
 SRCS	+= 		  objects_common.cpp \
 			  Publication.cpp \
