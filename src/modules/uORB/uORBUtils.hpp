@@ -55,7 +55,7 @@ public:
   /**
    * same as above except this generators the path based on the string.
    */
-  static int node_mkpath(char *buf, Flavor f, const std::string& orbMsgName);
+  static int node_mkpath(char *buf, Flavor f, const char *orbMsgName);
 
 };
 
