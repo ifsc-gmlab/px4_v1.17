@@ -31,13 +31,10 @@
 #
 ############################################################################
 
-px4_generate_parameters(OUT param_files)
-
 # for generated files
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}/src/modules/param)
 
 set(SRCS
-	${param_files}
 	perf_counter.c
 	param/param.c
 	conversions.c
@@ -82,5 +79,6 @@ px4_add_module(
 	SRCS ${SRCS}
 	DEPENDS
 		platforms__common
+		modules__param
 	)
 # vim: set noet ft=cmake fenc=utf-8 ff=unix : 
