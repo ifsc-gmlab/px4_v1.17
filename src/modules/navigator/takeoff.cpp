@@ -75,6 +75,8 @@ Takeoff::on_activation()
 {
 	/* set current mission item to Takeoff */
 	set_takeoff_item(&_mission_item, _param_min_alt.get());
+	_navigator->get_mission_result()->reached = false;
+	_navigator->get_mission_result()->finished = false;
 
 	/* convert mission item to current setpoint */
 	struct position_setpoint_triplet_s *pos_sp_triplet = _navigator->get_position_setpoint_triplet();
@@ -93,4 +95,8 @@ Takeoff::on_activation()
 void
 Takeoff::on_active()
 {
+	if (is_mission_item_reached()) {
+		_navigator->get_mission_result()->finished = true;
+		_navigator->set_mission_result_updated();
+	}
 }
