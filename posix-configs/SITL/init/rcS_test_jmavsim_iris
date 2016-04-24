@@ -14,7 +14,6 @@ gpssim start
 pwm_out_sim mode_pwm
 sleep 1
 sensors start
-commander start
 
 commander_tests
 controllib_test
@@ -22,3 +21,5 @@ uorb_tests
 tests all
 
 ver all
+
+shutdown
