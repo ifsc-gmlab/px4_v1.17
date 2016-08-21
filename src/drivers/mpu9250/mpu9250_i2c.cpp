@@ -55,18 +55,18 @@
 #include <drivers/drv_accel.h>
 #include <drivers/drv_device.h>
 
-#include "MPU9250.h"
+#include "mpu9250.h"
 
 #include "board_config.h"
 
 #ifdef USE_I2C
 
-device::Device *MPU9250_I2C_interface(int bus, int device_type, bool external_bus);
+device::Device *MPU9250_I2C_interface(int bus, bool external_bus);
 
 class MPU9250_I2C : public device::I2C
 {
 public:
-	MPU9250_I2C(int bus, int device_type);
+	MPU9250_I2C(int bus);
 	virtual ~MPU9250_I2C();
 
 	virtual int	init();
@@ -78,21 +78,17 @@ public:
 protected:
 	virtual int	probe();
 
-private:
-	int _device_type;
-
 };
 
 
 device::Device *
-MPU9250_I2C_interface(int bus, int device_type, bool external_bus)
+MPU9250_I2C_interface(int bus, bool external_bus)
 {
-	return new MPU9250_I2C(bus, device_type);
+	return new MPU9250_I2C(bus);
 }
 
-MPU9250_I2C::MPU9250_I2C(int bus, int device_type) :
-	I2C("MPU9250_I2C", nullptr, bus, PX4_I2C_OBDEV_MPU9250, 400000),
-	_device_type(device_type)
+MPU9250_I2C::MPU9250_I2C(int bus) :
+	I2C("MPU9250_I2C", nullptr, bus, PX4_I2C_OBDEV_MPU9250, 400000)
 {
 	_device_id.devid_s.devtype =  DRV_ACC_DEVTYPE_MPU9250;
 }
@@ -156,8 +152,7 @@ MPU9250_I2C::read(unsigned reg_speed, void *data, unsigned count)
 	 */
 	uint32_t offset = count < sizeof(MPUReport) ? 0 : offsetof(MPUReport, status);
 	uint8_t cmd = MPU9250_REG(reg_speed);
-	int ret = transfer(&cmd, 1, &((uint8_t *)data)[offset], count);
-	return ret == OK ? count : ret;
+	return transfer(&cmd, 1, &((uint8_t *)data)[offset], count);
 }
 
 
@@ -165,8 +160,8 @@ int
 MPU9250_I2C::probe()
 {
 	uint8_t whoami = 0;
-	uint8_t expected = _device_type == 6000 ? MPU_WHOAMI_6000 : ICM_WHOAMI_20608;
-	return (read(MPUREG_WHOAMI, &whoami, 1) > 0 && (whoami == expected)) ? 0 : -EIO;
-
+	uint8_t expected = MPU_WHOAMI_9250;
+	return (read(MPUREG_WHOAMI, &whoami, 1) == OK && (whoami == expected)) ? 0 : -EIO;
 }
-#endif /* PX4_I2C_OBDEV_HMC5883 */
+
+#endif /* USE_I2C */
