@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- *   Copyright (c) 2013 PX4 Development Team. All rights reserved.
- *   Author: Anton Babushkin <anton.babushkin@me.com>
+ *   Copyright (c) 2016 PX4 Development Team. All rights reserved.
+ *   Author: Tim Dyer <dyer.ti@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,7 +37,7 @@
  *
  * Dummy tone_alarm to prevent nsh errors.
  *
- * @author Tim Dyer <>
+ * @author Tim Dyer <dyer.ti@gmail.com>
  */
 
 #include <px4_defines.h>
