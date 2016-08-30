@@ -51,6 +51,12 @@ OutputRC::OutputRC(const OutputConfig &output_config)
 	: OutputBase(output_config)
 {
 }
+OutputRC::~OutputRC()
+{
+	if (_actuator_controls_pub) {
+		orb_unadvertise(_actuator_controls_pub);
+	}
+}
 
 int OutputRC::update(const ControlData *control_data)
 {
