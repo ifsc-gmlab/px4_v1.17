@@ -88,8 +88,6 @@ SyslinkBridge::poll_state(struct file *filp)
 	return 0;
 }
 
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-
 ssize_t
 SyslinkBridge::read(struct file *filp, char *buffer, size_t buflen)
 {
@@ -131,8 +129,6 @@ SyslinkBridge::write(struct file *filp, const char *buffer, size_t buflen)
 
 	return buflen;
 }
-
-
 
 int
 SyslinkBridge::ioctl(struct file *filp, int cmd, unsigned long arg)
