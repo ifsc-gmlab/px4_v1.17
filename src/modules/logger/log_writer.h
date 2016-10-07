@@ -33,24 +33,32 @@
 
 #pragma once
 
-#include <px4.h>
-#include <stdint.h>
-#include <pthread.h>
-#include <drivers/drv_hrt.h>
-#include <systemlib/perf_counter.h>
+#include "log_writer_file.h"
 
 namespace px4
 {
 namespace logger
 {
 
+/**
+ * @class LogWriter
+ * Manages starting, stopping & writing of logged data using the configured backend.
+ */
 class LogWriter
 {
 public:
-	LogWriter(size_t buffer_size);
+
+	/** bitfield to specify a backend */
+	typedef uint8_t Backend;
+	static constexpr Backend BackendFile = 1 << 0;
+	static constexpr Backend BackendAll = BackendFile;
+
+	LogWriter(Backend backend, size_t file_buffer_size);
 	~LogWriter();
 
 	bool init();
+
+	Backend backend() const { return _backend; }
 
 	/**
 	 * start the thread
@@ -61,14 +69,19 @@ public:
 
 	void thread_stop();
 
-	void start_log(const char *filename);
+	void start_log_file(const char *filename);
 
-	void stop_log();
+	void stop_log_file();
 
 	/**
 	 * whether logging is currently active or not.
 	 */
-	bool is_started() const { return _should_run; }
+	bool is_started() const;
+
+	/**
+	 * whether file logging is currently active or not.
+	 */
+	bool is_started_file() const;
 
 	/**
 	 * Write data to be logged. The caller must call lock() before calling this.
@@ -77,70 +90,51 @@ public:
 	 */
 	bool write(void *ptr, size_t size, uint64_t dropout_start = 0);
 
+
+	/* file logging methods */
+
 	void lock()
 	{
-		pthread_mutex_lock(&_mtx);
+		if (_log_writer_file) { _log_writer_file->lock(); }
 	}
 
 	void unlock()
 	{
-		pthread_mutex_unlock(&_mtx);
+		if (_log_writer_file) { _log_writer_file->unlock(); }
 	}
 
 	void notify()
 	{
-		pthread_cond_broadcast(&_cv);
+		if (_log_writer_file) { _log_writer_file->notify(); }
 	}
 
-	size_t get_total_written() const
+	size_t get_total_written_file() const
 	{
-		return _total_written;
+		if (_log_writer_file) { return _log_writer_file->get_total_written(); }
+
+		return 0;
 	}
 
-	size_t get_buffer_size() const
+	size_t get_buffer_size_file() const
 	{
-		return _buffer_size;
+		if (_log_writer_file) { return _log_writer_file->get_buffer_size(); }
+
+		return 0;
 	}
 
-	size_t get_buffer_fill_count() const
+	size_t get_buffer_fill_count_file() const
 	{
-		return _count;
+		if (_log_writer_file) { return _log_writer_file->get_buffer_fill_count(); }
+
+		return 0;
 	}
 
 private:
-	static void *run_helper(void *);
 
-	void run();
-
-	size_t get_read_ptr(void **ptr, bool *is_part);
-
-	void mark_read(size_t n)
-	{
-		_count -= n;
-	}
-
-	/**
-	 * Write to the buffer but assuming there is enough space
-	 */
-	inline void write_no_check(void *ptr, size_t size);
-
-	/* 512 didn't seem to work properly, 4096 should match the FAT cluster size */
-	static constexpr size_t	_min_write_chunk = 4096;
-
-	int			_fd = -1;
-	uint8_t 	*_buffer = nullptr;
-	const size_t	_buffer_size;
-	size_t			_head = 0; ///< next position to write to
-	size_t			_count = 0; ///< number of bytes in _buffer to be written
-	size_t		_total_written = 0;
-	bool		_should_run = false;
-	bool		_running = false;
-	bool 		_exit_thread = false;
-	pthread_mutex_t		_mtx;
-	pthread_cond_t		_cv;
-	perf_counter_t _perf_write;
-	perf_counter_t _perf_fsync;
+	LogWriterFile *_log_writer_file = nullptr;
+	const Backend _backend;
 };
+
 
 }
 }
