@@ -47,20 +47,6 @@
 #include "px4_micro_hal.h"
 
 #elif defined (__PX4_POSIX)
-
-#define CONFIG_NFILE_STREAMS 1
-#define CONFIG_SCHED_WORKQUEUE 1
-#define CONFIG_SCHED_HPWORK 1
-#define CONFIG_SCHED_LPWORK 1
-#define CONFIG_ARCH_BOARD_SITL 1
-
-#define BOARD_BATTERY1_V_DIV   (10.177939394f)
-#define BOARD_BATTERY1_A_PER_V (15.391030303f)
-
-/** time in ms between checks for work in work queues **/
-#define CONFIG_SCHED_WORKPERIOD 50000
-
-#define CONFIG_SCHED_INSTRUMENTATION 1
-#define CONFIG_MAX_TASKS 32
-
+#  include <system_config.h>
+#  include <board_config.h>
 #endif
