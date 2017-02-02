@@ -34,14 +34,7 @@
 #pragma once
 
 
-/** start gyro temperature calibration in a new task
+/** start temperature calibration in a new task for one or multiple sensors
  * @return 0 on success, <0 error otherwise  */
-int run_temperature_gyro_calibration();
+int run_temperature_calibration(bool accel, bool baro, bool gyro);
 
-/** start accel temperature calibration in a new task
- * @return 0 on success, <0 error otherwise  */
-int run_temperature_accel_calibration();
-
-/** start baro temperature calibration in a new task
- * @return 0 on success, <0 error otherwise  */
-int run_temperature_baro_calibration();
