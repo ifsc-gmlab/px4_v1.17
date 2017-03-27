@@ -57,5 +57,8 @@
 // set the queue size to the number of LED's, so that each led can be controlled individually
 static const int LED_UORB_QUEUE_LENGTH = BOARD_MAX_LEDS;
 
-
+#if defined (__PX4_POSIX_OCPOC)
+#define RGBLED0_DEVICE_PATH "/dev/i2c-1"
+#else
 #define RGBLED0_DEVICE_PATH "/dev/rgbled0"
+#endif
