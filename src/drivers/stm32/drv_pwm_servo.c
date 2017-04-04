@@ -87,6 +87,7 @@ int up_pwm_servo_init(uint32_t channel_mask)
 		}
 	}
 
+
 	// Now allocate the new set
 
 	for (unsigned channel = 0; channel_mask != 0 &&  channel < MAX_TIMER_IO_CHANNELS; channel++) {
