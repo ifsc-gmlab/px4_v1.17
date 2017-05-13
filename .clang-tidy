@@ -2,7 +2,6 @@ Checks:          '*
 		,-cert-dcl50-cpp
 		,-cert-err34-c
 		,-cert-err58-cpp
-		,-cert-flp30-c
 		,-cert-msc30-c
 		,-cert-msc50-cpp
 		,-clang-analyzer-core.CallAndMessage
@@ -14,7 +13,6 @@ Checks:          '*
 		,-clang-analyzer-deadcode.DeadStores
 		,-clang-analyzer-optin.cplusplus.VirtualCall
 		,-clang-analyzer-optin.performance.Padding
-		,-clang-analyzer-security.FloatLoopCounter
 		,-clang-analyzer-security.insecureAPI.strcpy
 		,-clang-analyzer-unix.cstring.BadSizeArg
 		,-clang-analyzer-unix.Malloc
