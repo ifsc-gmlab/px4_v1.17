@@ -36,7 +36,7 @@ param.fusion.magDeclDeg = 10.5; % Magnetic declination in deg
 %% Optical flow measurement fusion
 param.fusion.rangeTimeDelay = 0.05; % range fidner sensor delay relative to IMU (sec)
 param.fusion.flowTimeDelay = 0.05; % Optical flow sensor time delay relative to IMU (sec)
-param.fusion.flowRateError = 0.1; % Observation noise 1SD for the flow sensor (rad/sec)
+param.fusion.flowRateError = 0.15; % Observation noise 1SD for the flow sensor (rad/sec)
 param.fusion.flowGate = 5.0; % Size of the optical flow rate innovation consistency check gate in SD
 param.fusion.rngValidMin = 0.05; % range measurements wil be constrained to be  no less than this (m)
 param.fusion.rngValidMax = 5.0; % ignore range measurements larger than this (m)
@@ -44,8 +44,8 @@ param.fusion.rngTimeout = 2.0; % optical flow measurements will not be used if m
 
 %% Visual odometry body frame velocity measurement fusion
 param.fusion.bodyVelTimeDelay = 0.01; % Optical flow sensor time delay relative to IMU (sec)
-param.fusion.bodyVelErrorMin = 0.2; % Observation noise 1SD for the odometry sensor at the highest quality value (m/sec)
-param.fusion.bodyVelErrorMax = 1.8; % Observation noise 1SD for the odometry sensor at the lowest quality value (m/sec)
+param.fusion.bodyVelErrorMin = 0.1; % Observation noise 1SD for the odometry sensor at the highest quality value (m/sec)
+param.fusion.bodyVelErrorMax = 0.9; % Observation noise 1SD for the odometry sensor at the lowest quality value (m/sec)
 param.fusion.bodyVelGate = 5.0; % Size of the optical flow rate innovation consistency check gate in SD
 
 %% State prediction error growth
