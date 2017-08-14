@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 /**
- * @file FlightTaskOrbit.h
+ * @file FlightTaskOrbit.hpp
  *
  * Flight task for orbiting in a circle around a target position
  *
@@ -63,7 +63,11 @@ public:
 	 * Call once on the event of switching away from the task
 	 * 	@return 0 on success, >0 on error otherwise
 	 */
-	virtual int disable() { return 0; };
+	virtual int disable()
+	{
+		FlightTask::disable();
+		return 0;
+	};
 
 	/**
 	 * Call regularly in the control loop cycle to execute the task
@@ -73,11 +77,11 @@ public:
 	{
 		FlightTask::update();
 
-		r += _sticks(1) * _deltatime;
+		r += _sticks(0) * _deltatime;
 		r = math::constrain(r, 0.5f, 4.f);
-		v -= _sticks(0) * _deltatime;
+		v -= _sticks(1) * _deltatime;
 		v = math::constrain(v, -7.f, 7.f);
-		altitude += _sticks(3) * _deltatime;
+		altitude += _sticks(2) * _deltatime;
 		altitude = math::constrain(altitude, 2.f, 5.f);
 
 		matrix::Vector2<float> target_to_position = matrix::Vector2f(_position.data()) - matrix::Vector2f();
