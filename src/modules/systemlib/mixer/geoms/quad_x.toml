@@ -1,7 +1,7 @@
 # Generic Quadcopter in X configuration
 
 [info]
-name = "QUAD_X"
+name = "quad_x"
 key = "4x"
 description = "Generic Quadcopter in X configuration"
 
@@ -9,22 +9,22 @@ description = "Generic Quadcopter in X configuration"
 direction = "CW"
 axis      = [0.0, 0.0, -1.0]
 Ct        = 1.0
-Cm        = 0.01
+Cm        = 0.05
 
 [[rotors]]
 name      = "front_right"
-position  = [1.0, 1.0, 0.0]
+position  = [0.707107, 0.707107, 0.0]
 direction = "CCW"
 
 [[rotors]]
 name      = "rear_left"
-position  = [-1.0, -1.0, 0.0]
+position  = [-0.707107, -0.707107, 0.0]
 direction = "CCW"
 
 [[rotors]]
 name     = "front_left"
-position = [1.0, -1.0, 0.0]
+position = [0.707107, -0.707107, 0.0]
 
 [[rotors]]
 name     = "rear_right"
-position = [-1.0, 1.0, 0.0]
+position = [-0.707107, 0.707107, 0.0]
