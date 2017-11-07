@@ -51,63 +51,6 @@ public:
 	{};
 	virtual ~FlightTaskOrbit() {};
 
-	/**
-	 * Call once on the event where you switch to the task
-	 * @return 0 on success, >0 on error otherwise
-	 */
-	virtual int activate()
-	{
-		FlightTask::activate();
-		r = 1.f;
-		v =  0.5f;
-		z = _position(2);
-		_center = matrix::Vector2f(_position.data());
-		_center(0) -= r;
-		return 0;
-	};
-
-	/**
-	 * Call once on the event of switching away from the task
-	 * 	@return 0 on success, >0 on error otherwise
-	 */
-	virtual int disable()
-	{
-		FlightTask::disable();
-		return 0;
-	};
-
-	/**
-	 * Call regularly in the control loop cycle to execute the task
-	 * @return 0 on success, >0 on error otherwise
-	 */
-	virtual int update()
-	{
-		int ret = FlightTaskManual::update();
-
-		r += _sticks(0) * _deltatime;
-		r = math::constrain(r, 1.f, 20.f);
-		v -= _sticks(1) * _deltatime;
-		v = math::constrain(v, -7.f, 7.f);
-		z += _sticks(2) * _deltatime;
-
-		matrix::Vector2<float> center_to_position = matrix::Vector2f(_position.data()) - _center;
-
-		/* xy velocity to go around in a circle */
-		matrix::Vector2<float> velocity_xy = matrix::Vector2f(center_to_position(1), -center_to_position(0));
-		velocity_xy = velocity_xy.unit_or_zero();
-		velocity_xy *= v;
-
-		/* xy velocity adjustment to stay on the radius distance */
-		velocity_xy += (r - center_to_position.norm()) * center_to_position.unit_or_zero();
-
-		float yaw = atan2f(center_to_position(1), center_to_position(0)) + M_PI_F;
-
-		_set_position_setpoint(matrix::Vector3f(NAN, NAN, z));
-		_set_velocity_setpoint(matrix::Vector3f(velocity_xy(0), velocity_xy(1), 0.f));
-		_set_yaw_setpoint(yaw);
-		return ret;
-	};
-
 private:
 
 	float r = 0.f; /* radius with which to orbit the target */
