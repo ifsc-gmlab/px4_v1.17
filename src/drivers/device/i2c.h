@@ -33,7 +33,7 @@
 #pragma once
 
 #ifdef __PX4_NUTTX
-#include "nuttx/i2c_nuttx.h"
+#include "nuttx/I2C.hpp"
 #else
-#include "posix/i2c_posix.h"
+#include "posix/I2C.hpp"
 #endif
