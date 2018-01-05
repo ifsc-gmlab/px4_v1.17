@@ -60,9 +60,8 @@ protected:
 	control::BlockParamFloat _vel_max_up; /**< Maximum speed allowed to go down. */
 	control::BlockParamFloat _vel_z_dz; /**< velocity threshold/deadzone to switch into vertical position hold */
 
+	void _updateZsetpoints(); /**< Sets position or velocity setpoints. */
 	void _updateSetpoints() override; /**< Updates all setpoints. */
 	void _scaleSticks() override; /**< Scales sticks to velocity in z. */
 
-private:
-	void _updateZsetpoints(); /**< Sets position or velocity setpoints. */
 };
