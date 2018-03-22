@@ -51,6 +51,8 @@
 
 #else
 
+#define ecl_absolute_time() (0)
+#define ecl_elapsed_time (0)
 #define ECL_INFO printf
 #define ECL_WARN printf
 #define ECL_ERR printf
