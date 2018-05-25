@@ -51,4 +51,5 @@ px4_add_module(
 		drivers__device
 		git_ecl
 		ecl_validation
+		subsystem_info_pub
 	)
