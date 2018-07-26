@@ -32,22 +32,22 @@
 ############################################################################
 
 px4_add_library(flight_tasks
-tasks/FlightTask.cpp
-		tasks/FlightTaskManual.cpp
-		tasks/FlightTaskManualStabilized.cpp
-		tasks/FlightTaskOrbit.cpp
-		tasks/FlightTaskManualAltitude.cpp
-		tasks/FlightTaskManualAltitudeSmooth.cpp
-		tasks/FlightTaskManualPosition.cpp
-		tasks/FlightTaskManualPositionSmooth.cpp
-		tasks/FlightTaskAuto.cpp
-		tasks/FlightTaskAutoLine.cpp
-		tasks/FlightTaskAutoMapper.cpp
-		tasks/FlightTaskAutoFollowMe.cpp
-		tasks/FlightTaskOffboard.cpp
-		tasks/Utility/ManualSmoothingZ.cpp
-		tasks/Utility/ManualSmoothingXY.cpp
-		tasks/Utility/StraightLine.cpp
-		SubscriptionArray.cpp
-		FlightTasks.cpp
+	FlightTasks.cpp
 )
+
+target_link_libraries(flight_tasks PUBLIC
+	flight_tasks_manual
+	flight_tasks_manual_altitude
+	flight_tasks_manual_altitude_smooth
+	flight_tasks_manual_stabilized
+	flight_tasks_manual_position
+	flight_tasks_manual_position_smooth
+	flight_tasks_auto
+	flight_tasks_auto_line
+	flight_tasks_auto_follow_me
+	flight_tasks_offboard
+	flight_tasks_orbit
+	flight_tasks_utility
+)
+
+add_subdirectory(tasks)
