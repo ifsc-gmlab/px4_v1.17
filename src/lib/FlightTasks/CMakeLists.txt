@@ -44,6 +44,7 @@ target_link_libraries(FlightTasks PUBLIC
 	FlightTaskManualAltitudeSmooth
 	FlightTaskManualPosition
 	FlightTaskManualPositionSmooth
+	FlightTaskSport
 	FlightTaskAutoLine
 	FlightTaskAutoFollowMe
 	FlightTaskOffboard
