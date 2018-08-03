@@ -31,24 +31,14 @@
 #
 ############################################################################
 
-px4_add_library(FlightTask
-    FlightTask.cpp
-    SubscriptionArray.cpp
-)
-
-target_include_directories(FlightTask PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
+# add the core Flight tasks that the additional flight tasks depend on
+add_subdirectory(FlightTask)
 add_subdirectory(Utility)
 add_subdirectory(Manual)
-add_subdirectory(ManualAltitude)
-add_subdirectory(ManualAltitudeSmooth)
-add_subdirectory(ManualPosition)
-add_subdirectory(ManualPositionSmooth)
-add_subdirectory(ManualStabilized)
-add_subdirectory(Sport)
 add_subdirectory(Auto)
 add_subdirectory(AutoMapper)
-add_subdirectory(AutoLine)
-add_subdirectory(AutoFollowMe)
-add_subdirectory(Offboard)
-add_subdirectory(Orbit)
+
+# add all additional flight tasks
+foreach(task ${flight_tasks_all})
+    add_subdirectory(${task})
+endforeach()
