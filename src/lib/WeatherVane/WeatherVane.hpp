@@ -42,14 +42,15 @@
 
 #pragma once
 
+#include <px4_module_params.h>
 #include <matrix/matrix/math.hpp>
 
-class WeatherVane
+class WeatherVane : public ModuleParams
 {
 public:
 	WeatherVane();
 
-	~WeatherVane() {};
+	~WeatherVane() = default;
 
 	void activate() {_is_active = true;}
 
@@ -57,24 +58,28 @@ public:
 
 	bool is_active() {return _is_active;}
 
+	bool manual_enabled() { return _wv_manual_enabled.get(); }
+
+	bool auto_enabled() { return _wv_auto_enabled.get(); }
+
 	void update(matrix::Quatf q_sp_prev, float yaw);
 
 	float get_weathervane_yawrate();
 
-	void set_weathervane_gain(float gain) {_wv_gain = gain;}
-
-	void set_min_roll_rad(float min_roll_rad) {_wv_min_roll_rad = min_roll_rad;}
-
-	void set_yawrate_max_rad(float yawrate_max_rad) {_wv_yawrate_max_rad = yawrate_max_rad;}
+	void update_parameters() { ModuleParams::updateParams(); }
 
 private:
 	matrix::Quatf _q_sp_prev;	// previous attitude setpoint quaternion
-	float _yaw = 0.0f;					// current yaw angle
+	float _yaw = 0.0f;			// current yaw angle
 
 	bool _is_active = true;
 
-	float _wv_gain = 1.0f;		// gain that maps excessive roll angle setpoint to yawrate setoint [1/s]
-	float _wv_min_roll_rad = 0.01f;		// minimum roll angle setpoint for the controller to output a non-zero yawrate setpoint
-	float _wv_yawrate_max_rad = 1.0f;	// maximum yaw-rate the controller will output
+	DEFINE_PARAMETERS(
+		(ParamBool<px4::params::WV_MAN_EN>) _wv_manual_enabled,
+		(ParamBool<px4::params::WV_AUTO_EN>) _wv_auto_enabled,
+		(ParamFloat<px4::params::WV_ROLL_MIN>) _wv_min_roll,
+		(ParamFloat<px4::params::WV_GAIN>) _wv_gain,
+		(ParamFloat<px4::params::WV_YRATE_MAX>) _wv_max_yaw_rate
+	)
 
 };
