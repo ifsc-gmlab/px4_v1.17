@@ -33,15 +33,13 @@
 
 #pragma once
 
+#include <lib/conversion/rotation.h>
+#include <lib/mathlib/math/Limits.hpp>
+#include <lib/matrix/matrix/math.hpp>
 #include <lib/perf/perf_counter.h>
 #include <px4_config.h>
-#include <px4_getopt.h>
 #include <px4_log.h>
 #include <px4_module_params.h>
-#include <lib/matrix/matrix/math.hpp>
-#include <lib/mathlib/math/Limits.hpp>
-#include <lib/mathlib/math/Functions.hpp>
-#include <lib/conversion/rotation.h>
 #include <px4_work_queue/WorkItem.hpp>
 #include <uORB/Publication.hpp>
 #include <uORB/Subscription.hpp>
@@ -49,11 +47,10 @@
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/sensor_bias.h>
 #include <uORB/topics/sensor_correction.h>
-#include <uORB/topics/sensor_gyro.h>
 #include <uORB/topics/sensor_selection.h>
-#include <uORB/topics/vehicle_angular_velocity.h>
 
-#define MAX_GYRO_COUNT 3
+#include <uORB/topics/sensor_gyro.h>
+#include <uORB/topics/vehicle_angular_velocity.h>
 
 class VehicleAngularVelocity : public ModuleParams, public px4::WorkItem
 {
@@ -75,6 +72,7 @@ private:
 	void	SensorBiasUpdate(bool force = false);
 	bool	SensorCorrectionsUpdate(bool force = false);
 
+	static constexpr int MAX_SENSOR_COUNT = 3;
 
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::SENS_BOARD_ROT>) _param_sens_board_rot,
@@ -91,7 +89,7 @@ private:
 	uORB::Subscription			_sensor_correction_sub{ORB_ID(sensor_correction)};	/**< sensor thermal correction subscription */
 
 	uORB::SubscriptionCallbackWorkItem	_sensor_selection_sub{this, ORB_ID(sensor_selection)};	/**< selected primary sensor subscription */
-	uORB::SubscriptionCallbackWorkItem	_sensor_gyro_sub[MAX_GYRO_COUNT] {			/**< gyro data subscription */
+	uORB::SubscriptionCallbackWorkItem	_sensor_sub[MAX_SENSOR_COUNT] {				/**< sensor data subscription */
 		{this, ORB_ID(sensor_gyro), 0},
 		{this, ORB_ID(sensor_gyro), 1},
 		{this, ORB_ID(sensor_gyro), 2}
@@ -105,8 +103,8 @@ private:
 
 	perf_counter_t				_cycle_perf;
 	perf_counter_t				_interval_perf;
-	perf_counter_t				_sensor_gyro_latency_perf;
+	perf_counter_t				_sensor_latency_perf;
 
-	int					_selected_gyro{-1};
+	uint8_t					_selected_sensor{0};
 
 };

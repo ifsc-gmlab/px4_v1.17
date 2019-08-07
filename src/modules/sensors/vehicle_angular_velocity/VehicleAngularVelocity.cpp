@@ -35,15 +35,15 @@
 
 #include <px4_log.h>
 
-using namespace time_literals;
 using namespace matrix;
+using namespace time_literals;
 
 VehicleAngularVelocity::VehicleAngularVelocity() :
 	ModuleParams(nullptr),
 	WorkItem(px4::wq_configurations::rate_ctrl),
 	_cycle_perf(perf_alloc(PC_ELAPSED, "vehicle_angular_velocity: cycle time")),
 	_interval_perf(perf_alloc(PC_INTERVAL, "vehicle_angular_velocity: interval")),
-	_sensor_gyro_latency_perf(perf_alloc(PC_ELAPSED, "vehicle_angular_velocity: sensor gyro latency"))
+	_sensor_latency_perf(perf_alloc(PC_ELAPSED, "vehicle_angular_velocity: sensor latency"))
 {
 }
 
@@ -53,7 +53,7 @@ VehicleAngularVelocity::~VehicleAngularVelocity()
 
 	perf_free(_cycle_perf);
 	perf_free(_interval_perf);
-	perf_free(_sensor_gyro_latency_perf);
+	perf_free(_sensor_latency_perf);
 }
 
 bool
@@ -80,7 +80,7 @@ VehicleAngularVelocity::Stop()
 	Deinit();
 
 	// clear all registered callbacks
-	for (auto sub : _sensor_gyro_sub) {
+	for (auto sub : _sensor_sub) {
 		sub.unregister_callback();
 	}
 
@@ -95,9 +95,7 @@ VehicleAngularVelocity::SensorBiasUpdate(bool force)
 
 		if (_sensor_bias_sub.copy(&bias)) {
 			// TODO: should be checking device ID
-			_bias(0) = bias.gyro_x_bias;
-			_bias(1) = bias.gyro_y_bias;
-			_bias(2) = bias.gyro_z_bias;
+			_bias = Vector3f{bias.gyro_bias};
 		}
 	}
 }
@@ -105,22 +103,22 @@ VehicleAngularVelocity::SensorBiasUpdate(bool force)
 bool
 VehicleAngularVelocity::SensorCorrectionsUpdate(bool force)
 {
-	// check if the selected gyro has updated
+	// check if the selected sensor has updated
 	if (_sensor_correction_sub.updated() || force) {
 
 		sensor_correction_s corrections{};
 		_sensor_correction_sub.copy(&corrections);
 
 		// TODO: should be checking device ID
-		if (_selected_gyro == 0) {
+		if (_selected_sensor == 0) {
 			_offset = Vector3f{corrections.gyro_offset_0};
 			_scale = Vector3f{corrections.gyro_scale_0};
 
-		} else if (_selected_gyro == 1) {
+		} else if (_selected_sensor == 1) {
 			_offset = Vector3f{corrections.gyro_offset_1};
 			_scale = Vector3f{corrections.gyro_scale_1};
 
-		} else if (_selected_gyro == 2) {
+		} else if (_selected_sensor == 2) {
 			_offset = Vector3f{corrections.gyro_offset_2};
 			_scale = Vector3f{corrections.gyro_scale_2};
 
@@ -129,19 +127,19 @@ VehicleAngularVelocity::SensorCorrectionsUpdate(bool force)
 			_scale = Vector3f{1.0f, 1.0f, 1.0f};
 		}
 
-		// update the latest gyro selection
-		if (_selected_gyro != corrections.selected_gyro_instance) {
-			if (corrections.selected_gyro_instance < MAX_GYRO_COUNT) {
+		// update the latest sensor selection
+		if ((_selected_sensor != corrections.selected_gyro_instance) || force) {
+			if (corrections.selected_gyro_instance < MAX_SENSOR_COUNT) {
 				// clear all registered callbacks
-				for (auto sub : _sensor_gyro_sub) {
+				for (auto sub : _sensor_sub) {
 					sub.unregister_callback();
 				}
 
-				const int gyro_new = corrections.selected_gyro_instance;
+				const int sensor_new = corrections.selected_gyro_instance;
 
-				if (_sensor_gyro_sub[gyro_new].register_callback()) {
-					PX4_DEBUG("selected gyro changed %d -> %d", _selected_gyro, gyro_new);
-					_selected_gyro = gyro_new;
+				if (_sensor_sub[sensor_new].register_callback()) {
+					PX4_DEBUG("selected sensor changed %d -> %d", _selected_sensor, sensor_new);
+					_selected_sensor = sensor_new;
 
 					return true;
 				}
@@ -182,22 +180,22 @@ VehicleAngularVelocity::Run()
 	perf_begin(_cycle_perf);
 	perf_count(_interval_perf);
 
-	// update corrections first to set _selected_gyro
+	// update corrections first to set _selected_sensor
 	SensorCorrectionsUpdate();
 
-	sensor_gyro_s sensor_gyro;
+	sensor_gyro_s sensor_data;
 
-	if (_sensor_gyro_sub[_selected_gyro].update(&sensor_gyro)) {
-		perf_set_elapsed(_sensor_gyro_latency_perf, hrt_elapsed_time(&sensor_gyro.timestamp));
+	if (_sensor_sub[_selected_sensor].update(&sensor_data)) {
+		perf_set_elapsed(_sensor_latency_perf, hrt_elapsed_time(&sensor_data.timestamp));
 
 		ParametersUpdate();
 		SensorBiasUpdate();
 
-		// get the raw gyro data and correct for thermal errors
-		const Vector3f gyro{sensor_gyro.x, sensor_gyro.y, sensor_gyro.z};
+		// get the sensor data and correct for thermal errors
+		const Vector3f val{sensor_data.x, sensor_data.y, sensor_data.z};
 
 		// apply offsets and scale
-		Vector3f rates{(gyro - _offset).emult(_scale)};
+		Vector3f rates{(val - _offset).emult(_scale)};
 
 		// rotate corrected measurements from sensor to body frame
 		rates = _board_rotation * rates;
@@ -206,7 +204,7 @@ VehicleAngularVelocity::Run()
 		rates -= _bias;
 
 		vehicle_angular_velocity_s angular_velocity;
-		angular_velocity.timestamp_sample = sensor_gyro.timestamp;
+		angular_velocity.timestamp_sample = sensor_data.timestamp;
 		rates.copyTo(angular_velocity.xyz);
 		angular_velocity.timestamp = hrt_absolute_time();
 
@@ -219,9 +217,9 @@ VehicleAngularVelocity::Run()
 void
 VehicleAngularVelocity::PrintStatus()
 {
-	PX4_INFO("selected gyro: %d", _selected_gyro);
+	PX4_INFO("selected sensor: %d", _selected_sensor);
 
 	perf_print_counter(_cycle_perf);
 	perf_print_counter(_interval_perf);
-	perf_print_counter(_sensor_gyro_latency_perf);
+	perf_print_counter(_sensor_latency_perf);
 }
