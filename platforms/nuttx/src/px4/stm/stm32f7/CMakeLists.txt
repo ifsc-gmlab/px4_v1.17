@@ -33,7 +33,9 @@
 
 
 add_subdirectory(../stm32_common/adc adc)
+add_subdirectory(../stm32_common/board_critmon board_critmon)
 add_subdirectory(../stm32_common/board_hw_info board_hw_info)
+add_subdirectory(../stm32_common/board_reset board_reset)
 add_subdirectory(../stm32_common/dshot dshot)
 add_subdirectory(../stm32_common/hrt hrt)
 add_subdirectory(../stm32_common/led_pwm led_pwm)
