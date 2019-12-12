@@ -33,8 +33,7 @@
 
 include(gtest.cmake)
 
-add_library(SENSOR_SIMULATOR SensorSimulator.cpp)
-target_link_libraries(SENSOR_SIMULATOR ecl_EKF)
+add_subdirectory(SensorSimulator)
 
 set(SRCS
 	main.cpp
@@ -42,7 +41,6 @@ set(SRCS
 	test_EKF_ringbuffer.cpp
 	test_EKF_imuSampling.cpp
 	test_AlphaFilter.cpp
-	test_SensorSimulator.cpp
    )
 add_executable(ECL_GTESTS ${SRCS})
 
