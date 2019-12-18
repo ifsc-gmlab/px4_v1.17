@@ -50,6 +50,7 @@
 #include "gps.h"
 #include "flow.h"
 #include "range_finder.h"
+#include "vio.h"
 #include "EKF/ekf.h"
 
 using namespace sensor_simulator::sensor;
@@ -82,6 +83,9 @@ public:
 	void startRangeFinder(){ _rng.start(); }
 	void stopRangeFinder(){ _rng.stop(); }
 
+	void startExternalVision(){ _vio.start(); }
+	void stopExternalVision(){ _vio.stop(); }
+
 	void setImuBias(Vector3f accel_bias, Vector3f gyro_bias);
 	void simulateOrientation(Quatf orientation);
 
@@ -91,5 +95,5 @@ public:
 	Gps _gps;
 	Flow _flow;
 	RangeFinder _rng;
-
+	Vio _vio;
 };
