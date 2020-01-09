@@ -80,6 +80,7 @@ public:
 	matrix::Vector<float, 4> getQuaternionVariance() const;
 	Vector3f getPositionVariance() const;
 	Vector3f getVelocityVariance() const;
+	Vector2f getWindVelocity() const;
 
 	Quatf getVisionAlignmentQuaternion() const;
 
