@@ -57,7 +57,7 @@ private:
 	float _range_data;
 	int8_t _range_quality;
 
-	void send(uint32_t time) override;
+	void send(uint64_t time) override;
 
 };
 
