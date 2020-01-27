@@ -32,6 +32,7 @@
 ############################################################################
 
 add_subdirectory(failure_detector)
+add_subdirectory(HealthAndArmingChecks)
 add_subdirectory(Arming)
 
 px4_add_module(
@@ -59,6 +60,7 @@ px4_add_module(
 		circuit_breaker
 		failure_detector
 		geo
+		health_and_arming_checks
 		hysteresis
 		PreFlightCheck
 		ArmAuthorization
