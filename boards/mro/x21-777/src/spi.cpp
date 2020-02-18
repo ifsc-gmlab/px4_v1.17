@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (C) 2019 PX4 Development Team. All rights reserved.
+ *   Copyright (C) 2020 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,167 +31,21 @@
  *
  ****************************************************************************/
 
-/**
- * @file spi.cpp
- *
- * Board-specific SPI functions.
- */
-
-/************************************************************************************
- * Included Files
- ************************************************************************************/
-
-#include <board_config.h>
-
-#include <stdint.h>
-#include <stdbool.h>
-#include <debug.h>
-#include <unistd.h>
-
+#include <px4_arch/spi_hw_description.h>
+#include <drivers/drv_sensor.h>
 #include <nuttx/spi/spi.h>
-#include <arch/board/board.h>
-#include <systemlib/px4_macros.h>
 
-#include <up_arch.h>
-#include <chip.h>
-#include <stm32_gpio.h>
-#include "board_config.h"
+constexpr px4_spi_bus_t px4_spi_buses[SPI_BUS_MAX_BUS_ITEMS] = {
+	initSPIBus(1, {
+		initSPIDevice(DRV_IMU_DEVTYPE_ICM20602, SPI::CS{GPIO::PortC, GPIO::Pin15}, SPI::DRDY{GPIO::PortC, GPIO::Pin14}),
+		initSPIDevice(DRV_IMU_DEVTYPE_ICM20608, SPI::CS{GPIO::PortC, GPIO::Pin15}, SPI::DRDY{GPIO::PortC, GPIO::Pin14}),
+		initSPIDevice(DRV_BARO_DEVTYPE_MS5611, SPI::CS{GPIO::PortD, GPIO::Pin7}),
+		initSPIDevice(DRV_IMU_DEVTYPE_MPU9250, SPI::CS{GPIO::PortC, GPIO::Pin2}, SPI::DRDY{GPIO::PortD, GPIO::Pin15}),
+	}),
+	initSPIBus(2, {
+		initSPIDevice(SPIDEV_FLASH(0), SPI::CS{GPIO::PortD, GPIO::Pin10}),
+	}),
+};
 
-/************************************************************************************
- * Name: stm32_spiinitialize
- *
- * Description:
- *   Called to configure SPI chip select GPIO pins for the PX4FMU board.
- *
- ************************************************************************************/
+static constexpr bool unused = validateSPIConfig(px4_spi_buses);
 
-__EXPORT void stm32_spiinitialize(void)
-{
-#ifdef CONFIG_STM32F7_SPI1
-	px4_arch_configgpio(GPIO_SPI_CS_ICM_2060X);
-	px4_arch_configgpio(GPIO_SPI_CS_BARO);
-	px4_arch_configgpio(GPIO_SPI_CS_MPU);
-
-	px4_arch_configgpio(GPIO_EXTI_MPU_DRDY);
-	px4_arch_configgpio(GPIO_EXTI_ICM_2060X_DRDY);
-#endif /* CONFIG_STM32F7_SPI1 */
-
-#ifdef CONFIG_STM32F7_SPI2
-	px4_arch_configgpio(GPIO_SPI_CS_FRAM);
-#endif /* CONFIG_STM32F7_SPI2 */
-
-}
-
-__EXPORT void stm32_spi1select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
-{
-	/* SPI select is active low, so write !selected to select the device */
-
-	switch (devid) {
-
-	/* intended fallthrough */
-	case PX4_SPIDEV_ICM_20602:
-
-	/* intended fallthrough */
-	case PX4_SPIDEV_ICM_20608:
-		/* Making sure the other peripherals are not selected */
-		px4_arch_gpiowrite(GPIO_SPI_CS_ICM_2060X, !selected);
-		px4_arch_gpiowrite(GPIO_SPI_CS_BARO, 1);
-		px4_arch_gpiowrite(GPIO_SPI_CS_MPU, 1);
-		break;
-
-	case PX4_SPIDEV_BARO:
-		/* Making sure the other peripherals are not selected */
-		px4_arch_gpiowrite(GPIO_SPI_CS_ICM_2060X, 1);
-		px4_arch_gpiowrite(GPIO_SPI_CS_BARO, !selected);
-		px4_arch_gpiowrite(GPIO_SPI_CS_MPU, 1);
-		break;
-
-	case PX4_SPIDEV_MPU:
-		/* Making sure the other peripherals are not selected */
-		px4_arch_gpiowrite(GPIO_SPI_CS_ICM_2060X, 1);
-		px4_arch_gpiowrite(GPIO_SPI_CS_BARO, 1);
-		px4_arch_gpiowrite(GPIO_SPI_CS_MPU, !selected);
-		break;
-
-	default:
-		break;
-	}
-}
-
-__EXPORT uint8_t stm32_spi1status(FAR struct spi_dev_s *dev, uint32_t devid)
-{
-	return SPI_STATUS_PRESENT;
-}
-
-#ifdef CONFIG_STM32F7_SPI2
-__EXPORT void stm32_spi2select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
-{
-	/* there can only be one device on this bus, so always select it */
-	px4_arch_gpiowrite(GPIO_SPI_CS_FRAM, !selected);
-}
-
-__EXPORT uint8_t stm32_spi2status(FAR struct spi_dev_s *dev, uint32_t devid)
-{
-	/* FRAM is always present */
-	return SPI_STATUS_PRESENT;
-}
-#endif /* CONFIG_STM32F7_SPI2 */
-
-
-__EXPORT void board_spi_reset(int ms)
-{
-	/* disable SPI bus */
-	px4_arch_configgpio(GPIO_SPI_CS_ICM_2060X_OFF);
-	px4_arch_configgpio(GPIO_SPI_CS_BARO_OFF);
-	px4_arch_configgpio(GPIO_SPI_CS_MPU_OFF);
-
-	px4_arch_gpiowrite(GPIO_SPI_CS_ICM_2060X_OFF, 0);
-	px4_arch_gpiowrite(GPIO_SPI_CS_BARO_OFF, 0);
-	px4_arch_gpiowrite(GPIO_SPI_CS_MPU_OFF, 0);
-
-	px4_arch_configgpio(GPIO_SPI1_SCK_OFF);
-	px4_arch_configgpio(GPIO_SPI1_MISO_OFF);
-	px4_arch_configgpio(GPIO_SPI1_MOSI_OFF);
-
-	px4_arch_gpiowrite(GPIO_SPI1_SCK_OFF, 0);
-	px4_arch_gpiowrite(GPIO_SPI1_MISO_OFF, 0);
-	px4_arch_gpiowrite(GPIO_SPI1_MOSI_OFF, 0);
-
-	px4_arch_configgpio(GPIO_EXTI_ICM_2060X_DRDY_OFF);
-	px4_arch_configgpio(GPIO_EXTI_MPU_DRDY_OFF);
-
-	px4_arch_gpiowrite(GPIO_EXTI_ICM_2060X_DRDY_OFF, 0);
-	px4_arch_gpiowrite(GPIO_EXTI_MPU_DRDY_OFF, 0);
-
-	/* set the sensor rail off */
-	px4_arch_configgpio(GPIO_VDD_3V3_SENSORS_EN);
-	px4_arch_gpiowrite(GPIO_VDD_3V3_SENSORS_EN, 0);
-
-	/* wait for the sensor rail to reach GND */
-	usleep(ms * 1000);
-	syslog(LOG_DEBUG, "reset done, %d ms\n", ms);
-
-	/* re-enable power */
-
-	/* switch the sensor rail back on */
-	px4_arch_gpiowrite(GPIO_VDD_3V3_SENSORS_EN, 1);
-
-	/* wait a bit before starting SPI, different times didn't influence results */
-	usleep(100);
-
-	/* reconfigure the SPI pins */
-#ifdef CONFIG_STM32F7_SPI1
-	px4_arch_configgpio(GPIO_SPI_CS_ICM_2060X);
-	px4_arch_configgpio(GPIO_SPI_CS_BARO);
-	px4_arch_configgpio(GPIO_SPI_CS_MPU);
-
-	px4_arch_configgpio(GPIO_SPI1_SCK);
-	px4_arch_configgpio(GPIO_SPI1_MISO);
-	px4_arch_configgpio(GPIO_SPI1_MOSI);
-
-	// // XXX bring up the EXTI pins again
-	// px4_arch_configgpio(GPIO_EXTI_MPU_DRDY);
-	// px4_arch_configgpio(GPIO_EXTI_ICM_2060X_DRDY);
-
-#endif /* CONFIG_STM32F7_SPI1 */
-}
