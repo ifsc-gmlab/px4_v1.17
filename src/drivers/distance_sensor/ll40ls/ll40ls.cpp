@@ -53,7 +53,6 @@
 #include <px4_platform_common/module.h>
 
 #include "LidarLiteI2C.h"
-#include "LidarLitePWM.h"
 
 
 /**
@@ -62,13 +61,12 @@
 namespace ll40ls
 {
 
-LidarLite *instance = nullptr;
+LidarLiteI2C *instance = nullptr;
 
 int print_regs();
 int start(const uint8_t rotation = distance_sensor_s::ROTATION_DOWNWARD_FACING);
 int start_bus(const int bus = PX4_I2C_BUS_EXPANSION,
 	      const uint8_t rotation = distance_sensor_s::ROTATION_DOWNWARD_FACING);
-int start_pwm(const uint8_t rotation = distance_sensor_s::ROTATION_DOWNWARD_FACING);
 int status();
 int stop();
 int usage();
@@ -151,48 +149,6 @@ start_bus(const int bus, const uint8_t rotation)
 }
 
 /**
- * Start the pwm driver.
- *
- * This function only returns if the sensor is up and running
- * or could not be detected successfully.
- */
-int
-start_pwm(const uint8_t rotation)
-{
-	if (instance != nullptr) {
-		PX4_ERR("already started");
-		return PX4_OK;
-	}
-
-#ifdef LIDAR_LITE_PWM_SUPPORTED
-	instance = new LidarLitePWM(rotation);
-#else
-	instance = nullptr;
-	PX4_ERR("PWM input not supported.");
-#endif
-
-	if (instance == nullptr) {
-		PX4_ERR("Failed to instantiate the driver");
-		delete instance;
-		return PX4_ERROR;
-	}
-
-	// Initialize the sensor.
-	if (instance->init() != PX4_OK) {
-		PX4_ERR("Failed to initialize LidarLite pwm.");
-		delete instance;
-		instance = nullptr;
-		return PX4_ERROR;
-	}
-
-	// Start the driver.
-	instance->start();
-
-	PX4_INFO("driver started");
-	return PX4_OK;
-}
-
-/**
  * @brief Prints status info about the driver.
  */
 int
@@ -252,8 +208,6 @@ $ ll40ls stop
 	PRINT_MODULE_USAGE_SUBCATEGORY("distance_sensor");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("print_regs","Print the register values");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("start","Start driver");
-	PRINT_MODULE_USAGE_COMMAND_DESCR("pwm", "PWM device");
-	PRINT_MODULE_USAGE_COMMAND_DESCR("i2c", "I2C device");
 	PRINT_MODULE_USAGE_PARAM_FLAG('a', "Attempt to start driver on all I2C buses (first one found)", true);
 	PRINT_MODULE_USAGE_PARAM_INT('b', 1, 1, 2000, "Start driver on specific I2C bus", true);
 	PRINT_MODULE_USAGE_PARAM_INT('R', 25, 1, 25, "Sensor rotation - downward facing by default", true);
@@ -279,7 +233,6 @@ extern "C" __EXPORT int ll40ls_main(int argc, char *argv[])
 	uint8_t rotation = distance_sensor_s::ROTATION_DOWNWARD_FACING;
 
 	bool start_i2c_all = false;
-	bool start_pwm = false;
 
 	while ((ch = px4_getopt(argc, argv, "ab:R:", &myoptind, &myoptarg)) != EOF) {
 		switch (ch) {
@@ -301,23 +254,6 @@ extern "C" __EXPORT int ll40ls_main(int argc, char *argv[])
 		}
 	}
 
-	// Determine protocol.
-	if (argc > myoptind + 1) {
-		const char *protocol = argv[myoptind + 1];
-
-		if (!strcmp(protocol, "i2c")) {
-			PX4_INFO("protocol %s", protocol);
-
-		} else if (!strcmp(protocol, "pwm")) {
-			PX4_INFO("protocol %s", protocol);
-			start_pwm = true;
-
-		} else {
-			PX4_INFO("unknown protocol, choose pwm or i2c");
-			return ll40ls::usage();
-		}
-	}
-
 	if (myoptind >= argc) {
 		return ll40ls::usage();
 	}
@@ -332,10 +268,6 @@ extern "C" __EXPORT int ll40ls_main(int argc, char *argv[])
 		if (start_i2c_all) {
 			PX4_INFO("starting all i2c busses");
 			return ll40ls::start(rotation);
-
-		} else if (start_pwm) {
-			PX4_INFO("starting pwm");
-			return ll40ls::start_pwm(rotation);
 
 		} else {
 			return ll40ls::start_bus(bus, rotation);
