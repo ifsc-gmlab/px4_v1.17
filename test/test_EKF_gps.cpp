@@ -83,3 +83,28 @@ TEST_F(EkfGpsTest, gpsTimeout)
 	// TODO: this is not happening as expected
 	EXPECT_TRUE(_ekf_wrapper.isIntendingGpsFusion());
 }
+
+TEST_F(EkfGpsTest, resetToGpsVelocity)
+{
+	// GIVEN:EKF that fuses GPS
+	// and has gps checks already passed
+
+	// WHEN: stopping GPS fusion
+	_sensor_simulator.stopGps();
+	_sensor_simulator.runSeconds(11);
+
+	// AND: simulate constant velocity gps samples for short time
+	_sensor_simulator.startGps();
+	const Vector3f simulated_velocity(0.5f, 1.0f, -0.3f);
+	_sensor_simulator._gps.setVelocity(simulated_velocity);
+	const uint64_t dt_us = 1e5;
+	_sensor_simulator._gps.stepHorizontalPositionByMeters(
+		Vector2f(simulated_velocity) * dt_us * 1e-6);
+	_sensor_simulator._gps.stepHeightByMeters(
+		simulated_velocity(2) * dt_us * 1e-6);
+	_sensor_simulator.runMicroseconds(dt_us);
+
+	// THEN: a reset to GPS velocity should be done
+	const Vector3f estimated_velocity = _ekf->getVelocity();
+	EXPECT_TRUE(isEqual(estimated_velocity, simulated_velocity, 1e-2f));
+}
