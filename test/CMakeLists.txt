@@ -34,6 +34,7 @@
 include(gtest.cmake)
 
 add_subdirectory(sensor_simulator)
+add_subdirectory(test_helper)
 
 set(SRCS
 	main.cpp
@@ -54,6 +55,6 @@ set(SRCS
    )
 add_executable(ECL_GTESTS ${SRCS})
 
-target_link_libraries(ECL_GTESTS gtest_main ecl_EKF ecl_sensor_sim)
+target_link_libraries(ECL_GTESTS gtest_main ecl_EKF ecl_sensor_sim ecl_test_helper)
 
 add_test(NAME ECL_GTESTS COMMAND ECL_GTESTS)
