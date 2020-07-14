@@ -41,42 +41,16 @@
 #pragma once
 
 #include "FlightTask.hpp"
-#include <uORB/topics/manual_control_setpoint.h>
+#include "Sticks.hpp"
 
 class FlightTaskManual : public FlightTask
 {
 public:
-	FlightTaskManual() = default;
-
+	FlightTaskManual();
 	virtual ~FlightTaskManual() = default;
-
-	bool applyCommandParameters(const vehicle_command_s &command) override { return FlightTask::applyCommandParameters(command); };
 	bool updateInitialize() override;
 
 protected:
-
+	Sticks _sticks;
 	bool _sticks_data_required = true; /**< let inherited task-class define if it depends on stick data */
-	matrix::Vector<float, 4> _sticks; /**< unmodified manual stick inputs */
-	matrix::Vector<float, 4> _sticks_expo; /**< modified manual sticks using expo function*/
-	int _gear_switch_old = manual_control_setpoint_s::SWITCH_POS_NONE; /**< old switch state*/
-
-	float stickDeadzone() const { return _param_mpc_hold_dz.get(); }
-
-private:
-
-	bool _evaluateSticks(); /**< checks and sets stick inputs */
-	void _applyGearSwitch(uint8_t gswitch); /**< Sets gears according to switch */
-
-	uORB::SubscriptionData<manual_control_setpoint_s> _sub_manual_control_setpoint{ORB_ID(manual_control_setpoint)};
-
-	DEFINE_PARAMETERS_CUSTOM_PARENT(FlightTask,
-					(ParamFloat<px4::params::MPC_HOLD_DZ>) _param_mpc_hold_dz, /**< 0-deadzone around the center for the sticks */
-					(ParamFloat<px4::params::MPC_XY_MAN_EXPO>)
-					_param_mpc_xy_man_expo, /**< ratio of exponential curve for stick input in xy direction */
-					(ParamFloat<px4::params::MPC_Z_MAN_EXPO>)
-					_param_mpc_z_man_expo, /**< ratio of exponential curve for stick input in z direction */
-					(ParamFloat<px4::params::MPC_YAW_EXPO>)
-					_param_mpc_yaw_expo, /**< ratio of exponential curve for stick input in yaw for modes except acro */
-					(ParamFloat<px4::params::COM_RC_LOSS_T>) _param_com_rc_loss_t /**< time at which commander considers RC lost */
-				       )
 };
