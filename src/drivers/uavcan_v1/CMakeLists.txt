@@ -45,10 +45,6 @@ else()
 	message(FATAL_ERROR "UAVCAN Nunavut nnvg not found")
 endif()
 
-add_definitions(
-	-DCANARD_DSDL_CONFIG_LITTLE_ENDIAN=1
-)
-
 set(SRCS)
 if(${PX4_PLATFORM} MATCHES "nuttx")
 	if(CONFIG_NET_CAN)
@@ -80,8 +76,6 @@ px4_add_module(
 		${SRCS}
 		o1heap/o1heap.c
 		o1heap/o1heap.h
-		${LIBCANARD_DIR}/libcanard/canard_dsdl.c
-		${LIBCANARD_DIR}/libcanard/canard_dsdl.h
 		${LIBCANARD_DIR}/libcanard/canard.c
 		${LIBCANARD_DIR}/libcanard/canard.h
 	DEPENDS
