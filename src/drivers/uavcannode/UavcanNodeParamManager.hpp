@@ -36,6 +36,9 @@
 #include <uavcan/uavcan.hpp>
 #include <uavcan/protocol/param_server.hpp>
 
+namespace uavcannode
+{
+
 class UavcanNodeParamManager : public uavcan::IParamManager
 {
 public:
@@ -52,3 +55,4 @@ public:
 private:
 
 };
+} // namespace uavcannode
