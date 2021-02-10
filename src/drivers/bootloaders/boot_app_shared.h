@@ -95,16 +95,6 @@ typedef begin_packed_struct struct bootloader_app_shared_t {
 	uint32_t node_id;
 } end_packed_struct bootloader_app_shared_t;
 
-#define BL_ALT_APP_SHARED_SIGNATURE 0xc544ad9a
-typedef begin_packed_struct struct bootloader_alt_app_shared_t {
-	uint32_t  signature;
-	uint32_t  reserved[4];
-	uint8_t   fw_server_node_id;
-	uint8_t   node_id;
-	uint8_t   path[201];
-} end_packed_struct bootloader_alt_app_shared_t;
-#pragma GCC diagnostic pop
-
 /****************************************************************************
  *
  * Application firmware descriptor.
