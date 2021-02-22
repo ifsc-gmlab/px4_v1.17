@@ -62,16 +62,15 @@ public:
 	bool SetParamByName(const uavcan_register_Name_1_0 &name, const uavcan_register_Value_1_0 &value);
 
 private:
-	/// TODO:
-	/// use qsort() to order alphabetically by UAVCAN name
-	/// copy over Ken's parameter find/get/set code
-	const UavcanParamBinder _uavcan_params[7] {
-		{"uavcan.pub.esc.0.id",   "UCAN1_ESC0_PID"},
-		{"uavcan.pub.servo.0.id", "UCAN1_SERVO0_PID"},
+
+	const UavcanParamBinder _uavcan_params[8] {
+		{"uavcan.pub.esc.0.id",   "UCAN1_ESC_PUB"},
+		{"uavcan.pub.servo.0.id", "UCAN1_SERVO_PUB"},
+		{"uavcan.pub.gps.0.id",   "UCAN1_GPS_PUB"},
+		{"uavcan.sub.esc.0.id",   "UCAN1_ESC_PID"},
 		{"uavcan.sub.gps.0.id",   "UCAN1_GPS0_PID"},
 		{"uavcan.sub.gps.1.id",   "UCAN1_GPS1_PID"},
 		{"uavcan.sub.bms.0.id",   "UCAN1_BMS0_PID"},
 		{"uavcan.sub.bms.1.id",   "UCAN1_BMS1_PID"},
-		{"uavcan.sub.esc.0.id",   "UCAN1_ESC_PID"},
 	};
 };
