@@ -37,9 +37,6 @@
 #include <uORB/topics/manual_control_input.h>
 #include <uORB/topics/manual_control_setpoint.h>
 
-namespace manual_control
-{
-
 class ManualControlSelector
 {
 public:
@@ -58,5 +55,3 @@ private:
 	int32_t _rc_in_mode{0};
 	int _instance{-1};
 };
-
-} // namespace manual_control
