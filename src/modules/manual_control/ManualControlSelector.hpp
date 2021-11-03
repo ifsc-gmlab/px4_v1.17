@@ -34,7 +34,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <uORB/topics/manual_control_input.h>
 #include <uORB/topics/manual_control_setpoint.h>
 
 class ManualControlSelector
@@ -43,12 +42,12 @@ public:
 	void setRcInMode(int32_t rc_in_mode) { _rc_in_mode = rc_in_mode; }
 	void setTimeout(uint64_t timeout) { _timeout = timeout; }
 	void updateValidityOfChosenInput(uint64_t now);
-	void updateWithNewInputSample(uint64_t now, const manual_control_input_s &input, int instance);
+	void updateWithNewInputSample(uint64_t now, const manual_control_setpoint_s &input, int instance);
 	manual_control_setpoint_s &setpoint();
 	int instance() const { return _instance; };
 
 private:
-	bool isInputValid(const manual_control_input_s &input, uint64_t now) const;
+	bool isInputValid(const manual_control_setpoint_s &input, uint64_t now) const;
 
 	manual_control_setpoint_s _setpoint{};
 	uint64_t _timeout{0};
