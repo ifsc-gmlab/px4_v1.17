@@ -59,6 +59,7 @@ TEST(ControlAllocationTest, AllZeroCase)
 	method.setEffectivenessMatrix(effectiveness, actuator_trim, 16);
 	method.setControlSetpoint(control_sp);
 	method.allocate();
+	method.clipActuatorSetpoint();
 	actuator_sp = method.getActuatorSetpoint();
 	control_allocated_expected = method.getAllocatedControl();
 
