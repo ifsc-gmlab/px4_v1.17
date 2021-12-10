@@ -48,6 +48,8 @@ public:
 		// This matches with the parameter
 		None = 0,
 		Yaw = 1,
+		Pitch = 2,
+		YawAndPitch = 3,
 	};
 	enum class TiltDirection : int32_t {
 		// This matches with the parameter
@@ -73,7 +75,7 @@ public:
 
 	const Params &config(int idx) const { return _params[idx]; }
 
-	void updateYawSign(const ActuatorEffectivenessRotors::Geometry &geometry);
+	void updateTorqueSign(const ActuatorEffectivenessRotors::Geometry &geometry, bool disable_pitch = false);
 
 	bool hasYawControl() const;
 
@@ -93,5 +95,5 @@ private:
 	Params _params[MAX_COUNT] {};
 	int _count{0};
 
-	float _yaw_torque[MAX_COUNT] {};
+	matrix::Vector3f _torque[MAX_COUNT] {};
 };
