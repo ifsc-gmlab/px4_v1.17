@@ -139,6 +139,8 @@ void SensorMagSim::Run()
 					expected_field(2) + _sim_mag_offset_z.get());
 		}
 	}
+
+	perf_end(_loop_perf);
 }
 
 int SensorMagSim::task_spawn(int argc, char *argv[])

@@ -73,4 +73,5 @@ target_include_directories(modules__simulator INTERFACE ${CMAKE_BINARY_DIR}/mavl
 
 add_subdirectory(battery_simulator)
 add_subdirectory(sensor_baro_sim)
+add_subdirectory(sensor_gps_sim)
 add_subdirectory(sensor_mag_sim)
