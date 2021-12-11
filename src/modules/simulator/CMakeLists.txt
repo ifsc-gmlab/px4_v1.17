@@ -72,3 +72,4 @@ px4_add_module(
 target_include_directories(modules__simulator INTERFACE ${CMAKE_BINARY_DIR}/mavlink)
 
 add_subdirectory(battery_simulator)
+add_subdirectory(sensor_mag_sim)
