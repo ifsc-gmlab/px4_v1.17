@@ -45,6 +45,8 @@ bool HealthAndArmingChecks::update(bool force_reporting)
 {
 	_reporter.reset();
 
+	_reporter.prepare(_context.status().vehicle_type);
+
 	for (unsigned i = 0; i < sizeof(_checks) / sizeof(_checks[0]); ++i) {
 		if (!_checks[i]) {
 			break;
@@ -63,6 +65,8 @@ bool HealthAndArmingChecks::update(bool force_reporting)
 		// so we only report mavlink_log_*.
 		_reporter._mavlink_log_pub = &_mavlink_log_pub;
 		_reporter.reset();
+
+		_reporter.prepare(_context.status().vehicle_type);
 
 		for (unsigned i = 0; i < sizeof(_checks) / sizeof(_checks[0]); ++i) {
 			if (!_checks[i]) {
