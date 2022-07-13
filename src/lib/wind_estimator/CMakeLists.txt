@@ -37,6 +37,8 @@ add_library(wind_estimator
 )
 add_dependencies(wind_estimator prebuild_targets)
 
+add_subdirectory(test)
+
 add_custom_target(wind_estimator_generate_airspeed_fusion
 	COMMAND ${PYTHON_EXECUTABLE} derivation.py
 	#DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/python/derivation.py
