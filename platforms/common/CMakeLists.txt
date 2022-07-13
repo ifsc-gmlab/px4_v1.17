@@ -36,6 +36,7 @@ set(SRCS)
 if(NOT "${PX4_BOARD}" MATCHES "io-v2" AND NOT "${PX4_BOARD_LABEL}" MATCHES "bootloader")
 	list(APPEND SRCS
 		px4_log.cpp
+		px4_log_history.cpp
 	)
 endif()
 
