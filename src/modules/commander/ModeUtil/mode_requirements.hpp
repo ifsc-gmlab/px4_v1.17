@@ -35,6 +35,9 @@
 
 #include <uORB/topics/vehicle_status_flags.h>
 
+namespace mode_util
+{
+
 /**
  * Get per-mode requirements
  * @param vehicle_type one of vehicle_status_s::VEHICLE_TYPE_*
@@ -42,3 +45,5 @@
  */
 void getModeRequirements(uint8_t vehicle_type, vehicle_status_flags_s &flags);
 
+
+} // namespace mode_util
