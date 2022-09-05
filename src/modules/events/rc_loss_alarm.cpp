@@ -58,18 +58,22 @@ void RC_Loss_Alarm::process()
 		return;
 	}
 
+	vehicle_status_flags_s status_flags{};
+
+	_vehicle_status_flags_sub.copy(&status_flags);
+
 	if (!_was_armed &&
 	    status.arming_state == vehicle_status_s::ARMING_STATE_ARMED) {
 
 		_was_armed = true;	// Once true, impossible to go back to false
 	}
 
-	if (!_had_rc && !status.rc_signal_lost) {
+	if (!_had_rc && !status_flags.rc_signal_lost) {
 
 		_had_rc = true;
 	}
 
-	if (_was_armed && _had_rc && status.rc_signal_lost &&
+	if (_was_armed && _had_rc && status_flags.rc_signal_lost &&
 	    status.arming_state != vehicle_status_s::ARMING_STATE_ARMED) {
 		play_tune();
 		_alarm_playing = true;
