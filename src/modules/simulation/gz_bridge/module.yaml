@@ -1,7 +1,7 @@
-module_name: SIM_IGN
+module_name: SIM_GZ
 actuator_output:
   output_groups:
-    - param_prefix: SIM_IGN
+    - param_prefix: SIM_GZ
       channel_label: Channel
       num_channels: 8
       standard_params:

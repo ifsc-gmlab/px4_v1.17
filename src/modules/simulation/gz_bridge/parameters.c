@@ -37,7 +37,7 @@
  * @unit deg
  * @group Simulator
  */
-PARAM_DEFINE_FLOAT(SIM_IGN_HOME_LAT, 47.397742f);
+PARAM_DEFINE_FLOAT(SIM_GZ_HOME_LAT, 47.397742f);
 
 /**
  * simulator origin longitude
@@ -45,7 +45,7 @@ PARAM_DEFINE_FLOAT(SIM_IGN_HOME_LAT, 47.397742f);
  * @unit deg
  * @group Simulator
  */
-PARAM_DEFINE_FLOAT(SIM_IGN_HOME_LON, 8.545594);
+PARAM_DEFINE_FLOAT(SIM_GZ_HOME_LON, 8.545594);
 
 /**
  * simulator origin altitude
@@ -53,4 +53,4 @@ PARAM_DEFINE_FLOAT(SIM_IGN_HOME_LON, 8.545594);
  * @unit m
  * @group Simulator
  */
-PARAM_DEFINE_FLOAT(SIM_IGN_HOME_ALT, 488.0);
+PARAM_DEFINE_FLOAT(SIM_GZ_HOME_ALT, 488.0);

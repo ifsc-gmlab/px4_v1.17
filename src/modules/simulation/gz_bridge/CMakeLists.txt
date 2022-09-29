@@ -48,13 +48,13 @@ if(ignition-transport_FOUND)
 	set(IGN_TRANSPORT_VER ${ignition-transport_VERSION_MAJOR})
 
 	px4_add_module(
-		MODULE modules__simulation__ignition_bridge
-		MAIN simulator_ignition_bridge
+		MODULE modules__simulation__gz_bridge
+		MAIN gz_bridge
 		COMPILE_FLAGS
 			${MAX_CUSTOM_OPT_LEVEL}
 		SRCS
-			SimulatorIgnitionBridge.cpp
-			SimulatorIgnitionBridge.hpp
+			GZBridge.cpp
+			GZBridge.hpp
 		DEPENDS
 			mixer_module
 			px4_work_queue
@@ -63,33 +63,33 @@ if(ignition-transport_FOUND)
 			module.yaml
 	)
 
-	file(GLOB ign_models
+	file(GLOB gz_models
 		LIST_DIRECTORIES true
-		RELATIVE ${PX4_SOURCE_DIR}/Tools/simulation/ignition/models
+		RELATIVE ${PX4_SOURCE_DIR}/Tools/simulation/gz/models
 		CONFIGURE_DEPENDS
-		${PX4_SOURCE_DIR}/Tools/simulation/ignition/models/*
+		${PX4_SOURCE_DIR}/Tools/simulation/gz/models/*
 	)
 
-	file(GLOB ign_worlds
+	file(GLOB gz_worlds
 		CONFIGURE_DEPENDS
-		${PX4_SOURCE_DIR}/Tools/simulation/ignition/worlds/*.sdf
+		${PX4_SOURCE_DIR}/Tools/simulation/gz/worlds/*.sdf
 	)
 
-	foreach(model ${ign_models})
-		foreach(world ${ign_worlds})
+	foreach(model ${gz_models})
+		foreach(world ${gz_worlds})
 
 			get_filename_component("world_name" ${world} NAME_WE)
 
 			if(world_name MATCHES "default")
-				add_custom_target(ign_${model}
+				add_custom_target(gz_${model}
 					COMMAND ${CMAKE_COMMAND} -E env PX4_SIM_MODEL=${model} $<TARGET_FILE:px4>
 					WORKING_DIRECTORY ${SITL_WORKING_DIR}
 					USES_TERMINAL
 					DEPENDS px4
 				)
 			else()
-				add_custom_target(ign_${model}_${world_name}
-					COMMAND ${CMAKE_COMMAND} -E env PX4_SIM_MODEL=${model} PX4_SIM_WORLD=${world_name} $<TARGET_FILE:px4>
+				add_custom_target(gz_${model}_${world_name}
+					COMMAND ${CMAKE_COMMAND} -E env PX4_GZ_MODEL=${model} PX4_GZ_WORLD=${world_name} $<TARGET_FILE:px4>
 					WORKING_DIRECTORY ${SITL_WORKING_DIR}
 					USES_TERMINAL
 					DEPENDS px4
@@ -99,8 +99,8 @@ if(ignition-transport_FOUND)
 	endforeach()
 
 
-	# TODO: PX4_IGN_MODELS_PATH
-	# PX4_IGN_WORLDS_PATH
+	# TODO: PX4_GZ_MODELS_PATH
+	# PX4_GZ_WORLDS_PATH
 	configure_file(gazebo_env.sh.in ${PX4_BINARY_DIR}/rootfs/gazebo_env.sh)
 
 endif()

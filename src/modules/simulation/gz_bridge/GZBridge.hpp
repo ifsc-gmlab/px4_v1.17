@@ -60,11 +60,11 @@
 
 using namespace time_literals;
 
-class SimulatorIgnitionBridge : public ModuleBase<SimulatorIgnitionBridge>, public OutputModuleInterface
+class GZBridge : public ModuleBase<GZBridge>, public OutputModuleInterface
 {
 public:
-	SimulatorIgnitionBridge(const char *world, const char *model, const char *pose_str);
-	~SimulatorIgnitionBridge() override;
+	GZBridge(const char *world, const char *name, const char *model, const char *pose_str);
+	~GZBridge() override;
 
 	/** @see ModuleBase */
 	static int custom_command(int argc, char *argv[]);
@@ -121,16 +121,17 @@ private:
 
 	const std::string _world_name;
 	const std::string _model_name;
+	const std::string _model_sim;
 	const std::string _model_pose;
 
-	MixingOutput _mixing_output{"SIM_IGN", 8, *this, MixingOutput::SchedulingPolicy::Auto, false, false};
+	MixingOutput _mixing_output{"SIM_GZ", 8, *this, MixingOutput::SchedulingPolicy::Auto, false, false};
 
 	ignition::transport::Node _node;
 	ignition::transport::Node::Publisher _actuators_pub;
 
 	DEFINE_PARAMETERS(
-		(ParamFloat<px4::params::SIM_IGN_HOME_LAT>) _param_sim_home_lat,
-		(ParamFloat<px4::params::SIM_IGN_HOME_LON>) _param_sim_home_lon,
-		(ParamFloat<px4::params::SIM_IGN_HOME_ALT>) _param_sim_home_alt
+		(ParamFloat<px4::params::SIM_GZ_HOME_LAT>) _param_sim_home_lat,
+		(ParamFloat<px4::params::SIM_GZ_HOME_LON>) _param_sim_home_lon,
+		(ParamFloat<px4::params::SIM_GZ_HOME_ALT>) _param_sim_home_alt
 	)
 };
