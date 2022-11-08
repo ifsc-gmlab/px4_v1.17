@@ -36,13 +36,13 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <pthread.h>
+#include <visibility.h>
+
+__BEGIN_DECLS
 
 typedef unsigned long useconds_t;
 int usleep(useconds_t usec);
+int pthread_setname_np(pthread_t __target_thread, const char *__name);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
