@@ -57,3 +57,8 @@
  */
 #include <system_config.h>
 #include <px4_platform_common/board_common.h>
+
+/*
+ *  Default port for the ESC
+ */
+#define MODALAI_ESC_DEFAULT_PORT 	"2"
