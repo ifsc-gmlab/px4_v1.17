@@ -44,3 +44,5 @@ add_library(drivers_board
 
 # Add custom drivers for SLPI
 add_subdirectory(${PX4_BOARD_DIR}/src/drivers/icm42688p)
+add_subdirectory(${PX4_BOARD_DIR}/src/drivers/rc_controller)
+add_subdirectory(${PX4_BOARD_DIR}/src/drivers/mavlink_rc_in)
