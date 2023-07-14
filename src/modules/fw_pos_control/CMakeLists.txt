@@ -33,6 +33,7 @@
 
 add_subdirectory(launchdetection)
 add_subdirectory(runway_takeoff)
+add_subdirectory(figure_eight)
 
 px4_add_module(
 	MODULE modules__fw_pos_control
@@ -41,6 +42,7 @@ px4_add_module(
 		FixedwingPositionControl.cpp
 		FixedwingPositionControl.hpp
 	DEPENDS
+		figure_eight
 		launchdetection
 		npfg
 		runway_takeoff
