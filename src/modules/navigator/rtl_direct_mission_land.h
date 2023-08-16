@@ -41,7 +41,7 @@
 
 #pragma once
 
-#include "mission.h"
+#include "rtl_base.h"
 
 #include <uORB/Subscription.hpp>
 #include <uORB/topics/home_position.h>
@@ -49,17 +49,18 @@
 
 class Navigator;
 
-class RtlDirectMissionLand : public MissionBase
+class RtlDirectMissionLand : public RtlBase
 {
 public:
 	RtlDirectMissionLand(Navigator *navigator);
 	~RtlDirectMissionLand() = default;
 
-	void on_activation(bool enforce_rtl_alt);
+	void on_activation() override;
 
-	rtl_time_estimate_s calc_rtl_time_estimate();
+	rtl_time_estimate_s calc_rtl_time_estimate() override;
 
-	void setRtlAlt(float alt) {_rtl_alt = alt;};
+	void setReturnAltMin(bool min) override { _enforce_rtl_alt = min; };
+	void setRtlAlt(float alt) override {_rtl_alt = alt;};
 
 private:
 	bool setNextMissionItem() override;
@@ -68,5 +69,6 @@ private:
 	bool do_need_move_to_land();
 
 	bool _needs_climbing{false}; 	//< Flag if climbing is required at the start
+	bool _enforce_rtl_alt{false};
 	float _rtl_alt{0.0f};	///< AMSL altitude at which the vehicle should return to the land position
 };
