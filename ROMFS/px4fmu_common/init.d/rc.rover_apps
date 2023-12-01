@@ -22,7 +22,6 @@ control_allocator start
 #
 rover_pos_control start
 
-
 #
 # Start Land Detector.
 #
