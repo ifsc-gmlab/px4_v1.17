@@ -43,64 +43,20 @@
 
 #pragma once
 
-#include <lib/mathlib/math/filter/AlphaFilter.hpp>
 #include <lib/pid/PID.hpp>
-
+#include <px4_platform_common/module_params.h>
 #include <uORB/Publication.hpp>
 #include <uORB/Subscription.hpp>
-#include <uORB/topics/pwm_input.h>
 #include <uORB/topics/rpm.h>
-
-using namespace time_literals;
 
 class RpmControl : public ModuleParams
 {
 public:
-	RpmControl(ModuleParams *parent) :  ModuleParams(parent) {};
+	RpmControl(ModuleParams *parent);
 	~RpmControl() = default;
 
-	void setSpoolupProgress(float spoolup_progress)
-	{
-		_spoolup_progress = spoolup_progress;
-		_pid.setSetpoint(_spoolup_progress * _param_ca_heli_rpm_sp.get());
-
-		if (_spoolup_progress < .8f) {
-			_pid.resetIntegral();
-		}
-	}
-
-	float getActuatorCorrection()
-	{
-		if (_rpm_sub.updated()) {
-			rpm_s rpm{};
-
-			if (_rpm_sub.copy(&rpm)) {
-				_rpm_estimate = rpm.rpm_estimate;
-				_timestamp_last_rpm_measurement = rpm.timestamp;
-			}
-		}
-
-		hrt_abstime now = hrt_absolute_time();
-		const float dt = math::constrain((now - _timestamp_last_update) * 1e-6f, 1e-3f, 1.f);
-		_timestamp_last_update = now;
-
-		const bool rpm_measurement_timeout = (now - _timestamp_last_rpm_measurement) < 1_s;
-
-		if (rpm_measurement_timeout) {
-			const float gain_scale = math::max((_spoolup_progress - .8f) * 5.f, 0.f) * 1e-3f;
-			_pid.setGains(_param_ca_heli_rpm_p.get() * gain_scale, _param_ca_heli_rpm_i.get() * gain_scale, 0.f);
-
-		} else {
-			_pid.setGains(0.f, 0.f, 0.f);
-		}
-
-		_pid.setOutputLimit(.5f);
-		_pid.setIntegralLimit(.5f);
-
-		float output = _pid.update(_rpm_estimate, dt, true);
-
-		return output;
-	}
+	void setSpoolupProgress(float spoolup_progress);
+	float getActuatorCorrection();
 
 private:
 	uORB::Subscription _rpm_sub{ORB_ID(rpm)};
