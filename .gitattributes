@@ -61,6 +61,7 @@ Makefile.* text eol=lf
 *.tar    binary
 *.tgz    binary
 *.zip    binary
+*.hex    binary
 # everything else
 .gitattributes text eol=lf
 .gitignore     text eol=lf
