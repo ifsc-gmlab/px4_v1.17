@@ -56,6 +56,7 @@ using namespace matrix;
 MulticopterAttitudeControl::MulticopterAttitudeControl(bool vtol) :
 	ModuleParams(nullptr),
 	WorkItem(MODULE_NAME, px4::wq_configurations::nav_and_controllers),
+	_fully_actuated_attitude_control(this),
 	_vehicle_attitude_setpoint_pub(vtol ? ORB_ID(mc_virtual_attitude_setpoint) : ORB_ID(vehicle_attitude_setpoint)),
 	_loop_perf(perf_alloc(PC_ELAPSED, MODULE_NAME": cycle")),
 	_vtol(vtol)
@@ -146,57 +147,79 @@ MulticopterAttitudeControl::generate_attitude_setpoint(const Quatf &q, float dt)
 	}
 
 	const float yaw = Eulerf(q).psi();
-	const float yaw_stick_input = math::expo_deadzone(_manual_control_setpoint.yaw, _param_mpc_yaw_expo.get(),
-				      _param_mpc_hold_dz.get());
+	const float yaw_stick_input = math::expo_deadzone(_manual_control_setpoint.yaw, .6f, _param_man_deadzone.get());
 	_stick_yaw.generateYawSetpoint(attitude_setpoint.yaw_sp_move_rate, _yaw_setpoint_stabilized, yaw_stick_input, yaw, dt,
 				       _unaided_heading);
 
-	/*
-	 * Input mapping for roll & pitch setpoints
-	 * ----------------------------------------
-	 * We control the following 2 angles:
-	 * - tilt angle, given by sqrt(roll*roll + pitch*pitch)
-	 * - the direction of the maximum tilt in the XY-plane, which also defines the direction of the motion
-	 *
-	 * This allows a simple limitation of the tilt angle, the vehicle flies towards the direction that the stick
-	 * points to, and changes of the stick input are linear.
-	 */
-	_man_roll_input_filter.setParameters(dt, _param_mc_man_tilt_tau.get());
-	_man_pitch_input_filter.setParameters(dt, _param_mc_man_tilt_tau.get());
-
-	// we want to fly towards the direction of (roll, pitch)
-	Vector2f v = Vector2f(_man_roll_input_filter.update(_manual_control_setpoint.roll * _man_tilt_max),
-			      -_man_pitch_input_filter.update(_manual_control_setpoint.pitch * _man_tilt_max));
-	float v_norm = v.norm(); // the norm of v defines the tilt angle
-
-	if (v_norm > _man_tilt_max) { // limit to the configured maximum tilt angle
-		v *= _man_tilt_max / v_norm;
-	}
-
-	Quatf q_sp_rp = AxisAnglef(v(0), v(1), 0.f);
 	// Make sure there's a valid attitude quaternion with no yaw error when yaw is unlocked (NAN)
 	const float yaw_setpoint = PX4_ISFINITE(_yaw_setpoint_stabilized) ? _yaw_setpoint_stabilized : yaw;
-	// The axis angle can change the yaw as well (noticeable at higher tilt angles).
-	// This is the formula by how much the yaw changes:
-	//   let a := tilt angle, b := atan(y/x) (direction of maximum tilt)
-	//   yaw = atan(-2 * sin(b) * cos(b) * sin^2(a/2) / (1 - 2 * cos^2(b) * sin^2(a/2))).
-	const Quatf q_sp_yaw(cosf(yaw_setpoint / 2.f), 0.f, 0.f, sinf(yaw_setpoint / 2.f));
 
-	if (_vtol) {
-		// Modify the setpoints for roll and pitch such that they reflect the user's intention even
-		// if a large yaw error(yaw_sp - yaw) is present. In the presence of a yaw error constructing
-		// an attitude setpoint from the yaw setpoint will lead to unexpected attitude behaviour from
-		// the user's view as the tilt will not be aligned with the heading of the vehicle.
+	bool fully_actuated_setpoint_generated = false;
 
-		AttitudeControlMath::correctTiltSetpointForYawError(q_sp_rp, q, q_sp_yaw);
+	if (_fully_actuated_attitude_control.active()) {
+		const FullyActuatedAttitudeControl::SetpointInput input{
+			q,
+			_manual_control_setpoint.roll,
+			_manual_control_setpoint.pitch,
+			yaw_setpoint,
+			attitude_setpoint.yaw_sp_move_rate,
+			-throttle_curve(_manual_control_setpoint.throttle),
+			_param_mpc_thr_hover.get(),
+			_manual_throttle_maximum.getState(),
+			_param_man_deadzone.get(),
+			_param_mc_man_tilt_tau.get(),
+			dt
+		};
+		fully_actuated_setpoint_generated =
+			_fully_actuated_attitude_control.generateAttitudeSetpoint(input, attitude_setpoint);
 	}
 
-	// Align the desired tilt with the yaw setpoint
-	Quatf q_sp = q_sp_yaw * q_sp_rp;
+	if (!fully_actuated_setpoint_generated) {
+		_man_roll_input_filter.setParameters(dt, _param_mc_man_tilt_tau.get());
+		_man_pitch_input_filter.setParameters(dt, _param_mc_man_tilt_tau.get());
 
-	q_sp.copyTo(attitude_setpoint.q_d);
+		/*
+		 * Input mapping for roll & pitch setpoints
+		 * ----------------------------------------
+		 * We control the following 2 angles:
+		 * - tilt angle, given by sqrt(roll*roll + pitch*pitch)
+		 * - the direction of the maximum tilt in the XY-plane, which also defines the direction of the motion
+		 *
+		 * This allows a simple limitation of the tilt angle, the vehicle flies towards the direction that the stick
+		 * points to, and changes of the stick input are linear.
+		 */
+		// we want to fly towards the direction of (roll, pitch)
+		Vector2f v = Vector2f(_man_roll_input_filter.update(_manual_control_setpoint.roll * _man_tilt_max),
+				      -_man_pitch_input_filter.update(_manual_control_setpoint.pitch * _man_tilt_max));
+		float v_norm = v.norm(); // the norm of v defines the tilt angle
 
-	attitude_setpoint.thrust_body[2] = -throttle_curve(_manual_control_setpoint.throttle);
+		if (v_norm > _man_tilt_max) { // limit to the configured maximum tilt angle
+			v *= _man_tilt_max / v_norm;
+		}
+
+		Quatf q_sp_rp = AxisAnglef(v(0), v(1), 0.f);
+		// The axis angle can change the yaw as well (noticeable at higher tilt angles).
+		// This is the formula by how much the yaw changes:
+		//   let a := tilt angle, b := atan(y/x) (direction of maximum tilt)
+		//   yaw = atan(-2 * sin(b) * cos(b) * sin^2(a/2) / (1 - 2 * cos^2(b) * sin^2(a/2))).
+		const Quatf q_sp_yaw(cosf(yaw_setpoint / 2.f), 0.f, 0.f, sinf(yaw_setpoint / 2.f));
+
+		if (_vtol) {
+			// Modify the setpoints for roll and pitch such that they reflect the user's intention even
+			// if a large yaw error(yaw_sp - yaw) is present. In the presence of a yaw error constructing
+			// an attitude setpoint from the yaw setpoint will lead to unexpected attitude behaviour from
+			// the user's view as the tilt will not be aligned with the heading of the vehicle.
+
+			AttitudeControlMath::correctTiltSetpointForYawError(q_sp_rp, q, q_sp_yaw);
+		}
+
+		// Align the desired tilt with the yaw setpoint
+		Quatf q_sp = q_sp_yaw * q_sp_rp;
+
+		q_sp.copyTo(attitude_setpoint.q_d);
+
+		attitude_setpoint.thrust_body[2] = -throttle_curve(_manual_control_setpoint.throttle);
+	}
 
 	attitude_setpoint.timestamp = hrt_absolute_time();
 	_vehicle_attitude_setpoint_pub.publish(attitude_setpoint);
@@ -290,13 +313,22 @@ MulticopterAttitudeControl::Run()
 
 		const bool run_att_ctrl = _vehicle_control_mode.flag_control_attitude_enabled
 					  && (is_hovering || is_tailsitter_transition);
+		const bool stabilized_manual_control = run_att_ctrl
+						       && _vehicle_control_mode.flag_control_manual_enabled
+						       && !_vehicle_control_mode.flag_control_altitude_enabled
+						       && !_vehicle_control_mode.flag_control_velocity_enabled
+						       && !_vehicle_control_mode.flag_control_position_enabled;
+
+		if (_fully_actuated_attitude_control.updateMode(_manual_control_setpoint,
+				stabilized_manual_control, _landed, _vtol)) {
+			// Start the conventional mapping from zero after every FA transition.
+			_man_roll_input_filter.reset(0.f);
+			_man_pitch_input_filter.reset(0.f);
+		}
 
 		if (run_att_ctrl) {
 			// Generate the attitude setpoint from stick inputs if we are in Manual/Stabilized mode
-			if (_vehicle_control_mode.flag_control_manual_enabled &&
-			    !_vehicle_control_mode.flag_control_altitude_enabled &&
-			    !_vehicle_control_mode.flag_control_velocity_enabled &&
-			    !_vehicle_control_mode.flag_control_position_enabled) {
+			if (stabilized_manual_control) {
 
 				generate_attitude_setpoint(q, dt);
 
@@ -423,6 +455,19 @@ int MulticopterAttitudeControl::task_spawn(int argc, char *argv[])
 	_task_id = -1;
 
 	return PX4_ERROR;
+}
+
+int MulticopterAttitudeControl::print_status()
+{
+	PX4_INFO("Running");
+	_fully_actuated_attitude_control.printStatus();
+	PX4_INFO("landed: %s, thrust_body: [%.3f, %.3f, %.3f]",
+		 _landed ? "yes" : "no",
+		 (double)_thrust_setpoint_body(0),
+		 (double)_thrust_setpoint_body(1),
+		 (double)_thrust_setpoint_body(2));
+
+	return 0;
 }
 
 int MulticopterAttitudeControl::custom_command(int argc, char *argv[])

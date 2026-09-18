@@ -45,7 +45,7 @@ if(gazebo_FOUND)
 	px4_add_git_submodule(TARGET git_sitl_gazebo-classic PATH "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic")
 	include(ExternalProject)
 	ExternalProject_Add(sitl_gazebo-classic
-		SOURCE_DIR ${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic
+		SOURCE_DIR ${PX4_BINARY_DIR}/sitl_gazebo-classic_flying_car
 		CMAKE_ARGS
 			-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 			-DSEND_ODOMETRY_DATA=ON
@@ -53,6 +53,8 @@ if(gazebo_FOUND)
 		BINARY_DIR ${PX4_BINARY_DIR}/build_gazebo-classic
 		INSTALL_COMMAND ""
 		DEPENDS git_sitl_gazebo-classic
+		DOWNLOAD_COMMAND ${PYTHON_EXECUTABLE} ${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/flying_car/prepare.py ${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic ${PX4_BINARY_DIR}/sitl_gazebo-classic_flying_car
+		UPDATE_COMMAND ""
 		USES_TERMINAL_CONFIGURE true
 		USES_TERMINAL_BUILD true
 		EXCLUDE_FROM_ALL true
@@ -72,6 +74,7 @@ if(gazebo_FOUND)
 
 	set(models
 		advanced_plane
+		fs_fasmv8_flying_car_quad
 		believer
 		boat
 		cloudship
@@ -93,8 +96,6 @@ if(gazebo_FOUND)
 		plane_lidar
 		px4vision
 		quadtailsitter
-		r1_rover
-		rover
 		standard_vtol
 		standard_vtol_drop
 		tailsitter
@@ -136,10 +137,12 @@ if(gazebo_FOUND)
 		set(model_only)
 		string(REGEX REPLACE ".*_gazebo-classic_" "" model_only ${gazebo-classic_airframe})
 
-		if(EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/${model_only}")
+		if(EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/${model_only}"
+			OR EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/flying_car/models/${model_only}")
 
 			if((EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/${model_only}/${model_only}.sdf")
-			OR (EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/${model_only}/${model_only}.sdf.jinja"))
+			OR (EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/${model_only}/${model_only}.sdf.jinja")
+			OR (EXISTS "${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/flying_car/models/${model_only}/${model_only}.sdf"))
 				#message(STATUS "SDF file found for ${model_only}")
 			else()
 				message(WARNING "No SDF file found for ${model_only}")

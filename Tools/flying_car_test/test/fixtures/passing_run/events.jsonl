@@ -1,0 +1,14 @@
+{"phase": "PRECHECK", "stamp": 0.0, "type": "phase"}
+{"phase": "GROUND_FORWARD", "stamp": 1.0, "type": "phase"}
+{"phase": "GROUND_STOP", "stamp": 2.0, "type": "phase"}
+{"phase": "FLIGHT_CONFIGURE", "stamp": 3.0, "type": "phase"}
+{"phase": "TAKEOFF", "stamp": 4.0, "type": "phase"}
+{"phase": "AIR_FORWARD", "stamp": 6.0, "type": "phase"}
+{"phase": "HOVER", "stamp": 7.0, "type": "phase"}
+{"phase": "MANUAL_AIR", "stamp": 7.5, "type": "phase"}
+{"phase": "REACQUIRE_OFFBOARD", "stamp": 8.0, "type": "phase"}
+{"phase": "LAND", "stamp": 8.5, "type": "phase"}
+{"phase": "GROUND_RECONFIGURE", "stamp": 10.0, "type": "phase"}
+{"phase": "GROUND_TURN", "stamp": 11.0, "type": "phase"}
+{"phase": "GROUND_DIAGONAL", "stamp": 12.0, "type": "phase"}
+{"phase": "COMPLETE", "stamp": 14.0, "type": "phase"}

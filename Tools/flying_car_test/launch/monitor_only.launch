@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="gui" default="false"/>
+    <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/FS_flying_car.world"/>
+    <arg name="vehicle" default="fs_fasmv8_flying_car"/>
+    <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/FS-FASMv8_octo/FS-FASMv8_octo.sdf"/>
+    <arg name="my_model" default="FS-FASMv8_octo"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="30"/>
+    <arg name="z" default="1.8"/>
+
+    <arg name="config" default="$(find flying_car_test)/config/experiment.yaml"/>
+    <arg name="result_dir" default="/tmp/flying_car_test_result"/>
+    <arg name="model_name" default="fs_fasmv8_flying_car"/>
+
+    <arg name="rosbag_name" default="monitor_only"/>
+    <arg name="bag_output" default="$(arg result_dir)"/>
+
+    <include file="$(find px4)/launch/FS_flying_car.launch">
+        <arg name="x" value="$(arg x)"/>
+        <arg name="y" value="$(arg y)"/>
+        <arg name="z" value="$(arg z)"/>
+        <arg name="world" value="$(arg world)"/>
+        <arg name="vehicle" value="$(arg vehicle)"/>
+        <arg name="sdf" value="$(arg sdf)"/>
+        <arg name="my_model" value="$(arg my_model)"/>
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="interactive" value="false"/>
+        <arg name="debug" value="false"/>
+        <arg name="verbose" value="false"/>
+        <arg name="paused" value="false"/>
+        <arg name="respawn_gazebo" value="false"/>
+        <arg name="mavros_launch"
+             value="$(find flying_car_test)/launch/mavros_sitl_no_timesync.launch"/>
+        <arg name="respawn_mavros" value="false"/>
+    </include>
+
+    <!-- monitor (passive aggregation) -->
+    <node pkg="flying_car_test" type="experiment_monitor.py"
+          name="flying_car_experiment_monitor"
+          output="screen"
+          required="true">
+        <param name="config_file" value="$(arg config)"/>
+        <param name="result_dir" value="$(arg result_dir)"/>
+        <param name="model_name" value="$(arg model_name)"/>
+        <rosparam param="launch_arguments">{gui: $(arg gui), x: $(arg x), y: $(arg y)}</rosparam>
+    </node>
+
+    <!-- safety guard: heartbeat_required=false because QGC may be the operator -->
+    <node pkg="flying_car_test" type="safety_guard.py"
+          name="flying_car_safety_guard"
+          output="screen"
+          required="true">
+        <param name="config_file" value="$(arg config)"/>
+        <param name="result_dir" value="$(arg result_dir)"/>
+        <param name="model_name" value="$(arg model_name)"/>
+        <param name="heartbeat_required" value="false"/>
+        <param name="startup_grace_s" value="5.0"/>
+    </node>
+
+    <!-- passive rosbag recording (no controller; manual control via QGC) -->
+    <node pkg="rosbag" type="record"
+          name="flying_car_rosbag_record"
+          output="screen"
+          args="-O $(arg bag_output)/$(arg rosbag_name).bag
+                /mavros/state
+                /mavros/local_position/pose
+                /mavros/local_position/velocity_local
+                /mavros/manual_control/control
+                /mavros/rc/in
+                /flying_car_test/stage_marker
+                /clock
+                /gazebo/model_states"/>
+</launch>

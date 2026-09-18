@@ -1,0 +1,1 @@
+{"armed": false, "attitude": {"pitch": 0.0, "roll": 0.0, "yaw": 0.0}, "clock": 0.0, "clock_ok": true, "connected": true, "gazebo": {"x": 0.0, "y": 0.0, "z": 0.0}, "landed": true, "local": {"x": 0.0, "y": 0.0, "z": 0.0}, "mav_type": 10, "mav_type_fresh": true, "mode": "MANUAL", "stamp": 0.0, "velocity": {"x": 0.0, "y": 0.0, "z": 0.0}}

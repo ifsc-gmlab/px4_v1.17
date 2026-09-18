@@ -149,7 +149,12 @@ void PositionControl::_velocityControl(const float dt)
 	// No control input from setpoints or corresponding states which are NAN
 	ControlMath::addIfNotNanVector3f(_acc_sp, acc_sp_velocity);
 
-	_accelerationControl();
+	if (_direct_thrust_control) {
+		_accelerationControlDirect();
+
+	} else {
+		_accelerationControl();
+	}
 
 	// Integrator anti-windup in vertical direction
 	if ((_thr_sp(2) >= -_lim_thr_min && vel_error(2) >= 0.f) ||
@@ -180,6 +185,21 @@ void PositionControl::_velocityControl(const float dt)
 	// Saturate thrust in horizontal direction
 	if (thrust_sp_xy_norm > thrust_max_xy) {
 		_thr_sp.xy() = thrust_sp_xy / thrust_sp_xy_norm * thrust_max_xy;
+	}
+
+	// A level fully actuated vehicle cannot realize arbitrary horizontal and
+	// vertical force combinations while simultaneously producing attitude
+	// torque. Keep the direct force request inside the configured feasible cone
+	// before tracking anti-windup evaluates the acceleration actually produced.
+	if (_direct_thrust_control && _direct_thrust_limits_enabled) {
+		const Vector2f direct_thrust_sp_xy(_thr_sp);
+		const float direct_thrust_sp_xy_norm = direct_thrust_sp_xy.norm();
+		const float direct_thrust_max_xy = math::min(_lim_thr_xy_direct,
+						   _lim_thr_xy_to_z_ratio * fabsf(_thr_sp(2)));
+
+		if ((direct_thrust_sp_xy_norm > direct_thrust_max_xy) && (direct_thrust_sp_xy_norm > FLT_EPSILON)) {
+			_thr_sp.xy() = direct_thrust_sp_xy * (direct_thrust_max_xy / direct_thrust_sp_xy_norm);
+		}
 	}
 
 	// Use tracking Anti-Windup for horizontal direction: during saturation, the integrator is used to unsaturate the output
@@ -219,6 +239,21 @@ void PositionControl::_accelerationControl()
 	const float cos_ned_body = (Vector3f(0, 0, 1).dot(body_z));
 	const float collective_thrust = math::min(thrust_ned_z / cos_ned_body, -_lim_thr_min);
 	_thr_sp = body_z * collective_thrust;
+}
+
+void PositionControl::_accelerationControlDirect()
+{
+	// A fully actuated vehicle realizes the complete NED force vector without
+	// changing attitude. Map every acceleration axis with the same hover-thrust
+	// metric instead of converting the horizontal components to a limited tilt.
+	const float acceleration_to_thrust = _hover_thrust / CONSTANTS_ONE_G;
+	_thr_sp.xy() = _acc_sp.xy() * acceleration_to_thrust;
+	_thr_sp(2) = _acc_sp(2) * acceleration_to_thrust - _hover_thrust;
+
+	// Non-reversible multicopter actuators cannot command a positive body-Z
+	// collective. Keep the normal minimum vertical thrust behavior; the common
+	// total-thrust and anti-windup limits below remain active.
+	_thr_sp(2) = math::min(_thr_sp(2), -_lim_thr_min);
 }
 
 bool PositionControl::_inputValid()

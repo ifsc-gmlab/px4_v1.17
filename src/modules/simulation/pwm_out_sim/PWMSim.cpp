@@ -32,6 +32,7 @@
  ****************************************************************************/
 
 #include "PWMSim.hpp"
+#include "PWMSimOutput.hpp"
 
 #include <mathlib/mathlib.h>
 #include <px4_platform_common/getopt.h>
@@ -58,7 +59,7 @@ PWMSim::~PWMSim()
 	perf_free(_interval_perf);
 }
 
-bool PWMSim::updateOutputs(bool stop_motors, uint16_t outputs[MAX_ACTUATORS], unsigned num_outputs,
+bool PWMSim::updateOutputs(uint16_t outputs[MAX_ACTUATORS], unsigned num_outputs,
 			   unsigned num_control_groups_updated)
 {
 	// Only publish once we receive actuator_controls (important for lock-step to work correctly)
@@ -73,19 +74,51 @@ bool PWMSim::updateOutputs(bool stop_motors, uint16_t outputs[MAX_ACTUATORS], un
 
 				OutputFunction function = _mixing_output.outputFunction(i);
 				bool is_reversible = reversible_outputs & (1u << i);
-				float output = outputs[i];
+				const bool non_reversible_motor =
+					(int)function >= (int)OutputFunction::Motor1
+					&& (int)function <= (int)OutputFunction::MotorMax
+					&& !is_reversible;
+				actuator_outputs.output[i] = normalizeSimOutput(
+						outputs[i], non_reversible_motor, _param_sim_mot_idle.get());
+			}
+		}
 
-				if (((int)function >= (int)OutputFunction::Motor1 && (int)function <= (int)OutputFunction::MotorMax)
-				    && !is_reversible) {
-					// Scale non-reversible motors to [0, 1]
-					actuator_outputs.output[i] = (output - PWM_SIM_PWM_MIN_MAGIC) / (PWM_SIM_PWM_MAX_MAGIC - PWM_SIM_PWM_MIN_MAGIC);
+		// With CA_AIRFRAME=ROVER_DIFFERENTIAL the control allocator defers to
+		// rover_differential, which publishes actuator_motors directly; surface
+		// that frame to the SITL HIL output so the wheels receive real rover
+		// commands (rotor channels in that frame are 0 in ROVER mode).
+		if ((_param_sys_autostart.get() == 80003 || _param_sys_autostart.get() == 80004
+		     || _param_sys_autostart.get() == 80005) && _actuator_motors_sub.updated()) {
+			actuator_motors_s motors{};
+			_actuator_motors_sub.copy(&motors);
+			bool rover_frame = false;
+			constexpr int kRotorBlockEnd = 4;
+			bool mc_inactive = true;
 
-				} else {
-					// Scale everything else to [-1, 1]
-					const float pwm_center = (PWM_SIM_PWM_MAX_MAGIC + PWM_SIM_PWM_MIN_MAGIC) / 2.f;
-					const float pwm_delta = (PWM_SIM_PWM_MAX_MAGIC - PWM_SIM_PWM_MIN_MAGIC) / 2.f;
-					actuator_outputs.output[i] = (output - pwm_center) / pwm_delta;
+			// In the rover frame the rotor channels 0..3 are ~0/NaN, and the wheel
+			// block starts at RD_MOT_OFFSET (4 for the quad, 8 for the octo).
+			for (int i = 0; i < kRotorBlockEnd && i < actuator_motors_s::NUM_CONTROLS; i++) {
+				if (PX4_ISFINITE(motors.control[i]) && fabsf(motors.control[i]) > 0.001f) {
+					mc_inactive = false;
+					break;
 				}
+			}
+
+			if (mc_inactive) {
+				for (int i = kRotorBlockEnd; i < actuator_motors_s::NUM_CONTROLS; i++) {
+					if (PX4_ISFINITE(motors.control[i]) && fabsf(motors.control[i]) > 0.001f) {
+						rover_frame = true;
+						break;
+					}
+				}
+			}
+
+			if (rover_frame) {
+				for (int i = 0; i < actuator_motors_s::NUM_CONTROLS && i < MAX_ACTUATORS; i++) {
+					actuator_outputs.output[i] = motors.control[i];
+				}
+
+				actuator_outputs.noutputs = actuator_motors_s::NUM_CONTROLS;
 			}
 		}
 

@@ -5,3 +5,18 @@ actuator_output:
     - param_prefix: PWM_MAIN
       channel_label: Channel
       num_channels: 16
+parameters:
+  - group: Simulation
+    definitions:
+      SIM_MOT_IDLE:
+        description:
+          short: Non-reversible motor idle output
+          long: |
+            Minimum normalized output for finite, non-reversible motor commands
+            in SITL/HITL. NaN motor commands remain stopped, allowing another
+            control stack to leave motors inactive while armed.
+        type: float
+        min: 0
+        max: 1
+        decimal: 4
+        default: 0

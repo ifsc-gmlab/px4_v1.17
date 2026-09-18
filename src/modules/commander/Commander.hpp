@@ -53,6 +53,9 @@
 // publications
 #include <uORB/Publication.hpp>
 #include <uORB/topics/actuator_armed.h>
+#include <uORB/topics/vehicle_angular_velocity.h>
+#include <uORB/topics/vehicle_attitude.h>
+#include <uORB/topics/actuator_motors.h>
 #include <uORB/topics/actuator_test.h>
 #include <uORB/topics/failure_detector_status.h>
 #include <uORB/topics/vehicle_command_ack.h>
@@ -68,8 +71,10 @@
 #include <uORB/topics/battery_status.h>
 #include <uORB/topics/cpuload.h>
 #include <uORB/topics/distance_sensor.h>
+#include <uORB/topics/fully_actuated_control_status.h>
 #include <uORB/topics/iridiumsbd_status.h>
 #include <uORB/topics/manual_control_setpoint.h>
+#include <uORB/topics/manual_control_switches.h>
 #include <uORB/topics/mission_result.h>
 #include <uORB/topics/offboard_control_mode.h>
 #include <uORB/topics/parameter_update.h>
@@ -230,7 +235,7 @@ private:
 		_health_and_arming_checks.externalChecks()
 #endif
 	};
-	UserModeIntention	_user_mode_intention {this, _vehicle_status, _health_and_arming_checks, &_mode_management};
+	UserModeIntention _user_mode_intention {_vehicle_status, _health_and_arming_checks, &_mode_management};
 
 	const failsafe_flags_s &_failsafe_flags{_health_and_arming_checks.failsafeFlags()};
 	HomePosition 		_home_position{_failsafe_flags};
@@ -279,6 +284,7 @@ private:
 	bool _arm_tune_played{false};
 	bool _have_taken_off_since_arming{false};
 	bool _status_changed{true};
+	bool _mission_in_progress{false};
 
 	vehicle_land_detected_s	_vehicle_land_detected{};
 
@@ -290,8 +296,12 @@ private:
 	// Subscriptions
 	uORB::Subscription					_action_request_sub{ORB_ID(action_request)};
 	uORB::Subscription					_cpuload_sub{ORB_ID(cpuload)};
+	uORB::Subscription _fully_actuated_control_status_sub{ORB_ID(fully_actuated_control_status)};
 	uORB::Subscription					_iridiumsbd_status_sub{ORB_ID(iridiumsbd_status)};
 	uORB::Subscription					_manual_control_setpoint_sub{ORB_ID(manual_control_setpoint)};
+	uORB::Subscription					_manual_control_switches_sub{ORB_ID(manual_control_switches)};
+	uORB::Subscription					_vehicle_angular_velocity_sub{ORB_ID(vehicle_angular_velocity)};
+	uORB::Subscription					_vehicle_attitude_sub{ORB_ID(vehicle_attitude)};
 	uORB::Subscription					_system_power_sub{ORB_ID(system_power)};
 	uORB::Subscription					_vehicle_command_sub{ORB_ID(vehicle_command)};
 	uORB::Subscription					_vehicle_command_mode_executor_sub{ORB_ID(vehicle_command_mode_executor)};
@@ -311,6 +321,7 @@ private:
 
 	// Publications
 	uORB::Publication<actuator_armed_s>			_actuator_armed_pub{ORB_ID(actuator_armed)};
+	uORB::Publication<actuator_motors_s>			_actuator_motors_pub{ORB_ID(actuator_motors)};
 	uORB::Publication<actuator_test_s>			_actuator_test_pub{ORB_ID(actuator_test)};
 	uORB::Publication<failure_detector_status_s>		_failure_detector_status_pub{ORB_ID(failure_detector_status)};
 	uORB::Publication<vehicle_command_ack_s>		_vehicle_command_ack_pub{ORB_ID(vehicle_command_ack)};
@@ -326,6 +337,13 @@ private:
 	// optional parameters
 	param_t _param_mav_type{PARAM_INVALID};
 	param_t _param_rc_map_fltmode{PARAM_INVALID};
+
+	// Flying car
+	bool _flying_car_enabled{false};
+	bool _flying_car_rover_mode{false};
+	int32_t _flying_car_flight_mav_type{2};
+	hrt_abstime _flying_car_boot_time{0};
+	hrt_abstime _last_flying_car_switch_time{0};
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::COM_DISARM_LAND>)  _param_com_disarm_land,

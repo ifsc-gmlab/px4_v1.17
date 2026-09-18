@@ -1,0 +1,16 @@
+fatal:
+  - 'HEARTBEAT timed out'
+  - 'poll timeout'
+  - 'process has died'
+  - 'Segmentation fault'
+  - 'lockstep.*timeout'
+  - 'TM: Time jump detected'
+  - 'Traceback \(most recent call last\)'
+  - '\[ERROR\]'
+  - '\[FATAL\]'
+critical_warnings:
+  - 'failsafe'
+  - 'connection.*lost'
+  - 'mode.*reject'
+  - 'arming.*reject'
+allowed_warnings: []

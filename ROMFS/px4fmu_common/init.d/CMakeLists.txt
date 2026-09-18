@@ -69,19 +69,13 @@ if(CONFIG_MODULES_MC_RATE_CONTROL)
 	)
 endif()
 
-if(CONFIG_MODULES_ROVER_POS_CONTROL)
-	px4_add_romfs_files(
-		rc.rover_apps
-		rc.rover_defaults
-
-		rc.boat_defaults # hack
-	)
-endif()
-
 if(CONFIG_MODULES_ROVER_DIFFERENTIAL)
 	px4_add_romfs_files(
 		rc.rover_differential_apps
 		rc.rover_differential_defaults
+		rc.flying_car_defaults
+		rc.flying_car_apps
+		rc.flying_car_sitl_defaults
 	)
 endif()
 

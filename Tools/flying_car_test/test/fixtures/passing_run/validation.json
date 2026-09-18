@@ -1,0 +1,227 @@
+{
+  "abort_reason": null,
+  "config_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "counts": {
+    "allowed_warnings": 0,
+    "critical_warnings": 0,
+    "fatal": 0,
+    "px4_errors": 0,
+    "python_tracebacks": 0,
+    "ros_errors": 0
+  },
+  "items": [
+    {
+      "evidence": [
+        "samples.jsonl:0-9"
+      ],
+      "expected": {
+        "lateral_m": 0.0,
+        "longitudinal_m": 5.0,
+        "tolerance_lateral_m": 1.0,
+        "tolerance_longitudinal_m": 1.0
+      },
+      "id": "T01",
+      "measured": {
+        "lateral_m": 0.0,
+        "longitudinal_m": 4.5
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl",
+        "monitor.ulg"
+      ],
+      "expected": {
+        "phases": [
+          "PRECHECK",
+          "GROUND_CONFIGURE",
+          "GROUND_STOP",
+          "GROUND_RECONFIGURE",
+          "GROUND_TURN",
+          "GROUND_DIAGONAL"
+        ],
+        "rotor_max": 1100.0
+      },
+      "id": "T02",
+      "measured": {
+        "phases": [
+          "PRECHECK",
+          "GROUND_CONFIGURE",
+          "GROUND_STOP",
+          "GROUND_RECONFIGURE",
+          "GROUND_TURN",
+          "GROUND_DIAGONAL"
+        ],
+        "rotor_max": 1000.0
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl:0-19"
+      ],
+      "expected": {
+        "altitude_m": 4.0,
+        "tolerance_m": 0.75
+      },
+      "id": "T03",
+      "measured": {
+        "altitude_m": 4.75
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl",
+        "monitor.ulg"
+      ],
+      "expected": {
+        "phases": [
+          "TAKEOFF",
+          "AIR_FORWARD",
+          "HOVER",
+          "MANUAL_AIR",
+          "REACQUIRE_OFFBOARD"
+        ],
+        "rotor_max_min": 1200.0
+      },
+      "id": "T04",
+      "measured": {
+        "rotor_max": 1500.0
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl:0-9"
+      ],
+      "expected": {
+        "longitudinal_m": 5.0,
+        "tolerance_lateral_m": 1.5,
+        "tolerance_longitudinal_m": 1.0
+      },
+      "id": "T05",
+      "measured": {
+        "lateral_m": 0.0,
+        "longitudinal_m": 4.5
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl:0-140"
+      ],
+      "expected": {
+        "bounded": true,
+        "manual_air_observed": true
+      },
+      "id": "T06",
+      "measured": {
+        "bounded": true,
+        "manual_air_observed": true
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl",
+        "monitor.ulg"
+      ],
+      "expected": {
+        "phases": [
+          "GROUND_RECONFIGURE",
+          "GROUND_TURN",
+          "GROUND_DIAGONAL"
+        ],
+        "rotor_max": 1100.0
+      },
+      "id": "T07",
+      "measured": {
+        "rotor_max": 1000.0
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl:0-19"
+      ],
+      "expected": {
+        "forward_m": 3.0,
+        "left_m": 3.0,
+        "tolerance_forward_m": 1.5,
+        "tolerance_left_m": 1.5
+      },
+      "id": "T08",
+      "measured": {
+        "forward_error_m": 0.0,
+        "forward_m": 3.0,
+        "left_error_m": -0.0,
+        "left_m": 3.0
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "samples.jsonl"
+      ],
+      "expected": {
+        "mav_type_sequence": [
+          10,
+          14,
+          10
+        ]
+      },
+      "id": "T09",
+      "measured": {
+        "sequence": [
+          10,
+          14,
+          10
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "monitor_complete.json",
+        "scan:1"
+      ],
+      "expected": {
+        "critical_patterns": [
+          "failsafe",
+          "connection.*lost",
+          "mode.*reject",
+          "arming.*reject"
+        ],
+        "fatal_patterns": [
+          "HEARTBEAT timed out",
+          "poll timeout",
+          "process has died",
+          "Segmentation fault",
+          "lockstep.*timeout",
+          "TM: Time jump detected",
+          "Traceback \\(most recent call last\\)",
+          "\\[ERROR\\]",
+          "\\[FATAL\\]"
+        ],
+        "monitor_clean": true
+      },
+      "id": "T10",
+      "measured": {
+        "files_scanned": 1,
+        "matched": []
+      },
+      "status": "PASS"
+    }
+  ],
+  "metadata": {
+    "duration_s": 14.0,
+    "git_sha": "0000000000000000000000000000000000000000",
+    "trial_utc": 0.0,
+    "ulog_available": true
+  },
+  "overall": "PASS",
+  "schema_version": 1,
+  "trial_result_dir": "/home/px4/real-PX4-Autopilot/PX4-Autopilot/Tools/flying_car_test/test/fixtures/passing_run"
+}

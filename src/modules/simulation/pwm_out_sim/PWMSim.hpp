@@ -70,7 +70,7 @@ public:
 	/** @see ModuleBase::print_status() */
 	int print_status() override;
 
-	bool updateOutputs(bool stop_motors, uint16_t outputs[MAX_ACTUATORS],
+	bool updateOutputs(uint16_t outputs[MAX_ACTUATORS],
 			   unsigned num_outputs, unsigned num_control_groups_updated) override;
 
 private:
@@ -85,7 +85,13 @@ private:
 	uORB::SubscriptionInterval _parameter_update_sub{ORB_ID(parameter_update), 1_s};
 
 	uORB::Publication<actuator_outputs_s> _actuator_outputs_sim_pub{ORB_ID(actuator_outputs_sim)};
+	uORB::Subscription _actuator_motors_sub{ORB_ID(actuator_motors)};
 
 	perf_counter_t	_cycle_perf{perf_alloc(PC_ELAPSED, MODULE_NAME": cycle")};
 	perf_counter_t	_interval_perf{perf_alloc(PC_INTERVAL, MODULE_NAME": interval")};
+
+	DEFINE_PARAMETERS(
+		(ParamInt<px4::params::SYS_AUTOSTART>) _param_sys_autostart,
+		(ParamFloat<px4::params::SIM_MOT_IDLE>) _param_sim_mot_idle
+	)
 };

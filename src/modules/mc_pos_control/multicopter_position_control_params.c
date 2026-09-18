@@ -49,6 +49,80 @@
 PARAM_DEFINE_FLOAT(MPC_THR_HOVER, 0.5f);
 
 /**
+ * Fully actuated position-control flight mode
+ *
+ * Selects one of two fully actuated position-controller behaviors. Both send all
+ * three body-frame thrust components independently from the attitude setpoint
+ * and require a control-effectiveness matrix with controllable Fx, Fy, Fz,
+ * roll, pitch and yaw axes.
+ *
+ * Mode 0 commands zero roll/pitch and retains the normal yaw setpoint;
+ * position changes use independent three-axis thrust. Manual Altitude
+ * mode always uses this behavior: horizontal sticks command direct Fx/Fy while
+ * roll/pitch remain zero.
+ * Mode 1 is for manual Position flight after takeoff: it holds the captured XYZ
+ * position and maps roll, pitch and yaw sticks to attitude commands. Throttle
+ * is ignored while the XYZ position is locked. It is not used in Altitude mode.
+ *
+ * Only SYS_AUTOSTART 6003, 6004, 4026, and 22000 consume this parameter. All other airframes
+ * always use the standard tilt-based mapping. It is also ignored for VTOL
+ * position control. Invalid or stale attitude data causes an automatic fallback.
+ *
+ * When MPC_FA_RC_AUX is set to a non-zero AUX channel, that RC switch overrides
+ * this parameter in Position mode. Altitude mode remains in mode 0 regardless
+ * of this parameter or its AUX override.
+ *
+ * @value 0 Independent thrust, zero roll/pitch and controlled yaw
+ * @value 1 Hold XYZ position and control attitude with manual sticks
+ * @min 0
+ * @max 1
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_INT32(MPC_FA_MODE, 0);
+
+/**
+ * Fully actuated mode RC AUX channel
+ *
+ * Selects which manual_control_setpoint AUXn input overrides MPC_FA_MODE.
+ * Map the physical RC switch with RC_MAP_AUXn first.
+ *
+ * Two-position switch mapping (normalized AUX in [-1, 1]):
+ *   AUX < -0.2           -> mode 0 (independent thrust, zero roll/pitch)
+ *   AUX >  0.2           -> mode 1 (hold XYZ and control attitude)
+ * Values between the bands keep the previous mode (hysteresis).
+ * If the AUX input is invalid or stale, MPC_FA_MODE is used.
+ *
+ * @value 0 Disabled (use MPC_FA_MODE)
+ * @value 1 Aux1
+ * @value 2 Aux2
+ * @value 3 Aux3
+ * @value 4 Aux4
+ * @value 5 Aux5
+ * @value 6 Aux6
+ * @min 0
+ * @max 6
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_INT32(MPC_FA_RC_AUX, 0);
+
+/**
+ * Maximum manual tilt in fully actuated pose mode
+ *
+ * Limits the combined roll and pitch command generated from manual sticks when
+ * MPC_FA_MODE is set to 1. A conservative limit is required because the
+ * position controller must generate lateral body thrust to hold XYZ while the
+ * vehicle is tilted.
+ *
+ * @unit deg
+ * @min 1
+ * @max 45
+ * @decimal 1
+ * @increment 1
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(MPC_FA_TILT_MAX, 15.f);
+
+/**
  * Use hover thrust estimate for altitude control
  *
  * Disable to use the fixed parameter MPC_THR_HOVER instead of the hover thrust estimate in the position controller.

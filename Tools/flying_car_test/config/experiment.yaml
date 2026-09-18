@@ -1,0 +1,49 @@
+publish_rate_hz: 30.0
+model_name: fs_fasmv8_flying_car
+trajectory:
+  ground_forward_m: 5.0
+  takeoff_agl_m: 4.0
+  air_forward_m: 5.0
+  hover_s: 3.0
+  final_forward_m: 3.0
+  final_left_m: 3.0
+tolerances:
+  first_ground_longitudinal_m: 1.0
+  first_ground_lateral_m: 1.0
+  altitude_m: 0.75
+  air_longitudinal_m: 1.0
+  air_lateral_m: 1.5
+  hover_altitude_m: 0.75
+  final_forward_m: 1.5
+  final_left_m: 1.5
+timeouts:
+  precheck_s: 30.0
+  transition_s: 15.0
+  ground_forward_s: 30.0
+  takeoff_s: 30.0
+  air_forward_s: 20.0
+  landing_s: 45.0
+  final_ground_s: 40.0
+commands:
+  manual_neutral: {x: 0.0, y: 0.0, z: 500.0, r: 0.0}
+  ground_neutral: {x: 0.0, y: 0.0, z: 0.0, r: 0.0}
+  ground_forward: {x: 0.0, y: 0.0, z: 650.0, r: 0.0}
+  # z is the PX4 throttle channel (500=neutral, 650=forward 0.3); y is the
+  # steering channel.  Positive y commands a left turn in the rover manual
+  # mode.  x/r are unused by the differential rover.
+  ground_left_turn: {x: 0.0, y: 500.0, z: 650.0, r: 0.0}
+  # z=480 (just below the 500 hover center) offsets the ~1-2% manual-throttle
+  # trim bias seen in SITL, so the open-loop manual phase does not climb.
+  air_manual_forward: {x: 150.0, y: 0.0, z: 480.0, r: 0.0}
+  air_manual_duration_s: 1.0
+  # SITL has almost no rolling drag, so a 1000 kg vehicle never coasts below
+  # the stopped threshold; bound the neutral-brake phase and hand back to
+  # OFFBOARD (which actively holds position) after this many seconds.
+  air_manual_brake_s: 2.0
+safety:
+  heartbeat_timeout_s: 0.3
+  soft_tilt_deg: 30.0
+  hard_tilt_deg: 45.0
+  maximum_agl_m: 12.0
+  maximum_planar_deviation_m: 10.0
+  stopped_speed_mps: 0.15

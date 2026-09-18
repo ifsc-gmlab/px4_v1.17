@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# Flying Car (Quad + Rover Differential) default parameters
+#
+set VEHICLE_TYPE flying_car
+param set-default MAV_TYPE 2
+# Single EKF: this firmware is built with BOARD_CONSTRAINED_FLASH, which
+# disables CONFIG_EKF2_MULTI_INSTANCE (multi-EKF + selector).  Keeping
+# SENS_IMU_MODE=0 would make the arming check wait for estimator_selector_status
+# forever ("Waiting for estimator to initialize").
+param set-default SENS_IMU_MODE  1
+
+# RC channel mapping (CH5 = mode switch, CH6 = flight mode, CH7 = offboard, CH8 = kill switch)
+param set-default RC_MAP_ROLL     1
+param set-default RC_MAP_PITCH    2
+param set-default RC_MAP_THROTTLE 3
+param set-default RC_MAP_YAW      4
+param set-default RC_MAP_FLTMODE  6
+param set-default RC_MAP_AUX1     5
+param set RC_MAP_AUX2     7
+# CH8 = kill switch（紧急刹车：拨到高位强制加锁停转）。
+# 用 param set 而非 set-default，保证旧板子 Flash 里已保存的参数也被覆盖，
+# 刷机后无需任何手动设置即生效。
+param set RC_MAP_KILL_SW 8
+param set RC_MAP_ARM_SW 0
+param set-default COM_FLTMODE1    0
+param set-default COM_FLTMODE4    1
+param set-default COM_FLTMODE6    2
+# RC only: prevent MAVLink/QGC from taking over manual control
+param set-default COM_RC_IN_MODE  0
+
+# AUX1-4: DShot600
+param set-default PWM_AUX_TIM0 -3
+# AUX5-6: PWM 50Hz
+param set-default PWM_AUX_TIM1 50
+# AUX7-8: PWM 400Hz
+param set-default PWM_AUX_TIM2 400
+
+# Motor1-4 -> AUX1-4 (flight motors)
+param set-default PWM_AUX_FUNC1 101
+param set-default PWM_AUX_FUNC2 102
+param set-default PWM_AUX_FUNC3 103
+param set-default PWM_AUX_FUNC4 104
+# Motor5-6 -> AUX5-6 (wheel motors)
+param set-default PWM_AUX_FUNC5 105
+param set-default PWM_AUX_FUNC6 106
+
+# DShot PWM range (AUX1-4)
+param set-default PWM_AUX_DIS1 1000
+param set-default PWM_AUX_MIN1 1000
+param set-default PWM_AUX_MAX1 2000
+param set-default PWM_AUX_DIS2 1000
+param set-default PWM_AUX_MIN2 1000
+param set-default PWM_AUX_MAX2 2000
+param set-default PWM_AUX_DIS3 1000
+param set-default PWM_AUX_MIN3 1000
+param set-default PWM_AUX_MAX3 2000
+param set-default PWM_AUX_DIS4 1000
+param set-default PWM_AUX_MIN4 1000
+param set-default PWM_AUX_MAX4 2000
+
+# PWM 50Hz range (AUX5-6, brushed ESC, 1500=stop)
+param set-default PWM_AUX_DIS5 1500
+param set-default PWM_AUX_MIN5 1100
+param set-default PWM_AUX_MAX5 1900
+param set-default PWM_AUX_DIS6 1500
+param set-default PWM_AUX_MIN6 1100
+param set-default PWM_AUX_MAX6 1900
+
+# MC PID defaults
+param set-default MC_ROLL_P 8.0
+param set-default MC_PITCH_P 8.0
+param set-default MC_ROLLRATE_P 0.15
+param set-default MC_PITCHRATE_P 0.15
+param set-default MC_YAWRATE_P 0.2
+param set-default MPC_XY_P 0.95
+param set-default MPC_Z_P 1.0
+
+# Rover PID defaults (v1.17 rover_differential parameter names)
+param set-default RD_WHEEL_TRACK 0.5
+param set-default RO_SPEED_LIM 5.0
+param set-default RO_MAX_THR_SPEED 4.0
+param set-default RO_SPEED_P 2.0
+param set-default RO_SPEED_I 0.5
+param set-default RO_YAW_RATE_LIM 180.0
+param set-default RO_YAW_P 5.0
+param set-default RD_YAW_STK_GAIN 0.5
+# Motor5-6 reversible (0b110000 = 48)
+param set-default CA_R_REV 48
+
+# Safety & EKF
+param set-default EKF2_MAG_TYPE 1
+param set-default EKF2_GBIAS_INIT 0.01
+param set-default EKF2_ANGERR_INIT 0.01
+param set-default NAV_ACC_RAD 0.5
+
+# MAIN1-2: PWM 50Hz 1500us (brushed ESC BEC signal), clamped in every state
+param set-default PWM_MAIN_TIM0 50
+param set-default PWM_MAIN_FUNC1 201
+param set-default PWM_MAIN_FUNC2 202
+param set-default PWM_MAIN_DIS1 1500
+param set-default PWM_MAIN_DIS2 1500
+param set-default PWM_MAIN_MIN1 1500
+param set-default PWM_MAIN_MAX1 1500
+param set-default PWM_MAIN_MIN2 1500
+param set-default PWM_MAIN_MAX2 1500
+param set-default PWM_MAIN_FAIL1 1500
+param set-default PWM_MAIN_FAIL2 1500
+
+param save

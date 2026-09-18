@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include "FullyActuatedControl.hpp"
 #include "PositionControl/PositionControl.hpp"
 #include "Takeoff/Takeoff.hpp"
 #include "GotoControl/GotoControl.hpp"
@@ -98,6 +99,8 @@ private:
 	uORB::PublicationData<takeoff_status_s>              _takeoff_status_pub{ORB_ID(takeoff_status)};
 	uORB::Publication<vehicle_attitude_setpoint_s>	     _vehicle_attitude_setpoint_pub{ORB_ID(vehicle_attitude_setpoint)};
 	uORB::Publication<vehicle_local_position_setpoint_s> _local_pos_sp_pub{ORB_ID(vehicle_local_position_setpoint)};	/**< vehicle local position setpoint publication */
+	const bool _vtol;
+	FullyActuatedControl _fully_actuated_control;
 
 	uORB::SubscriptionCallbackWorkItem _local_pos_sub{this, ORB_ID(vehicle_local_position)};	/**< vehicle local position */
 

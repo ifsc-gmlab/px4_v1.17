@@ -37,14 +37,15 @@
 #include <lib/mathlib/mathlib.h>
 #include <lib/matrix/matrix/math.hpp>
 #include <px4_platform_common/events.h>
-#include "PositionControl/ControlMath.hpp"
 
 using namespace matrix;
 
 MulticopterPositionControl::MulticopterPositionControl(bool vtol) :
 	ModuleParams(nullptr),
 	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::nav_and_controllers),
-	_vehicle_attitude_setpoint_pub(vtol ? ORB_ID(mc_virtual_attitude_setpoint) : ORB_ID(vehicle_attitude_setpoint))
+	_vehicle_attitude_setpoint_pub(vtol ? ORB_ID(mc_virtual_attitude_setpoint) : ORB_ID(vehicle_attitude_setpoint)),
+	_vtol(vtol),
+	_fully_actuated_control(this, vtol)
 {
 	_sample_interval_s.update(0.01f); // 100 Hz default
 	parameters_update(true);
@@ -386,9 +387,12 @@ void MulticopterPositionControl::Run()
 	// reschedule backup
 	ScheduleDelayed(100_ms);
 
+	//参数存在变化才进行重新读取
 	parameters_update(false);
 
 	perf_begin(_cycle_perf);
+
+	// 获取本地位置
 	vehicle_local_position_s vehicle_local_position;
 
 	if (_local_pos_sub.update(&vehicle_local_position)) {
@@ -398,19 +402,27 @@ void MulticopterPositionControl::Run()
 
 		_sample_interval_s.update(dt);
 
+		// 读取是否为全是量的机架，并启动对应的控制逻辑
+		_fully_actuated_control.updateSubscriptions();
+
 		if (_vehicle_control_mode_sub.updated()) {
 			const bool previous_position_control_enabled = _vehicle_control_mode.flag_multicopter_position_control_enabled;
 
 			if (_vehicle_control_mode_sub.update(&_vehicle_control_mode)) {
 				if (!previous_position_control_enabled && _vehicle_control_mode.flag_multicopter_position_control_enabled) {
 					_time_position_control_enabled = _vehicle_control_mode.timestamp;
+					_fully_actuated_control.reset();
 
 				} else if (previous_position_control_enabled && !_vehicle_control_mode.flag_multicopter_position_control_enabled) {
 					// clear existing setpoint when controller is no longer active
 					_setpoint = PositionControl::empty_trajectory_setpoint;
+					_fully_actuated_control.reset();
 				}
 			}
 		}
+
+		//全矢量模式选择
+		_fully_actuated_control.updateControlMode(_vehicle_control_mode);
 
 		_vehicle_land_detected_sub.update(&_vehicle_land_detected);
 
@@ -426,9 +438,12 @@ void MulticopterPositionControl::Run()
 
 		PositionControlStates states{set_vehicle_states(vehicle_local_position, dt)};
 
-		// if a goto setpoint available this publishes a trajectory setpoint to go there
-		if (_goto_control.checkForSetpoint(vehicle_local_position.timestamp_sample,
-						   _vehicle_control_mode.flag_multicopter_position_control_enabled)) {
+		// If a goto setpoint is available this publishes a trajectory setpoint to go there
+		// If trajectory_setpoint is published elsewhere, do not use the goto setpoint
+		const bool goto_setpoint_enable = _vehicle_control_mode.flag_multicopter_position_control_enabled
+						  && !_trajectory_setpoint_sub.updated();
+
+		if (_goto_control.checkForSetpoint(vehicle_local_position.timestamp_sample, goto_setpoint_enable)) {
 			_goto_control.update(dt, states.position, states.yaw);
 		}
 
@@ -515,6 +530,12 @@ void MulticopterPositionControl::Run()
 				// prevent any integrator windup
 				_control.resetIntegral();
 			}
+
+			const FullyActuatedControl::DirectThrustConfiguration direct_thrust =
+				_fully_actuated_control.updateSetpoint(states.position, flying, flying_but_ground_contact, _setpoint);
+			_control.setDirectThrustControl(direct_thrust.enabled);
+			_control.setDirectThrustLimits(direct_thrust.limits_enabled, direct_thrust.horizontal_limit,
+						       direct_thrust.horizontal_to_vertical_ratio);
 
 			// limit tilt during takeoff ramupup
 			const float tilt_limit_deg = (_takeoff.getTakeoffState() < TakeoffState::flight)
@@ -604,7 +625,13 @@ void MulticopterPositionControl::Run()
 
 			// Publish attitude setpoint output
 			vehicle_attitude_setpoint_s attitude_setpoint{};
-			_control.getAttitudeSetpoint(attitude_setpoint);
+
+			if (!_fully_actuated_control.generateAttitudeSetpoint(local_pos_sp, dt, attitude_setpoint)) {
+				// Preserve the standard PX4 behavior for normal vehicles and as a
+				// safety fallback if the independent mapping cannot be generated.
+				_control.getAttitudeSetpoint(attitude_setpoint);
+			}
+
 			attitude_setpoint.timestamp = hrt_absolute_time();
 			_vehicle_attitude_setpoint_pub.publish(attitude_setpoint);
 
@@ -684,6 +711,8 @@ trajectory_setpoint_s MulticopterPositionControl::generateFailsafeSetpoint(const
 void MulticopterPositionControl::adjustSetpointForEKFResets(const vehicle_local_position_s &vehicle_local_position,
 		trajectory_setpoint_s &setpoint)
 {
+	_fully_actuated_control.adjustPositionHoldForEKFReset(vehicle_local_position, _xy_reset_counter, _z_reset_counter);
+
 	if ((setpoint.timestamp != 0) && (setpoint.timestamp < vehicle_local_position.timestamp)) {
 		if (vehicle_local_position.vxy_reset_counter != _vxy_reset_counter) {
 			setpoint.velocity[0] += vehicle_local_position.delta_vxy[0];

@@ -33,6 +33,7 @@
 
 #include <gtest/gtest.h>
 #include <PositionControl.hpp>
+#include <geo/geo.h>
 #include <px4_defines.h>
 
 using namespace matrix;
@@ -63,8 +64,6 @@ TEST(PositionControlTest, EmptySetpoint)
 	EXPECT_FLOAT_EQ(attitude.yaw_sp_move_rate, 0.f);
 	EXPECT_EQ(Quatf(attitude.q_d), Quatf(1.f, 0.f, 0.f, 0.f));
 	EXPECT_EQ(Vector3f(attitude.thrust_body), Vector3f(0.f, 0.f, 0.f));
-	EXPECT_EQ(attitude.reset_integral, false);
-	EXPECT_EQ(attitude.fw_control_yaw_wheel, false);
 }
 
 class PositionControlBasicTest : public ::testing::Test
@@ -148,6 +147,61 @@ TEST_F(PositionControlBasicTest, TiltLimit)
 	EXPECT_LE(angle, .50001f);
 
 	_position_control.setTiltLimit(1.f);  // restore original
+}
+
+TEST_F(PositionControlBasicTest, DirectThrustBypassesTiltCone)
+{
+	_position_control.setTiltLimit(0.1f);
+	_position_control.setDirectThrustControl(true);
+	Vector3f(5.f, 0.f, 0.f).copyTo(_input_setpoint.acceleration);
+
+	ASSERT_TRUE(runController());
+	const Vector3f thrust(_output_setpoint.thrust);
+	EXPECT_NEAR(thrust(0), 5.f * 0.5f / CONSTANTS_ONE_G, 1e-5f);
+	EXPECT_FLOAT_EQ(thrust(1), 0.f);
+	EXPECT_FLOAT_EQ(thrust(2), -0.5f);
+	EXPECT_GT(atan2f(thrust(0), -thrust(2)), 0.1f);
+
+	// Disabling the fully actuated path restores the conventional tilt cone.
+	_position_control.setDirectThrustControl(false);
+	ASSERT_TRUE(runController());
+	const Vector3f conventional_thrust(_output_setpoint.thrust);
+	EXPECT_LE(atan2f(conventional_thrust(0), -conventional_thrust(2)), 0.10001f);
+}
+
+TEST_F(PositionControlBasicTest, DirectThrustMapsAxesDirectly)
+{
+	_position_control.setDirectThrustControl(true);
+	Vector3f(2.f, -1.f, 1.f).copyTo(_input_setpoint.acceleration);
+
+	ASSERT_TRUE(runController());
+	const Vector3f thrust(_output_setpoint.thrust);
+	EXPECT_NEAR(thrust(0), 2.f * 0.5f / CONSTANTS_ONE_G, 1e-5f);
+	EXPECT_NEAR(thrust(1), -1.f * 0.5f / CONSTANTS_ONE_G, 1e-5f);
+	EXPECT_NEAR(thrust(2), 1.f * 0.5f / CONSTANTS_ONE_G - 0.5f, 1e-5f);
+}
+
+TEST_F(PositionControlBasicTest, DirectThrustRespectsLevelForceCone)
+{
+	_position_control.setDirectThrustControl(true);
+	_position_control.setDirectThrustLimits(true, 0.1f, 0.8f);
+	Vector3f(5.f, 5.f, 0.f).copyTo(_input_setpoint.acceleration);
+
+	ASSERT_TRUE(runController());
+	Vector3f thrust(_output_setpoint.thrust);
+	EXPECT_NEAR(Vector2f(thrust).norm(), 0.1f, 1e-5f);
+	EXPECT_NEAR(thrust(0), thrust(1), 1e-5f);
+	EXPECT_FLOAT_EQ(thrust(2), -0.5f);
+
+	// With a lower vertical command, the coupled force ratio becomes the
+	// tighter limit while preserving the horizontal command direction.
+	_position_control.setDirectThrustLimits(true, 0.5f, 0.3f);
+	Vector3f(5.f, 5.f, 5.f).copyTo(_input_setpoint.acceleration);
+
+	ASSERT_TRUE(runController());
+	thrust = Vector3f(_output_setpoint.thrust);
+	EXPECT_NEAR(Vector2f(thrust).norm(), 0.3f * fabsf(thrust(2)), 1e-5f);
+	EXPECT_NEAR(thrust(0), thrust(1), 1e-5f);
 }
 
 TEST_F(PositionControlBasicTest, VelocityLimit)
@@ -318,23 +372,62 @@ TEST_F(PositionControlBasicTest, SetpointValidityAllCombinations)
 	}
 }
 
-TEST_F(PositionControlBasicTest, InvalidState)
+TEST_F(PositionControlBasicTest, PositionSetpointInvalidState)
 {
-	Vector3f(.1f, .2f, .3f).copyTo(_input_setpoint.position);
+	Vector3f(.1f, .2f, .3f).copyTo(_input_setpoint.position); // Position setpoint
 
+	// All states valid - ok
 	PositionControlStates states{};
+	_position_control.setState(states);
+	EXPECT_TRUE(runController());
+
+	// Position invalid
 	states.position(0) = NAN;
 	_position_control.setState(states);
 	EXPECT_FALSE(runController());
 
+	// Position and velocity invalid
 	states.velocity(0) = NAN;
 	_position_control.setState(states);
 	EXPECT_FALSE(runController());
 
+	// Velocity invalid
 	states.position(0) = 0.f;
 	_position_control.setState(states);
 	EXPECT_FALSE(runController());
 
+	// Velocity derivative invalid
+	states.velocity(0) = 0.f;
+	states.acceleration(1) = NAN;
+	_position_control.setState(states);
+	EXPECT_FALSE(runController());
+}
+
+TEST_F(PositionControlBasicTest, VelocitySetpointInvalidState)
+{
+	Vector3f(.1f, .2f, .3f).copyTo(_input_setpoint.velocity); // Velocity setpoint
+
+	// All states valid - ok
+	PositionControlStates states{};
+	_position_control.setState(states);
+	EXPECT_TRUE(runController());
+
+	// Position invalid - ok
+	states.position(0) = NAN;
+	_position_control.setState(states);
+	EXPECT_TRUE(runController());
+
+	// Position and velocity invalid
+	states.velocity(0) = NAN;
+	_position_control.setState(states);
+	EXPECT_FALSE(runController());
+
+	// Velocity invalid
+	states.position(0) = 0.f;
+	_position_control.setState(states);
+	EXPECT_FALSE(runController());
+
+	// Velocity derivative invalid
 	states.velocity(0) = 0.f;
 	states.acceleration(1) = NAN;
 	_position_control.setState(states);

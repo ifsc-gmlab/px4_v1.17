@@ -81,12 +81,16 @@ if [ -x "$(command -v gazebo)" ]; then
 	if [ -z $PX4_SITL_WORLD ]; then
 		#Spawn predefined world
 		if [ "$world" == "none" ]; then
+			if [ "$model" == "fs_fasmv8_flying_car_quad" ]; then
+				world_path="${src_path}/Tools/simulation/gazebo-classic/flying_car/worlds/FS_flying_car.world"
+			else
 			if [ -f ${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${model}.world ]; then
 				echo "empty world, default world ${model}.world for model found"
 				world_path="${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${model}.world"
 			else
 				echo "empty world, setting empty.world as default"
 				world_path="${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/empty.world"
+			fi
 			fi
 		else
 			#Spawn empty world if world with model name doesn't exist

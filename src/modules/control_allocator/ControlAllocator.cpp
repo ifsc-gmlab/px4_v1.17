@@ -52,6 +52,7 @@ using namespace time_literals;
 ControlAllocator::ControlAllocator() :
 	ModuleParams(nullptr),
 	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::rate_ctrl),
+	_fully_actuated_control_allocation(this),
 	_loop_perf(perf_alloc(PC_ELAPSED, MODULE_NAME": cycle"))
 {
 	_control_allocator_status_pub[0].advertise();
@@ -105,6 +106,8 @@ ControlAllocator::init()
 void
 ControlAllocator::parameters_updated()
 {
+	const bool airframe_eligibility_changed = _fully_actuated_control_allocation.updateAirframe();
+
 	_has_slew_rate = false;
 
 	for (int i = 0; i < MAX_NUM_MOTORS; ++i) {
@@ -119,7 +122,7 @@ ControlAllocator::parameters_updated()
 
 	// Allocation method & effectiveness source
 	// Do this first: in case a new method is loaded, it will be configured below
-	bool updated = update_effectiveness_source();
+	bool updated = update_effectiveness_source(airframe_eligibility_changed);
 	update_allocation_method(updated); // must be called after update_effectiveness_source()
 
 	if (_num_control_allocation == 0) {
@@ -145,7 +148,7 @@ ControlAllocator::update_allocation_method(bool force)
 
 	if (_allocation_method_id != configured_method || force) {
 
-		matrix::Vector<float, NUM_ACTUATORS> actuator_sp[ActuatorEffectiveness::MAX_NUM_MATRICES];
+		ActuatorVector actuator_sp[ActuatorEffectiveness::MAX_NUM_MATRICES];
 
 		// Cleanup first
 		for (int i = 0; i < ActuatorEffectiveness::MAX_NUM_MATRICES; ++i) {
@@ -175,7 +178,7 @@ ControlAllocator::update_allocation_method(bool force)
 
 			switch (method) {
 			case AllocationMethod::PSEUDO_INVERSE:
-				_control_allocation[i] = new ControlAllocationPseudoInverse();
+				_control_allocation[i] = _fully_actuated_control_allocation.createPseudoInverse();
 				break;
 
 			case AllocationMethod::SEQUENTIAL_DESATURATION:
@@ -202,11 +205,11 @@ ControlAllocator::update_allocation_method(bool force)
 }
 
 bool
-ControlAllocator::update_effectiveness_source()
+ControlAllocator::update_effectiveness_source(bool force)
 {
 	const EffectivenessSource source = (EffectivenessSource)_param_ca_airframe.get();
 
-	if (_effectiveness_source_id != source) {
+	if ((_effectiveness_source_id != source) || force) {
 
 		// try to instanciate new effectiveness source
 		ActuatorEffectiveness *tmp = nullptr;
@@ -266,11 +269,15 @@ ControlAllocator::update_effectiveness_source()
 			break;
 
 		case EffectivenessSource::SPACECRAFT_2D:
-			// spacecraft_allocation does allocation and publishes directly to actuator_motors topic
+			tmp = new ActuatorEffectivenessSpacecraft(this);
 			break;
 
 		case EffectivenessSource::SPACECRAFT_3D:
-			// spacecraft_allocation does allocation and publishes directly to actuator_motors topic
+			tmp = new ActuatorEffectivenessSpacecraft(this);
+			break;
+
+		case EffectivenessSource::FULLY_ACTUATED_HEXA:
+			tmp = _fully_actuated_control_allocation.createEffectivenessSource(this);
 			break;
 
 		default:
@@ -280,9 +287,15 @@ ControlAllocator::update_effectiveness_source()
 
 		// Replace previous source with new one
 		if (tmp == nullptr) {
-			// It did not work, forget about it
-			PX4_ERR("Actuator effectiveness init failed");
-			_param_ca_airframe.set((int)_effectiveness_source_id);
+			if (source == EffectivenessSource::ROVER_DIFFERENTIAL) {
+				// The rover publishes actuator_motors directly. Keep the existing
+				// effectiveness object for a later switch back to multirotor.
+				_effectiveness_source_id = source;
+
+			} else {
+				PX4_ERR("Actuator effectiveness init failed");
+				_param_ca_airframe.set((int)_effectiveness_source_id);
+			}
 
 		} else {
 			// Swap effectiveness sources
@@ -626,9 +639,9 @@ ControlAllocator::publish_control_allocator_status(int matrix_index)
 			control_allocator_status.unallocated_thrust[2]).norm_squared() < 1e-6f);
 
 	// Actuator saturation
-	const matrix::Vector<float, NUM_ACTUATORS> &actuator_sp = _control_allocation[matrix_index]->getActuatorSetpoint();
-	const matrix::Vector<float, NUM_ACTUATORS> &actuator_min = _control_allocation[matrix_index]->getActuatorMin();
-	const matrix::Vector<float, NUM_ACTUATORS> &actuator_max = _control_allocation[matrix_index]->getActuatorMax();
+	const ActuatorVector &actuator_sp = _control_allocation[matrix_index]->getActuatorSetpoint();
+	const ActuatorVector &actuator_min = _control_allocation[matrix_index]->getActuatorMin();
+	const ActuatorVector &actuator_max = _control_allocation[matrix_index]->getActuatorMax();
 
 	for (int i = 0; i < NUM_ACTUATORS; i++) {
 		if (actuator_sp(i) > (actuator_max(i) - FLT_EPSILON)) {
@@ -641,6 +654,7 @@ ControlAllocator::publish_control_allocator_status(int matrix_index)
 
 	// Handled motor failures
 	control_allocator_status.handled_motor_failure_mask = _handled_motor_failure_bitmask;
+	control_allocator_status.motor_stop_mask = _motor_stop_mask;
 
 	_control_allocator_status_pub[matrix_index].publish(control_allocator_status);
 }
@@ -665,7 +679,9 @@ ControlAllocator::publish_actuator_controls()
 	int actuator_idx = 0;
 	int actuator_idx_matrix[ActuatorEffectiveness::MAX_NUM_MATRICES] {};
 
-	uint32_t stopped_motors = _actuator_effectiveness->getStoppedMotors() | _handled_motor_failure_bitmask;
+	uint32_t stopped_motors = _actuator_effectiveness->getStoppedMotors()
+				  | _handled_motor_failure_bitmask
+				  | _motor_stop_mask;
 
 	// motors
 	int motors_idx;
@@ -716,8 +732,13 @@ ControlAllocator::check_for_motor_failures()
 
 	if ((FailureMode)_param_ca_failure_mode.get() > FailureMode::IGNORE
 	    && _failure_detector_status_sub.update(&failure_detector_status)) {
-		if (failure_detector_status.fd_motor) {
 
+		if (_motor_stop_mask != failure_detector_status.motor_stop_mask) {
+			_motor_stop_mask = failure_detector_status.motor_stop_mask;
+			PX4_WARN("Stopping motors (%d)", _motor_stop_mask);
+		}
+
+		if (failure_detector_status.fd_motor) {
 			if (_handled_motor_failure_bitmask != failure_detector_status.motor_failure_mask) {
 				// motor failure bitmask changed
 				switch ((FailureMode)_param_ca_failure_mode.get()) {
@@ -820,6 +841,19 @@ int ControlAllocator::print_status()
 
 		PX4_INFO("  Effectiveness.T =");
 		effectiveness.T().print();
+
+		matrix::Matrix<float, NUM_ACTUATORS, NUM_AXES> mix;
+
+		if (_control_allocation[i]->getMixMatrix(mix)) {
+			PX4_INFO("  Mix (normalized) =");
+			mix.print();
+			PX4_INFO("  Allocation scale (roll pitch yaw Fx Fy Fz) =");
+			_control_allocation[i]->getControlAllocationScale().T().print();
+
+		} else {
+			PX4_INFO("  Mix (normalized) = unavailable");
+		}
+
 		PX4_INFO("  minimum =");
 		_control_allocation[i]->getActuatorMin().T().print();
 		PX4_INFO("  maximum =");

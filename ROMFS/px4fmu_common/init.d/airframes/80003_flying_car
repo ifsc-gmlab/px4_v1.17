@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# @name Flying Car (Quad + Rover Differential)
+#
+# @type Flying Car
+# @class Experimental
+#
+# @maintainer Hazel
+#
+
+# Load Flying Car default parameters
+. ${R}etc/init.d/rc.flying_car_defaults
+
+# ========== Quadrotor X Geometry (F450 frame, 450mm wheelbase) ==========
+#
+# PX4 coordinate system: X=forward, Y=right, Z=down
+# F450: motor-to-center distance = 450mm/2 = 225mm = 0.225m
+#
+# Motor layout (top-down view, X configuration, matches user manual):
+#
+#     M3 (front-left, CW)      M1 (front-right, CCW)
+#         (-0.225, -0.225)       (0.225, 0.225)
+#                  \              /
+#                   \    FRONT   /
+#                    \          /
+#                     +--------+
+#                     |  FC    |
+#                     +--------+
+#                    /          \
+#                   /    REAR    \
+#                  /              \
+#     M2 (rear-left, CCW)     M4 (rear-right, CW)
+#       (-0.225, -0.225)        (0.225, -0.225)
+#
+# PX4 v1.17 convention (stock 4001_quad_x): positive CA_ROTOR_KM = CCW
+# (viewed from above), negative = CW.  Motor1 (AUX1) front-right CCW,
+# Motor2 (AUX2) rear-left CCW, Motor3 (AUX3) front-left CW,
+# Motor4 (AUX4) rear-right CW.
+
+param set-default CA_ROTOR_COUNT 4
+
+param set-default CA_ROTOR0_PX  0.225
+param set-default CA_ROTOR0_PY  0.225
+param set-default CA_ROTOR1_PX -0.225
+param set-default CA_ROTOR1_PY -0.225
+param set-default CA_ROTOR2_PX  0.225
+param set-default CA_ROTOR2_PY -0.225
+param set-default CA_ROTOR3_PX -0.225
+param set-default CA_ROTOR3_PY  0.225
+
+param set-default CA_ROTOR0_KM -0.05
+param set-default CA_ROTOR1_KM -0.05
+param set-default CA_ROTOR2_KM 0.05
+param set-default CA_ROTOR3_KM 0.05
+
+# Motor 5 starts the differential wheel output block (AUX5-6).
+param set-default RD_MOT_OFFSET 4

@@ -1,0 +1,83 @@
+#!/bin/sh
+#
+# @name Flying Car (Quad + Rover Differential) - SITL
+#
+# @type Flying Car
+# @class Experimental
+#
+# @output MAIN1 motor 1 (front-right rotor)
+# @output MAIN2 motor 2 (rear-left rotor)
+# @output MAIN3 motor 3 (front-left rotor)
+# @output MAIN4 motor 4 (rear-right rotor)
+# @output MAIN9 left-front wheel
+# @output MAIN10 right-front wheel
+# @output MAIN11 left-rear wheel
+# @output MAIN12 right-rear wheel
+#
+# @maintainer Hazel
+#
+
+. ${R}etc/init.d/rc.flying_car_sitl_defaults
+
+# The flight stack is a F450 X quad (4 rotors).
+param set-default MAV_TYPE 2
+param set CA_AIRFRAME 0
+param set-default CA_ROTOR_COUNT 4
+
+# flying_car_v2-derived X quad geometry, PX4 FRD (SDF FLU y flipped).
+param set-default CA_ROTOR0_PX  0.128438
+param set-default CA_ROTOR0_PY -0.190122
+param set-default CA_ROTOR1_PX  0.128438
+param set-default CA_ROTOR1_PY  0.190122
+param set-default CA_ROTOR2_PX -0.128438
+param set-default CA_ROTOR2_PY -0.190166
+param set-default CA_ROTOR3_PX -0.128438
+param set-default CA_ROTOR3_PY  0.190166
+
+# Spin directions follow the PX4 X-quad convention (iris layout):
+# M1 front-right CCW, M2 rear-left CCW, M3 front-left CW, M4 rear-right CW.
+# KM signs must match the SDF motor plugin turning directions.
+param set-default CA_ROTOR0_KM 0.05
+param set-default CA_ROTOR1_KM -0.05
+param set-default CA_ROTOR2_KM -0.05
+param set-default CA_ROTOR3_KM 0.05
+
+# Motor 1..4 are rotors; Motor 9..12 are LF/RF/LR/RR wheels.
+# (Channels 5..8 are unused on this 4-rotor airframe.)
+param set-default PWM_MAIN_FUNC1 101
+param set-default PWM_MAIN_FUNC2 102
+param set-default PWM_MAIN_FUNC3 103
+param set-default PWM_MAIN_FUNC4 104
+param set-default PWM_MAIN_FUNC9 109
+param set-default PWM_MAIN_FUNC10 110
+param set-default PWM_MAIN_FUNC11 111
+param set-default PWM_MAIN_FUNC12 112
+
+# A finite zero rotor command idles at about 100 rad/s. RoverDifferential
+# leaves rotor controls NaN, which bypasses this floor and stops them.
+param set-default SIM_MOT_IDLE 0.0
+param set-default THR_MDL_FAC 1.0
+
+# Rover differential wheels are Motor 9..12 (actuator indices 8..11),
+# matching the SDF control channels and the SITL rover output path.
+param set-default RD_MOT_OFFSET 8
+param set-default RD_WHEEL_TRACK 0.256
+param set-default RO_SPEED_LIM 2.0
+param set-default RO_YAW_RATE_P 0.25
+param set-default RO_SPEED_P 0.1
+param set-default RO_SPEED_I 0.01
+param set-default RO_ACCEL_LIM 5.0
+param set-default RO_DECEL_LIM 10.0
+
+# Reversible wheels are actuator indices 8..11 (Motors 9..12)
+param set-default CA_R_REV 3840
+
+# SITL robustness / EKF tuning (mirrors validated 80004 setup)
+param set-default COM_ARM_WO_GPS 1
+param set-default COM_RC_IN_MODE 1
+param set-default COM_DISARM_PRFLT 9999
+param set-default EKF2_GPS_V_NOISE 0.5
+param set-default EKF2_GPS_P_NOISE 0.5
+
+
+param set-default EKF2_BARO_NOISE 1.0

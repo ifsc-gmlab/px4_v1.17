@@ -33,6 +33,8 @@
 
 #pragma once
 
+#include "FullyActuatedAttitudeControl.hpp"
+
 #include <matrix/matrix/math.hpp>
 #include <perf/perf_counter.h>
 #include <px4_platform_common/px4_config.h>
@@ -79,6 +81,9 @@ public:
 	/** @see ModuleBase */
 	static int print_usage(const char *reason = nullptr);
 
+	/** @see ModuleBase::print_status() */
+	int print_status() override;
+
 	bool init();
 
 private:
@@ -98,6 +103,7 @@ private:
 
 	AttitudeControl _attitude_control; /**< class for attitude control calculations */
 	StickYaw _stick_yaw{this};
+	FullyActuatedAttitudeControl _fully_actuated_attitude_control;
 
 	uORB::SubscriptionInterval _parameter_update_sub{ORB_ID(parameter_update), 1_s};
 
@@ -146,7 +152,6 @@ private:
 	bool _vtol_in_transition_mode{false};
 
 	uint8_t _quat_reset_counter{0};
-
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::MC_AIRMODE>)         _param_mc_airmode,
 		(ParamFloat<px4::params::MC_MAN_TILT_TAU>)  _param_mc_man_tilt_tau,
@@ -161,13 +166,12 @@ private:
 		(ParamFloat<px4::params::MC_YAWRATE_MAX>)   _param_mc_yawrate_max,
 
 		/* Stabilized mode params */
-		(ParamFloat<px4::params::MPC_HOLD_DZ>) _param_mpc_hold_dz,
+		(ParamFloat<px4::params::MAN_DEADZONE>) _param_man_deadzone,
 		(ParamFloat<px4::params::MPC_MAN_TILT_MAX>) _param_mpc_man_tilt_max,
 		(ParamFloat<px4::params::MPC_MANTHR_MIN>) _param_mpc_manthr_min,
 		(ParamFloat<px4::params::MPC_THR_MAX>) _param_mpc_thr_max,
 		(ParamFloat<px4::params::MPC_THR_HOVER>) _param_mpc_thr_hover,
 		(ParamInt<px4::params::MPC_THR_CURVE>) _param_mpc_thr_curve,
-		(ParamFloat<px4::params::MPC_YAW_EXPO>) _param_mpc_yaw_expo,
 
 		(ParamFloat<px4::params::COM_SPOOLUP_TIME>) _param_com_spoolup_time
 	)

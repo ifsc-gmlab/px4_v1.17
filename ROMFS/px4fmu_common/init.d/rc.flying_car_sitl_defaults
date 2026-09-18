@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Flying Car SITL default parameters (no HW-specific PWM config)
+#
+set VEHICLE_TYPE flying_car
+param set-default MAV_TYPE 2
+param set-default RC_MAP_AUX1 5
+
+# MC PID defaults
+param set-default MC_ROLL_P 8.0
+param set-default MC_PITCH_P 8.0
+param set-default MC_ROLLRATE_P 0.15
+param set-default MC_PITCHRATE_P 0.15
+param set-default MC_YAWRATE_P 0.2
+param set-default MPC_XY_P 0.95
+param set-default MPC_Z_P 1.0
+
+# Rover PID defaults
+param set-default CA_R_REV 3
+param set-default RO_YAW_RATE_LIM 180
+param set-default RO_YAW_P 5
+param set-default RO_YAW_RATE_P 0.25
+
+# Safety & EKF
+param set-default EKF2_MAG_TYPE 1
+param set-default NAV_ACC_RAD 0.5
+
+# SITL-specific: suppress false warnings
+param set-default COM_DISARM_LAND -1

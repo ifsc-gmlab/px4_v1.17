@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Flying Car apps - defaults to Multicopter (MC) mode.
+# Both actuator producers stay alive. RoverDifferential publishes only while
+# MAV_TYPE is GROUND_ROVER; control_allocator remains the flight producer.
+# All comments in English to avoid ROMFS pruner encoding errors.
+#
+
+# ========== Start Control Allocator ==========
+# The control allocator converts controller outputs to actuator commands.
+# Default CA_AIRFRAME=0 (Multirotor).
+control_allocator start
+rover_differential start
+
+# ========== Start MC Rate Controller ==========
+# Innermost loop: angular rate control at 1kHz
+mc_rate_control start
+
+# ========== Start MC Attitude Controller ==========
+# Middle loop: attitude angle control
+mc_att_control start
+
+# Optional: Autotune (disabled by default, enable with MC_AT_EN=1)
+if param greater -s MC_AT_EN 0
+then
+	mc_autotune_attitude_control start
+fi
+
+# ========== Start MC Position Controller ==========
+# Outermost loop: position and velocity control
+mc_hover_thrust_estimator start
+flight_mode_manager start
+mc_pos_control start
+
+# ========== Start Land Detector (multicopter) ==========
+land_detector start multicopter
