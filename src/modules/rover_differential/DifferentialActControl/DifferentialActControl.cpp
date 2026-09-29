@@ -127,7 +127,9 @@ void DifferentialActControl::stopVehicle()
 	actuator_motors_s actuator_motors{};
 	_actuator_motors_sub.copy(&actuator_motors);
 	actuator_motors.reversible_flags = _param_r_rev.get();
-	for (float &control : actuator_motors.control) { control = 0.0f; }
+	for (float &control : actuator_motors.control) {
+		control = NAN;
+	}
 	actuator_motors.timestamp = _timestamp;
 	_actuator_motors_pub.publish(actuator_motors);
 }

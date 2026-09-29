@@ -61,6 +61,17 @@ if(gazebo_FOUND)
 		BUILD_ALWAYS 1
 		BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> -- -j ${parallel_jobs}
 	)
+	# DOWNLOAD_COMMAND runs only when the external project is first prepared.
+	# Refresh the overlay before each configure/build so incremental SITL runs
+	# use the current flying-car plugins and models as well.
+	ExternalProject_Add_Step(sitl_gazebo-classic refresh_flying_car_assets
+		COMMAND ${PYTHON_EXECUTABLE} ${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/flying_car/prepare.py
+			${PX4_SOURCE_DIR}/Tools/simulation/gazebo-classic/sitl_gazebo-classic
+			${PX4_BINARY_DIR}/sitl_gazebo-classic_flying_car
+		DEPENDEES download
+		DEPENDERS configure
+		ALWAYS 1
+	)
 
 	# create targets for each model/world/debugger combination
 
@@ -74,6 +85,8 @@ if(gazebo_FOUND)
 
 	set(models
 		advanced_plane
+		fs_fasmv8_flying_car
+		fs_fasmv8_flying_car_light
 		fs_fasmv8_flying_car_quad
 		believer
 		boat

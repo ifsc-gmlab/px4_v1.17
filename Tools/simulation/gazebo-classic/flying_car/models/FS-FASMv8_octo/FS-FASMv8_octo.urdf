@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="FS-FASMv8">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.00711587558099831 0.00255705460961825 -0.085762300483608"
+        rpy="0 0 0" />
+      <mass
+        value="2514.5950246391" />
+      <inertia
+        ixx="199.859950317255"
+        ixy="0.0387762540279891"
+        ixz="-0.0162954379513077"
+        iyy="523.220352528675"
+        iyz="-0.0464263471160759"
+        izz="711.878953972246" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.333333333333333 0.690196078431373 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="link1">
+    <inertial>
+      <origin
+        xyz="-1.47198410083149E-06 -1.44516746436452E-06 0.0165020492492653"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795950737497" />
+      <inertia
+        ixx="0.782572711659681"
+        ixy="-0.728518071546415"
+        ixz="9.05168310752435E-08"
+        iyy="0.692514918160086"
+        iyz="5.28705955108658E-08"
+        izz="1.47399793016408" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.615686274509804 0.792156862745098 0.23921568627451 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint1"
+    type="continuous">
+    <origin
+      xyz="1.1 -1.4 0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link1" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link2">
+    <inertial>
+      <origin
+        xyz="1.56166493869847E-06 -1.53259557289509E-06 0.0165017930544993"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795288332216" />
+      <inertia
+        ixx="0.782576044836076"
+        ixy="0.728526393131277"
+        ixz="-7.31367074339175E-08"
+        iyy="0.692527278276701"
+        iyz="3.45377957305853E-08"
+        izz="1.47401349136735" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.780392156862745 0.890196078431372 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint2"
+    type="continuous">
+    <origin
+      xyz="1.1 1.4 0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link2" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link3">
+    <inertial>
+      <origin
+        xyz="1.4471760456658E-08 2.10224284646898E-06 0.0165020725020978"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795906793012" />
+      <inertia
+        ixx="1.46607091314237"
+        ixy="0.0450295495761494"
+        ixz="-2.53056578613968E-08"
+        iyy="0.00902580033624773"
+        iyz="-1.08433131995669E-07"
+        izz="1.47400701110737" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.615686274509804 0.792156862745098 0.23921568627451 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint3"
+    type="continuous">
+    <origin
+      xyz="-1.1 1.4 0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link3" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link4">
+    <inertial>
+      <origin
+        xyz="-5.23218424142158E-08 -2.37459218488389E-06 0.0165018088636264"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795063531962" />
+      <inertia
+        ixx="1.4660862030108"
+        ixy="-0.0450248659752422"
+        ixz="-2.27116841978804E-08"
+        iyy="0.00902529027880713"
+        iyz="1.18391363114409E-07"
+        izz="1.47402165795525" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.780392156862745 0.890196078431372 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint4"
+    type="continuous">
+    <origin
+      xyz="-1.1 -1.4 0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link4" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link5">
+    <inertial>
+      <origin
+        xyz="-1.4445E-06 -1.4154E-06 -0.010046"
+        rpy="0 0 0" />
+      <mass
+        value="12.48" />
+      <inertia
+        ixx="0.78257"
+        ixy="-0.72852"
+        ixz="9.313E-08"
+        iyy="0.69252"
+        iyz="5.5556E-08"
+        izz="1.474" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.61569 0.79216 0.23922 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint5"
+    type="continuous">
+    <origin
+      xyz="1.1 1.4 -0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link5" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link6">
+    <inertial>
+      <origin
+        xyz="-1.50192770931312E-06 1.46908675535684E-06 -0.0100465924981483"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795271581514" />
+      <inertia
+        ixx="0.782575644402999"
+        ixy="0.728526016175648"
+        ixz="8.24300095487304E-08"
+        iyy="0.692526922854364"
+        iyz="-4.44140672155613E-08"
+        izz="1.4740127360752" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.780392156862745 0.890196078431372 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint6"
+    type="continuous">
+    <origin
+      xyz="1.1 -1.4 -0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link6" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link7">
+    <inertial>
+      <origin
+        xyz="-2.30582586868699E-06 -5.4646251967938E-08 -0.0100463223217283"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795737399714" />
+      <inertia
+        ixx="0.00902576596414692"
+        ixy="-0.0450293918299339"
+        ixz="1.28014152970027E-07"
+        iyy="1.46607049498945"
+        iyz="-2.26937491859606E-08"
+        izz="1.47400655762241" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link7.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.615686274509804 0.792156862745098 0.23921568627451 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link7.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint7"
+    type="continuous">
+    <origin
+      xyz="-1.1 -1.4 -0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link7" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link8">
+    <inertial>
+      <origin
+        xyz="-2.43167146707357E-06 5.35493485109839E-08 -0.0100465773078908"
+        rpy="0 0 0" />
+      <mass
+        value="12.4795057662723" />
+      <inertia
+        ixx="0.00902528977318259"
+        ixy="0.0450248524322647"
+        ixz="1.06811703289122E-07"
+        iyy="1.46608581106431"
+        iyz="2.31000475234814E-08"
+        izz="1.47402126585423" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link8.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.780392156862745 0.890196078431372 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link8.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint8"
+    type="continuous">
+    <origin
+      xyz="-1.1 1.4 -0.2065"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link8" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="link9">
+    <inertial>
+      <origin
+        xyz="9.992E-16 0.069179 4.4409E-16"
+        rpy="0 0 0" />
+      <mass
+        value="82.971" />
+      <inertia
+        ixx="2.1284"
+        ixy="-7.8503E-15"
+        ixz="5.6968E-16"
+        iyy="4.0185"
+        iyz="-1.345E-14"
+        izz="2.1284" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link9.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link9.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint9"
+    type="continuous">
+    <origin
+      xyz="0.89723 -0.751 -1.533"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link9" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="link10">
+    <inertial>
+      <origin
+        xyz="1.22124532708767E-15 -0.0741794538481573 -4.44089209850063E-16"
+        rpy="0 0 0" />
+      <mass
+        value="82.9705173307876" />
+      <inertia
+        ixx="2.12837684128994"
+        ixy="-3.55492649867719E-15"
+        ixz="-1.5947715244403E-16"
+        iyy="4.01846438838075"
+        iyz="-5.95694367614816E-15"
+        izz="2.12837684128994" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link10.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link10.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint10"
+    type="continuous">
+    <origin
+      xyz="0.897499999999992 0.755999999999994 -1.53300000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link10" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  <link
+    name="link11">
+    <inertial>
+      <origin
+        xyz="0 -0.0609794538481715 4.44089209850063E-16"
+        rpy="0 0 0" />
+      <mass
+        value="82.9705173307876" />
+      <inertia
+        ixx="2.12837684128994"
+        ixy="-3.49444575903486E-15"
+        ixz="1.49737292277174E-16"
+        iyy="4.01846438838075"
+        iyz="-6.05837803210527E-15"
+        izz="2.12837684128994" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link11.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link11.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint11"
+    type="continuous">
+    <origin
+      xyz="-0.9 0.7428 -1.533"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link11" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="link12">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link12.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://FS-FASMv8/meshes/link12.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint12"
+    type="continuous">
+    <origin
+      xyz="-0.900000000000007 -0.740000000000002 -1.533"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link12" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+</robot>

@@ -63,34 +63,57 @@ if [ "$model" == "" ] || [ "$model" == "none" ]; then
 	model="iris"
 fi
 
-# kill process names that might stil
-# be running from last time
-pkill -x gazebo || true
-
 export PX4_SIM_MODEL=gazebo-classic_${model}
 export PX4_SIM_WORLD=${world}
 
 SIM_PID=0
+GUI_PID=0
+
+cleanup_simulator() {
+	if [ "$GUI_PID" -gt 0 ]; then
+		kill "$GUI_PID" 2>/dev/null || true
+	fi
+	if [ "$SIM_PID" -gt 0 ]; then
+		kill "$SIM_PID" 2>/dev/null || true
+		wait "$SIM_PID" 2>/dev/null || true
+	fi
+}
+
+trap cleanup_simulator EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 if [ -x "$(command -v gazebo)" ]; then
+	# A direct SITL run must use the Gazebo server it starts. An older master
+	# can otherwise accept the model while PX4 connects to this new process.
+	if [[ "$model" == fs_fasmv8_flying_car* ]] && command -v timeout >/dev/null; then
+		# gz stats streams until stopped, so inspect its output rather than the
+		# timeout exit code.
+		master_stats=$(timeout 3 gz stats -d 1 2>/dev/null || true)
+		if [[ "$master_stats" == *"SimTime["* ]]; then
+			echo "A Gazebo master is already running at ${GAZEBO_MASTER_URI:-the default address}; stop it before starting flying-car SITL."
+			exit 1
+		fi
+	fi
+
 	# Get the model name
 	model_name="${model}"
 
 	# Set the plugin path so Gazebo finds our model and sim
 	source "$src_path/Tools/simulation/gazebo-classic/setup_gazebo.bash" "${src_path}" "${build_path}"
-	if [ -z $PX4_SITL_WORLD ]; then
+	if [ -z "$PX4_SITL_WORLD" ]; then
 		#Spawn predefined world
 		if [ "$world" == "none" ]; then
-			if [ "$model" == "fs_fasmv8_flying_car_quad" ]; then
+			if [[ "$model" == "fs_fasmv8_flying_car" ||
+			      "$model" == "fs_fasmv8_flying_car_light" ||
+			      "$model" == "fs_fasmv8_flying_car_quad" ]]; then
 				world_path="${src_path}/Tools/simulation/gazebo-classic/flying_car/worlds/FS_flying_car.world"
-			else
-			if [ -f ${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${model}.world ]; then
+			elif [ -f ${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${model}.world ]; then
 				echo "empty world, default world ${model}.world for model found"
 				world_path="${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${model}.world"
 			else
 				echo "empty world, setting empty.world as default"
 				world_path="${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/empty.world"
-			fi
 			fi
 		else
 			#Spawn empty world if world with model name doesn't exist
@@ -105,7 +128,7 @@ if [ -x "$(command -v gazebo)" ]; then
 			world_path="$PX4_SITL_WORLD"
 		fi
 	fi
-	gzserver $verbose $world_path $ros_args &
+	gzserver $verbose "$world_path" $ros_args &
 	SIM_PID=$!
 
 	# Check all paths in ${GAZEBO_MODEL_PATH} for specified model
@@ -124,7 +147,7 @@ if [ -x "$(command -v gazebo)" ]; then
 	done
 	IFS=$IFS_bak
 
-	if [ -z $modelpath ]; then
+	if [ -z "$modelpath" ]; then
 		echo "Model ${model} not found in model path: ${GAZEBO_MODEL_PATH}"
 		exit 1
 	else
@@ -132,6 +155,10 @@ if [ -x "$(command -v gazebo)" ]; then
 	fi
 
 	while gz model --verbose --spawn-file="${modelpath}/${model}/${model_name}.sdf" --model-name=${model} -x 1.01 -y 0.98 -z 0.83 2>&1 | grep -q "An instance of Gazebo is not running."; do
+		if ! kill -0 "$SIM_PID" 2>/dev/null; then
+			echo "gzserver exited before the flying-car model could be spawned."
+			exit 1
+		fi
 		echo "gzserver not ready yet, trying again!"
 		sleep 1
 	done
@@ -172,9 +199,3 @@ else
 fi
 
 popd >/dev/null
-
-
-kill -9 $SIM_PID
-if [[ ! -n "$HEADLESS" ]]; then
-	kill -9 $GUI_PID
-fi

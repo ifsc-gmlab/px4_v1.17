@@ -1,0 +1,1232 @@
+﻿<!-- DO NOT EDIT-->
+<sdf version='1.6'>
+  <model name='FS-FASMv8_octo'>
+    <link name='base_link'>
+      <inertial>
+        <pose>0.007116 0.002557 -0.085762 0 -0 0</pose>
+        <mass>823.50439996</mass>
+        <inertia>
+          <ixx>81.6964108886</ixx>
+          <ixy>0.0158505180503</ixy>
+          <ixz>-0.00666104119881</ixz>
+          <iyy>213.875693511</iyy>
+          <iyz>-0.0189775947205</iyz>
+          <izz>290.993491879</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>2.2 1.8 1.6</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.08 0.10 0.12 1</ambient>
+          <diffuse>0.18 0.22 0.26 1</diffuse>
+          <specular>0.20 0.20 0.20 1</specular>
+        </material>
+      </visual>
+    </link>
+		<joint name='/joint_imu' type='revolute'>
+    <pose relative_to='base_link'>0 0 0 0 -0 0</pose>
+      <child>/link_imu</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='/link_imu'>
+      <pose relative_to='/joint_imu'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.0224822505698</mass>
+        <inertia>
+          <ixx>2.04384096089e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.04384096089e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.04384096089e-05</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name='joint1' type='revolute'>
+      <pose relative_to='base_link'>1.1 -1.4 0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link1</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link1'>
+      <pose relative_to='joint1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-1e-06 -1e-06 0.016502 0 -0 0</pose>
+        <mass>5.1012635311</mass>
+        <inertia>
+          <ixx>0.319890950457</ixx>
+          <ixy>-0.297794985829</ixy>
+          <ixz>3.70003886977e-08</ixz>
+          <iyy>0.283078104606</iyy>
+          <iyz>2.16118195813e-08</iyz>
+          <izz>0.602524315269</izz>
+        </inertia>
+      </inertial>
+      <collision name='link1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link1.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.02 0.12 0.18 1</ambient>
+          <diffuse>0.05 0.45 0.70 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='joint10' type='revolute'>
+      <pose relative_to='base_link'>0.9 0.75 -1.533 -1.5708 0 0</pose>
+      <parent>base_link</parent>
+      <child>link10</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>1200</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.1</damping>
+          <friction>0.03</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link10'>
+      <pose relative_to='joint10'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0 -0 0 -0 0</pose>
+        <mass>33.915701289</mass>
+        <inertia>
+          <ixx>0.643196750391</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.643196750391</iyy>
+          <iyz>0</iyz>
+          <izz>1.06022206005</izz>
+        </inertia>
+      </inertial>
+      <collision name='link10_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+								<mu1>1.0</mu1>
+								<mu2>1.0</mu2>
+								<slip1>0.01</slip1>
+								<slip2>0.01</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>20000</kd>
+              <max_vel>2.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='link10_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.01 0.01 0.01 1</ambient>
+          <diffuse>0.02 0.02 0.02 1</diffuse>
+          <specular>0.04 0.04 0.04 1</specular>
+        </material>
+      </visual>
+      <visual name='link10_rotation_marker'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.42 0.025 0.215</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.2 0 0 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint11' type='revolute'>
+      <pose relative_to='base_link'>-0.9 0.75 -1.533 -1.5708 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link11</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>1200</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.2</damping>
+          <friction>0.05</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link11'>
+      <pose relative_to='joint11'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0 0 0 -0 0</pose>
+        <mass>33.915701289</mass>
+        <inertia>
+          <ixx>0.643196750391</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.643196750391</iyy>
+          <iyz>0</iyz>
+          <izz>1.06022206005</izz>
+        </inertia>
+      </inertial>
+      <collision name='link11_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+								<mu1>1.0</mu1>
+								<mu2>1.0</mu2>
+								<slip1>0.01</slip1>
+								<slip2>0.01</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>20000</kd>
+              <max_vel>2.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='link11_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.01 0.01 0.01 1</ambient>
+          <diffuse>0.02 0.02 0.02 1</diffuse>
+          <specular>0.04 0.04 0.04 1</specular>
+        </material>
+      </visual>
+      <visual name='link11_rotation_marker'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.42 0.025 0.215</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.2 0 0 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='joint12' type='revolute'>
+      <pose relative_to='base_link'>-0.9 -0.75 -1.533 -1.5708 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link12</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>1200</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.2</damping>
+          <friction>0.05</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link12'>
+      <pose relative_to='joint12'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0 0 0 -0 0</pose>
+        <mass>33.915701289</mass>
+        <inertia>
+          <ixx>0.643196750391</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.643196750391</iyy>
+          <iyz>0</iyz>
+          <izz>1.06022206005</izz>
+        </inertia>
+      </inertial>
+      <collision name='link12_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+								<mu1>1.0</mu1>
+								<mu2>1.0</mu2>
+								<slip1>0.01</slip1>
+								<slip2>0.01</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>20000</kd>
+              <max_vel>2.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='link12_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.01 0.01 0.01 1</ambient>
+          <diffuse>0.02 0.02 0.02 1</diffuse>
+          <specular>0.04 0.04 0.04 1</specular>
+        </material>
+      </visual>
+      <visual name='link12_rotation_marker'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.42 0.025 0.215</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.2 0 0 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='joint2' type='revolute'>
+      <pose relative_to='base_link'>1.1 1.4 0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link2</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link2'>
+      <pose relative_to='joint2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>2e-06 -2e-06 0.016502 0 -0 0</pose>
+        <mass>5.10122265428</mass>
+        <inertia>
+          <ixx>0.319892176761</ixx>
+          <ixy>0.297798255974</ixy>
+          <ixz>-2.98959566408e-08</ixz>
+          <iyy>0.283083009824</iyy>
+          <iyz>1.41179540678e-08</iyz>
+          <izz>0.602528402951</izz>
+        </inertia>
+      </inertial>
+      <collision name='link2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link2.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.02 0.12 0.18 1</ambient>
+          <diffuse>0.05 0.45 0.70 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint3' type='revolute'>
+      <pose relative_to='base_link'>-1.1 1.4 0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link3'>
+      <pose relative_to='joint3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 2e-06 0.016502 0 -0 0</pose>
+        <mass>5.1012635311</mass>
+        <inertia>
+          <ixx>0.599282783505</ixx>
+          <ixy>0.0184066273096</ixy>
+          <ixz>-1.03441652408e-08</ixz>
+          <iyy>0.00368945994895</iyy>
+          <iyz>-4.43239613824e-08</iyz>
+          <izz>0.602528402951</izz>
+        </inertia>
+      </inertial>
+      <collision name='link3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link3.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.02 0.12 0.18 1</ambient>
+          <diffuse>0.05 0.45 0.70 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint4' type='revolute'>
+      <pose relative_to='base_link'>-1.1 -1.4 0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link4</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link4'>
+      <pose relative_to='joint4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0 -2e-06 0.016502 0 -0 0</pose>
+        <mass>5.10122265428</mass>
+        <inertia>
+          <ixx>0.599290958869</ixx>
+          <ixy>-0.018404746976</ixy>
+          <ixz>-9.28382055027e-09</ixz>
+          <iyy>0.00368925147718</iyy>
+          <iyz>4.83944750401e-08</iyz>
+          <izz>0.602532490633</izz>
+        </inertia>
+      </inertial>
+      <collision name='link4_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link4.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.02 0.12 0.18 1</ambient>
+          <diffuse>0.05 0.45 0.70 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint5' type='revolute'>
+      <pose relative_to='base_link'>1.1 1.4 -0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link5</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link5'>
+      <pose relative_to='joint5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-1e-06 -1e-06 -0.010046 0 -0 0</pose>
+        <mass>5.10142703837</mass>
+        <inertia>
+          <ixx>0.319889724152</ixx>
+          <ixy>-0.297795803365</ixy>
+          <ixz>3.80685817375e-08</ixz>
+          <iyy>0.283080148447</iyy>
+          <iyz>2.27095256846e-08</iyz>
+          <izz>0.602524315269</izz>
+        </inertia>
+      </inertial>
+      <collision name='link5_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link5_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link5.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.20 0.09 0.01 1</ambient>
+          <diffuse>0.95 0.42 0.06 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint6' type='revolute'>
+      <pose relative_to='base_link'>1.1 -1.4 -0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link6</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link6'>
+      <pose relative_to='joint6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-2e-06 1e-06 -0.010047 0 -0 0</pose>
+        <mass>5.10122265428</mass>
+        <inertia>
+          <ixx>0.319892176761</ixx>
+          <ixy>0.297798255974</ixy>
+          <ixz>3.36947620812e-08</ixz>
+          <iyy>0.283083009824</iyy>
+          <iyz>-1.81550713642e-08</iyz>
+          <izz>0.602528402951</izz>
+        </inertia>
+      </inertial>
+      <collision name='link6_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link6_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link6.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.20 0.09 0.01 1</ambient>
+          <diffuse>0.95 0.42 0.06 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint7' type='revolute'>
+      <pose relative_to='base_link'>-1.1 -1.4 -0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link7</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link7'>
+      <pose relative_to='joint7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-2e-06 -0 -0.010046 0 -0 0</pose>
+        <mass>5.1012635311</mass>
+        <inertia>
+          <ixx>0.00368944768591</ixx>
+          <ixy>-0.0184065864328</ixy>
+          <ixz>5.23280513534e-08</ixz>
+          <iyy>0.599282783505</iyy>
+          <iyz>-9.27646272281e-09</iyz>
+          <izz>0.602528402951</izz>
+        </inertia>
+      </inertial>
+      <collision name='link7_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link7_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link7.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.20 0.09 0.01 1</ambient>
+          <diffuse>0.95 0.42 0.06 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+    <joint name='joint8' type='revolute'>
+      <pose relative_to='base_link'>-1.1 1.4 -0.2065 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>link8</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link8'>
+      <pose relative_to='joint8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-2e-06 0 -0.010047 0 -0 0</pose>
+        <mass>5.10122265428</mass>
+        <inertia>
+          <ixx>0.00368925147718</ixx>
+          <ixy>0.018404746976</ixy>
+          <ixz>4.36613481428e-08</ixz>
+          <iyy>0.599290958869</iyy>
+          <iyz>9.4425452393e-09</iyz>
+          <izz>0.602532490633</izz>
+        </inertia>
+      </inertial>
+      <collision name='link8_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>1.0</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='link8_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_octo/meshes/link8.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.20 0.09 0.01 1</ambient>
+          <diffuse>0.95 0.42 0.06 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='joint9' type='revolute'>
+      <pose relative_to='base_link'>0.9 -0.75 -1.533 -1.5708 0 0</pose>
+      <parent>base_link</parent>
+      <child>link9</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>1200</effort>
+          <velocity>40</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.1</damping>
+          <friction>0.03</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='link9'>
+      <pose relative_to='joint9'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>33.9159056731</mass>
+        <inertia>
+          <ixx>0.643196750391</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.643196750391</iyy>
+          <iyz>0</iyz>
+          <izz>1.06022206005</izz>
+        </inertia>
+      </inertial>
+      <collision name='link9_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+							<mu1>1.0</mu1>
+							<mu2>1.0</mu2>
+							<slip1>0.01</slip1>
+							<slip2>0.01</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>20000</kd>
+              <max_vel>2.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='link9_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.2</length>
+            <radius>0.25</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.01 0.01 0.01 1</ambient>
+          <diffuse>0.02 0.02 0.02 1</diffuse>
+          <specular>0.04 0.04 0.04 1</specular>
+        </material>
+      </visual>
+      <visual name='link9_rotation_marker'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.42 0.025 0.215</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.2 0 0 1</specular>
+        </material>
+      </visual>
+    </link>
+    <plugin name='rosbag' filename='libgazebo_multirotor_base_plugin.so'>
+      <robotNamespace/>
+      <linkName>base_link</linkName>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='front_right_up_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint1</jointName>
+      <linkName>link1</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>0</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/0</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='front_left_up_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint2</jointName>
+      <linkName>link2</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>1</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/1</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='back_left_up_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint3</jointName>
+      <linkName>link3</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>2</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/2</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='back_right_up_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint4</jointName>
+      <linkName>link4</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>3</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/3</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='front_left_down_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint5</jointName>
+      <linkName>link5</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>4</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/4</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+
+    <plugin name='front_right_down_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint6</jointName>
+      <linkName>link6</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>5</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/5</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='back_right_down_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint7</jointName>
+      <linkName>link7</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>6</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/6</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='back_left_down_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>joint8</jointName>
+      <linkName>link8</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.03</timeConstantUp>
+      <timeConstantDown>0.05</timeConstantDown>
+      <maxRotVelocity>376.49</maxRotVelocity>
+      <motorConstant>0.017296235</motorConstant>
+      <momentConstant>0.05</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>7</motorNumber>
+      <rotorDragCoefficient>0.0414</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/7</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>20</rotorVelocitySlowdownSim>
+    </plugin>
+    <include>
+      <uri>model://gps</uri>
+      <pose>0.1 0 0 0 0 0</pose>
+      <name>gps0</name>
+    </include>
+    <joint name='gps0_joint' type='fixed'>
+      <child>gps0::link</child>
+      <parent>base_link</parent>
+    </joint>
+    <plugin name='groundtruth_plugin' filename='libgazebo_groundtruth_plugin.so'>
+      <robotNamespace/>
+    </plugin>
+    <plugin name='magnetometer_plugin' filename='libgazebo_magnetometer_plugin.so'>
+      <robotNamespace/>
+      <pubRate>100</pubRate>
+      <noiseDensity>0.0004</noiseDensity>
+      <randomWalk>6.4e-06</randomWalk>
+      <biasCorrelationTime>600</biasCorrelationTime>
+      <magTopic>/mag</magTopic>
+    </plugin>
+    <plugin name='barometer_plugin' filename='libgazebo_barometer_plugin.so'>
+      <robotNamespace/>
+      <pubRate>50</pubRate>
+      <baroTopic>/baro</baroTopic>
+      <baroDriftPaPerSec>0</baroDriftPaPerSec>
+    </plugin>
+
+    <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
+      <enable_lockstep>false</enable_lockstep>
+      <robotNamespace/>
+      <imuSubTopic>/imu</imuSubTopic>
+      <magSubTopic>/mag</magSubTopic>
+      <baroSubTopic>/baro</baroSubTopic>
+      <mavlink_addr>INADDR_ANY</mavlink_addr>
+      <mavlink_tcp_port>4560</mavlink_tcp_port>
+      <mavlink_udp_port>14560</mavlink_udp_port>
+      <serialEnabled>0</serialEnabled>
+      <serialDevice>/dev/ttyACM0</serialDevice>
+      <baudRate>921600</baudRate>
+      <qgc_addr>INADDR_ANY</qgc_addr>
+      <qgc_udp_port>14550</qgc_udp_port>
+      <sdk_addr>INADDR_ANY</sdk_addr>
+      <sdk_udp_port>14540</sdk_udp_port>
+      <hil_mode>0</hil_mode>
+      <hil_state_level>0</hil_state_level>
+      <send_vision_estimation>0</send_vision_estimation>
+      <send_odometry>1</send_odometry>
+      <use_tcp>1</use_tcp>
+      <motorSpeedCommandPubTopic>/gazebo/command/motor_speed</motorSpeedCommandPubTopic>
+      <control_channels>
+
+        <channel name='rotor1'>
+          <input_index>0</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint1</joint_name>
+        </channel>
+
+        <channel name='rotor2'>
+          <input_index>1</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint2</joint_name>
+        </channel>
+
+        <channel name='rotor3'>
+          <input_index>2</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint3</joint_name>
+        </channel>
+
+        <channel name='rotor4'>
+          <input_index>3</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint4</joint_name>
+        </channel>
+
+        <channel name='rotor5'>
+          <input_index>4</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint5</joint_name>
+        </channel>
+
+        <channel name='rotor6'>
+          <input_index>5</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint6</joint_name>
+        </channel>
+
+        <channel name='rotor7'>
+          <input_index>6</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint7</joint_name>
+        </channel>
+
+        <channel name='rotor8'>
+          <input_index>7</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>376.49</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint8</joint_name>
+        </channel>
+
+        <channel name='left_front_wheel'>
+          <input_index>8</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>8</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint10</joint_name>
+          <joint_control_pid>
+            <p>80</p>
+            <i>10</i>
+            <d>1</d>
+            <iMax>800</iMax>
+            <iMin>-800</iMin>
+            <cmdMax>1200</cmdMax>
+            <cmdMin>-1200</cmdMin>
+          </joint_control_pid>
+        </channel>
+
+        <channel name='right_front_wheel'>
+          <input_index>9</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>8</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint9</joint_name>
+          <joint_control_pid>
+            <p>80</p>
+            <i>10</i>
+            <d>1</d>
+            <iMax>800</iMax>
+            <iMin>-800</iMin>
+            <cmdMax>1200</cmdMax>
+            <cmdMin>-1200</cmdMin>
+          </joint_control_pid>
+        </channel>
+
+        <channel name='left_rear_wheel'>
+          <input_index>10</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>8</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint11</joint_name>
+          <joint_control_pid>
+            <p>80</p>
+            <i>10</i>
+            <d>1</d>
+            <iMax>800</iMax>
+            <iMin>-800</iMin>
+            <cmdMax>1200</cmdMax>
+            <cmdMin>-1200</cmdMin>
+          </joint_control_pid>
+        </channel>
+
+        <channel name='right_rear_wheel'>
+          <input_index>11</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>8</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>joint12</joint_name>
+          <joint_control_pid>
+            <p>80</p>
+            <i>10</i>
+            <d>1</d>
+            <iMax>800</iMax>
+            <iMin>-800</iMin>
+            <cmdMax>1200</cmdMax>
+            <cmdMin>-1200</cmdMin>
+          </joint_control_pid>
+        </channel>
+
+      </control_channels>
+    </plugin>
+    <static>0</static>
+    <plugin name='rotors_gazebo_imu_plugin' filename='libgazebo_imu_plugin.so'>
+      <robotNamespace/>
+      <linkName>/link_imu</linkName>
+      <imuTopic>/imu</imuTopic>
+      <gyroscopeNoiseDensity>0.00018665</gyroscopeNoiseDensity>
+      <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
+      <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
+      <gyroscopeTurnOnBiasSigma>0.0087</gyroscopeTurnOnBiasSigma>
+      <accelerometerNoiseDensity>0.00186</accelerometerNoiseDensity>
+      <accelerometerRandomWalk>0.006</accelerometerRandomWalk>
+      <accelerometerBiasCorrelationTime>300.0</accelerometerBiasCorrelationTime>
+      <accelerometerTurnOnBiasSigma>0.196</accelerometerTurnOnBiasSigma>
+    </plugin>
+  </model>
+</sdf>

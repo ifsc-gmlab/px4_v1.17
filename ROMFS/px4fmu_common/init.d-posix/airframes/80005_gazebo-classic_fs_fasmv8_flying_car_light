@@ -1,0 +1,149 @@
+#!/bin/sh
+#
+# @name FS-FASMv8 Octo Differential Flying Car SITL (Light 50kg variant)
+# @type Flying Car
+# @class Experimental
+#
+# @output MAIN1 motor 1 (upper rotor 0)
+# @output MAIN2 motor 2 (upper rotor 1)
+# @output MAIN3 motor 3 (upper rotor 2)
+# @output MAIN4 motor 4 (upper rotor 3)
+# @output MAIN5 motor 5 (lower rotor 4)
+# @output MAIN6 motor 6 (lower rotor 5)
+# @output MAIN7 motor 7 (lower rotor 6)
+# @output MAIN8 motor 8 (lower rotor 7)
+# @output MAIN9 left-front wheel
+# @output MAIN10 right-front wheel
+# @output MAIN11 left-rear wheel
+# @output MAIN12 right-rear wheel
+#
+# Design rationale:
+# - Model mass: 50 kg (down from 1000 kg in 80004)
+# - Thrust-to-weight ratio (TWR): 2.0
+# - Hover throttle: ~50%
+# - Control gains tuned for 50 kg vehicle with ~10x larger inertia than a 5kg quad
+#
+
+. ${R}etc/init.d/rc.flying_car_sitl_defaults
+
+# The flight stack is an octo-coax multicopter.
+param set-default MAV_TYPE 14
+param set CA_AIRFRAME 0
+param set-default CA_ROTOR_COUNT 8
+
+# Actual SDF rotor geometry converted from Gazebo FLU to PX4 FRD.
+param set-default CA_ROTOR0_PX   1.1
+param set-default CA_ROTOR0_PY   1.4
+param set-default CA_ROTOR0_PZ  -0.2065
+param set-default CA_ROTOR0_KM   0.05
+param set-default CA_ROTOR1_PX   1.1
+param set-default CA_ROTOR1_PY  -1.4
+param set-default CA_ROTOR1_PZ  -0.2065
+param set-default CA_ROTOR1_KM  -0.05
+param set-default CA_ROTOR2_PX  -1.1
+param set-default CA_ROTOR2_PY  -1.4
+param set-default CA_ROTOR2_PZ  -0.2065
+param set-default CA_ROTOR2_KM   0.05
+param set-default CA_ROTOR3_PX  -1.1
+param set-default CA_ROTOR3_PY   1.4
+param set-default CA_ROTOR3_PZ  -0.2065
+param set-default CA_ROTOR3_KM  -0.05
+param set-default CA_ROTOR4_PX   1.1
+param set-default CA_ROTOR4_PY  -1.4
+param set-default CA_ROTOR4_PZ   0.2065
+param set-default CA_ROTOR4_KM   0.05
+param set-default CA_ROTOR5_PX   1.1
+param set-default CA_ROTOR5_PY   1.4
+param set-default CA_ROTOR5_PZ   0.2065
+param set-default CA_ROTOR5_KM  -0.05
+param set-default CA_ROTOR6_PX  -1.1
+param set-default CA_ROTOR6_PY   1.4
+param set-default CA_ROTOR6_PZ   0.2065
+param set-default CA_ROTOR6_KM   0.05
+param set-default CA_ROTOR7_PX  -1.1
+param set-default CA_ROTOR7_PY  -1.4
+param set-default CA_ROTOR7_PZ   0.2065
+param set-default CA_ROTOR7_KM  -0.05
+
+# Motor 1..8 are rotors; Motor 9..12 are LF/RF/LR/RR wheels.
+param set-default PWM_MAIN_FUNC1 101
+param set-default PWM_MAIN_FUNC2 102
+param set-default PWM_MAIN_FUNC3 103
+param set-default PWM_MAIN_FUNC4 104
+param set-default PWM_MAIN_FUNC5 105
+param set-default PWM_MAIN_FUNC6 106
+param set-default PWM_MAIN_FUNC7 107
+param set-default PWM_MAIN_FUNC8 108
+param set-default PWM_MAIN_FUNC9 109
+param set-default PWM_MAIN_FUNC10 110
+param set-default PWM_MAIN_FUNC11 111
+param set-default PWM_MAIN_FUNC12 112
+
+# A finite zero rotor command idles at about 100 rad/s. RoverDifferential
+# leaves rotor controls NaN, which bypasses this floor and stops them.
+param set-default SIM_MOT_IDLE 0.2656113
+
+param set-default RD_MOT_OFFSET 8
+# Reverse Motor 9..12 to match the four SDF wheel joint axes.
+param set-default CA_R_REV 3840
+
+# ============================================================
+# Flight gains tuned for 50 kg vehicle (TWR=2.0, hover~50%)
+# ============================================================
+
+# Throttle configuration
+# TWR=2.0 -> hover at ~50% throttle
+param set-default MPC_THR_HOVER  0.50
+param set-default MPC_THR_MIN    0.10
+param set-default MPC_THR_MAX    0.85
+
+# Attitude control (P-gain) - increased for higher inertia
+# Standard 5kg quad: MC_ROLL_P=8.0
+# 50kg vehicle inertia is ~10x larger, so P-gain increased ~2x
+param set-default MC_ROLL_P        15.0
+param set-default MC_PITCH_P       15.0
+param set-default MC_YAW_P         8.0
+
+# Rate control - increased to handle larger torque demands
+# Standard 5kg: MC_ROLLRATE_P=0.15
+param set-default MC_ROLLRATE_P    0.40
+param set-default MC_ROLLRATE_I    0.20
+param set-default MC_ROLLRATE_D    0.010
+param set-default MC_ROLLRATE_MAX  60
+param set-default MC_PITCHRATE_P   0.50
+param set-default MC_PITCHRATE_I   0.25
+param set-default MC_PITCHRATE_D   0.012
+param set-default MC_PITCHRATE_MAX 60
+param set-default MC_YAWRATE_P     0.30
+param set-default MC_YAWRATE_I     0.15
+param set-default MC_YAWRATE_D     0.0
+param set-default MC_YAWRATE_MAX   30
+
+# Position control (MPC)
+param set-default MPC_XY_P         0.95
+param set-default MPC_XY_VEL_P_ACC 0.20
+param set-default MPC_XY_VEL_I_ACC 0.05
+param set-default MPC_XY_VEL_D_ACC 0.005
+param set-default MPC_Z_P          1.0
+param set-default MPC_Z_VEL_P_ACC  0.50
+param set-default MPC_Z_VEL_I_ACC  0.20
+param set-default MPC_Z_VEL_D_ACC  0.0
+param set-default MPC_Z_VEL_MAX_UP 3.0
+param set-default MPC_HOLD_MAX_XY  0.5
+param set-default MPC_Z_VEL_MAX_DN 2.0
+param set-default MPC_XY_VEL_MAX   5.0
+
+# Landing parameters (slower for stable touchdown)
+param set-default LNDMC_ROT_MAX    30
+param set-default LNDMC_Z_VEL_MAX  1.0
+param set-default LNDMC_XY_VEL_MAX 3.0
+
+# Safety parameters
+param set-default COM_ARM_WO_GPS   1
+param set-default COM_RC_IN_MODE   1
+param set-default COM_DISARM_LAND  0
+param set-default COM_DISARM_PRFLT 9999
+
+# EKF parameters
+param set-default EKF2_GPS_V_NOISE 0.5
+param set-default EKF2_GPS_P_NOISE 0.5

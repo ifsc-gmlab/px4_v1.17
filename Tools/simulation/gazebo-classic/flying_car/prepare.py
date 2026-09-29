@@ -33,6 +33,10 @@ def main() -> int:
         else:
             shutil.copytree(source, stage / root, dirs_exist_ok=True)
 
+    model_bindings = assets / "MODEL_BINDINGS.md"
+    if model_bindings.is_file():
+        shutil.copy2(model_bindings, stage / model_bindings.name)
+
     print(f"Prepared flying-car Gazebo Classic source: {stage}")
     return 0
 

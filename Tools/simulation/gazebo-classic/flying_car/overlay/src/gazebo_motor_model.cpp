@@ -190,6 +190,10 @@ void GazeboMotorModel::VelocityCallback(CommandMotorSpeedPtr &rot_velocities) {
     const double cmd = static_cast<double>(rot_velocities->motor_speed(motor_number_));
     if (std::isfinite(cmd)) {
       ref_motor_rot_vel_ = std::min(cmd, static_cast<double>(max_rot_velocity_));
+    } else {
+      // The flying car sends NaN on inactive rotor channels in rover mode.
+      // Do not retain the last flight command after that transition.
+      ref_motor_rot_vel_ = 0.0;
     }
   }
 }

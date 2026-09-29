@@ -1,0 +1,870 @@
+<?xml version="1.0"?>
+<sdf version='1.6'>
+  <model name='FS-FASMv8_quad_v2_hitl'>
+    <pose>0 0 0.12 0 0 0</pose>
+    <static>0</static>
+
+    <!-- ===== BODY (PX4 / iris style) ===== -->
+        <link name='base_link'>
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.000276134869684732 0.000326323802786586 0.017457376801873 0 0 0</pose>
+        <mass>2.1291738945758</mass>
+        <inertia>
+          <ixx>0.00347041892003144</ixx>
+          <ixy>1.57070640368815e-05</ixy>
+          <ixz>-3.03951167853223e-06</ixz>
+          <iyy>0.00532781690384282</iyy>
+          <iyz>9.16254060682809e-07</iyz>
+          <izz>0.00790882022230751</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0.05 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.52 0.66 0.10</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <max_vel>0</max_vel>
+              <kp>1e6</kp>
+              <kd>2000</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+    </link>
+
+
+    <!-- ===== IMU (PX4 / iris style) ===== -->
+    <!-- NOTE: link/joint names kept as 'flying_car/imu_*' to avoid breaking external references.
+         All sensor plugins below consistently use this same name. -->
+    <link name='imu_link'>
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>1e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-05</iyy>
+          <iyz>0</iyz>
+          <izz>1e-05</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name='imu_joint' type='revolute'>
+      <child>imu_link</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <!-- ===== ROTOR 0 (FRONT-RIGHT, CCW) ===== -->
+    <!-- PX4 FRD frame: X+ = right, Y- = front, Y+ = back -->
+        <link name='rotor_0'>
+      <pose>0.127468450384666 0.190165769892592 0.0534503981713312 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.012736</mass>
+        <inertia>
+          <ixx>2.69596504954376e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.69595636676478e-05</iyy>
+          <iyz>0</iyz>
+          <izz>5.38934041739497e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='rotor_0_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Fly_Link3.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+    </link>
+    <joint name='rotor_0_joint' type='revolute'>
+      <child>rotor_0</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    
+
+    <!-- ===== ROTOR 1 (FRONT-LEFT, CW) ===== -->
+        <link name='rotor_1'>
+      <pose>0.127468450384672 -0.190165769892587 0.0534503981713312 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.012736</mass>
+        <inertia>
+          <ixx>2.69596504954376e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.69595636676478e-05</iyy>
+          <iyz>0</iyz>
+          <izz>5.38934041739497e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='rotor_1_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Fly_Link1.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+    </link>
+    <joint name='rotor_1_joint' type='revolute'>
+      <child>rotor_1</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    
+
+    <!-- ===== ROTOR 2 (REAR-RIGHT, CCW) ===== -->
+        <link name='rotor_2'>
+      <pose>-0.12940845038467 0.190165769892588 0.0534503981713312 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.012736</mass>
+        <inertia>
+          <ixx>2.69596504954376e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.69595636676478e-05</iyy>
+          <iyz>0</iyz>
+          <izz>5.38934041739497e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='rotor_2_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Fly_Link2.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+    </link>
+    <joint name='rotor_2_joint' type='revolute'>
+      <child>rotor_2</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    
+
+    <!-- ===== ROTOR 3 (REAR-LEFT, CW) ===== -->
+        <link name='rotor_3'>
+      <pose>-0.129408450384666 -0.190165769892591 0.0534503981713312 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.012736</mass>
+        <inertia>
+          <ixx>2.69596504954376e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.69595636676478e-05</iyy>
+          <iyz>0</iyz>
+          <izz>5.38934041739497e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='rotor_3_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Fly_Link4.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+    </link>
+    <joint name='rotor_3_joint' type='revolute'>
+      <child>rotor_3</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    
+
+    <!-- ===== WHEELS (kept from user, already PX4-style with collision+visual+surface) ===== -->
+        <link name='wheel_fl'>
+      <pose>0.127240114192753 0.109000000000062 -0.0710589544849976 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.005</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.005</iyy>
+          <iyz>0</iyz>
+          <izz>0.005</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_fl_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.0425</radius>
+          </sphere>
+        </geometry>
+      
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.5</mu>
+              <mu2>1.5</mu2>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0.0</restitution_coefficient>
+            <threshold>0.0</threshold>
+          </bounce>
+        </surface>
+      </collision>
+      <visual name='wheel_fl_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Car_Link3.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='wheel_fl_joint' type='revolute'>
+      <parent>base_link</parent>
+      <child>wheel_fl</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>20</effort>
+          <velocity>20</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.1</damping>
+          <friction>0.03</friction>
+        </dynamics>
+      </axis>
+    </joint>
+
+    
+
+        <link name='wheel_fr'>
+      <pose>0.127240114192756 -0.109000000000058 -0.0710589544849976 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.005</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.005</iyy>
+          <iyz>0</iyz>
+          <izz>0.005</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_fr_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.0425</radius>
+          </sphere>
+        </geometry>
+      
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.5</mu>
+              <mu2>1.5</mu2>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0.0</restitution_coefficient>
+            <threshold>0.0</threshold>
+          </bounce>
+        </surface>
+      </collision>
+      <visual name='wheel_fr_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Car_Link1.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='wheel_fr_joint' type='revolute'>
+      <parent>base_link</parent>
+      <child>wheel_fr</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>20</effort>
+          <velocity>20</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.1</damping>
+          <friction>0.03</friction>
+        </dynamics>
+      </axis>
+    </joint>
+
+    
+
+        <link name='wheel_rl'>
+      <pose>-0.129180114192755 0.109000000000058 -0.0710589544849985 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.005</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.005</iyy>
+          <iyz>0</iyz>
+          <izz>0.005</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_rl_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.0425</radius>
+          </sphere>
+        </geometry>
+      
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.5</mu>
+              <mu2>1.5</mu2>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0.0</restitution_coefficient>
+            <threshold>0.0</threshold>
+          </bounce>
+        </surface>
+      </collision>
+      <visual name='wheel_rl_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Car_Link2.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='wheel_rl_joint' type='revolute'>
+      <parent>base_link</parent>
+      <child>wheel_rl</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>20</effort>
+          <velocity>20</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.1</damping>
+          <friction>0.03</friction>
+        </dynamics>
+      </axis>
+    </joint>
+
+    
+
+        <link name='wheel_rr'>
+      <pose>-0.129180114192752 -0.109000000000062 -0.0710589544849985 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.005</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.005</iyy>
+          <iyz>0</iyz>
+          <izz>0.005</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_rr_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.0425</radius>
+          </sphere>
+        </geometry>
+      
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.5</mu>
+              <mu2>1.5</mu2>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0.0</restitution_coefficient>
+            <threshold>0.0</threshold>
+          </bounce>
+        </surface>
+      </collision>
+      <visual name='wheel_rr_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://FS-FASMv8_quad_v2_hitl/meshes/Car_Link4.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='wheel_rr_joint' type='revolute'>
+      <parent>base_link</parent>
+      <child>wheel_rr</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>20</effort>
+          <velocity>20</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.1</damping>
+          <friction>0.03</friction>
+        </dynamics>
+      </axis>
+    </joint>
+
+    
+
+    <!-- ===== ROTOR MOTOR PLUGINS (PX4 / iris style) ===== -->
+    <plugin name='front_right_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <motorNumber>0</motorNumber>
+      <jointName>rotor_0_joint</jointName>
+      <linkName>rotor_0</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.001</timeConstantUp>
+      <timeConstantDown>0.002</timeConstantDown>
+      <maxRotVelocity>1500</maxRotVelocity>
+      <motorConstant>2.3e-05</motorConstant>
+      <momentConstant>0.12</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <rotorDragCoefficient>0.00035</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/0</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+
+    <plugin name='back_right_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <motorNumber>1</motorNumber>
+      <jointName>rotor_1_joint</jointName>
+      <linkName>rotor_1</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.001</timeConstantUp>
+      <timeConstantDown>0.002</timeConstantDown>
+      <maxRotVelocity>1500</maxRotVelocity>
+      <motorConstant>2.3e-05</motorConstant>
+      <momentConstant>0.12</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <rotorDragCoefficient>0.00035</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/3</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+
+    <plugin name='front_left_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <motorNumber>2</motorNumber>
+      <jointName>rotor_2_joint</jointName>
+      <linkName>rotor_2</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.001</timeConstantUp>
+      <timeConstantDown>0.002</timeConstantDown>
+      <maxRotVelocity>1500</maxRotVelocity>
+      <motorConstant>2.3e-05</motorConstant>
+      <momentConstant>0.12</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <rotorDragCoefficient>0.00035</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/2</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+
+    <plugin name='back_left_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <motorNumber>3</motorNumber>
+      <jointName>rotor_3_joint</jointName>
+      <linkName>rotor_3</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.001</timeConstantUp>
+      <timeConstantDown>0.002</timeConstantDown>
+      <maxRotVelocity>1500</maxRotVelocity>
+      <motorConstant>2.3e-05</motorConstant>
+      <momentConstant>0.12</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <rotorDragCoefficient>0.00035</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>/motor_speed/1</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+
+    <include>
+      <uri>model://gps</uri>
+      <pose>0 0 0.15 0 0 0</pose>
+      <name>gps0</name>
+    </include>
+    <joint name='gps0_joint' type='fixed'>
+      <child>gps0::link</child>
+      <parent>base_link</parent>
+    </joint>
+
+
+    <!-- ===== SENSOR PLUGINS ===== -->
+        <plugin name='groundtruth_plugin' filename='libgazebo_groundtruth_plugin.so'>
+      <robotNamespace/>
+    </plugin>
+
+        <plugin name='rotors_gazebo_mag_plugin' filename='libgazebo_magnetometer_plugin.so'>
+      <robotNamespace/>
+
+      <pubRate>50</pubRate>
+      <magTopic>/mag</magTopic>
+    </plugin>
+
+        <plugin name='rotors_gazebo_baro_plugin' filename='libgazebo_barometer_plugin.so'>
+      <robotNamespace/>
+
+      <pubRate>50</pubRate>
+      <baroTopic>/baro</baroTopic>
+    </plugin>
+
+        <plugin name='vision_plugin' filename='libgazebo_vision_plugin.so'>
+      <robotNamespace/>
+      <pubRate>30</pubRate>
+    </plugin>
+
+        <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
+      <robotNamespace/>
+      <imuSubTopic>/imu</imuSubTopic>
+      <magSubTopic>/mag</magSubTopic>
+      <baroSubTopic>/baro</baroSubTopic>
+      <mavlink_addr>INADDR_ANY</mavlink_addr>
+      <mavlink_tcp_port>4560</mavlink_tcp_port>
+      <mavlink_udp_port>14560</mavlink_udp_port>
+      <serialEnabled>1</serialEnabled>
+      <serialDevice>/dev/ttyACM0</serialDevice>
+      <baudRate>921600</baudRate>
+      <qgc_addr>INADDR_ANY</qgc_addr>
+      <qgc_udp_port>14550</qgc_udp_port>
+      <sdk_addr>INADDR_ANY</sdk_addr>
+      <sdk_udp_port>14540</sdk_udp_port>
+      <hil_mode>1</hil_mode>
+      <hil_state_level>0</hil_state_level>
+      <send_vision_estimation>0</send_vision_estimation>
+      <send_odometry>1</send_odometry>
+      <enable_lockstep>0</enable_lockstep>
+      <use_tcp>1</use_tcp>
+      <motorSpeedCommandPubTopic>/gazebo/command/motor_speed</motorSpeedCommandPubTopic>
+      <control_channels>
+        <channel name='rotor_0'>
+          <input_index>0</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>1000</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+        </channel>
+        <channel name='rotor_1'>
+          <input_index>1</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>1000</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+        </channel>
+        <channel name='rotor_2'>
+          <input_index>2</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>1000</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+        </channel>
+        <channel name='rotor_3'>
+          <input_index>3</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>1000</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+        </channel>
+
+
+
+        
+        
+              <channel name='wheel_fl'>
+          <input_index>8</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>13.333</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>wheel_fl_joint</joint_name>
+          <joint_control_pid>
+            <p>0.5</p>
+            <i>0.2</i>
+            <d>0.0</d>
+            <iMax>1.0</iMax>
+            <iMin>-1.0</iMin>
+            <cmdMax>5.0</cmdMax>
+            <cmdMin>-5.0</cmdMin>
+          </joint_control_pid>
+        </channel>
+        <channel name='wheel_rl'>
+          <input_index>10</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>13.333</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>wheel_rl_joint</joint_name>
+          <joint_control_pid>
+            <p>0.5</p>
+            <i>0.2</i>
+            <d>0.0</d>
+            <iMax>1.0</iMax>
+            <iMin>-1.0</iMin>
+            <cmdMax>5.0</cmdMax>
+            <cmdMin>-5.0</cmdMin>
+          </joint_control_pid>
+        </channel>
+        <channel name='wheel_fr'>
+          <input_index>9</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>13.333</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>wheel_fr_joint</joint_name>
+          <joint_control_pid>
+            <p>0.5</p>
+            <i>0.2</i>
+            <d>0.0</d>
+            <iMax>1.0</iMax>
+            <iMin>-1.0</iMin>
+            <cmdMax>5.0</cmdMax>
+            <cmdMin>-5.0</cmdMin>
+          </joint_control_pid>
+        </channel>
+        <channel name='wheel_rr'>
+          <input_index>11</input_index>
+          <input_offset>0</input_offset>
+          <input_scaling>13.333</input_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>0</zero_position_armed>
+          <joint_control_type>velocity</joint_control_type>
+          <joint_name>wheel_rr_joint</joint_name>
+          <joint_control_pid>
+            <p>0.5</p>
+            <i>0.2</i>
+            <d>0.0</d>
+            <iMax>1.0</iMax>
+            <iMin>-1.0</iMin>
+            <cmdMax>5.0</cmdMax>
+            <cmdMin>-5.0</cmdMin>
+          </joint_control_pid>
+        </channel>
+      </control_channels>
+    </plugin>
+
+
+        <plugin name='rotors_gazebo_imu_plugin' filename='libgazebo_imu_plugin.so'>
+      <robotNamespace/>
+      <linkName>imu_link</linkName>
+
+      <imuTopic>/imu</imuTopic>
+      <gyroscopeNoiseDensity>0.00018665</gyroscopeNoiseDensity>
+      <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
+      <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
+      <gyroscopeTurnOnBiasSigma>0.0087</gyroscopeTurnOnBiasSigma>
+      <accelerometerNoiseDensity>0.00186</accelerometerNoiseDensity>
+      <accelerometerRandomWalk>0.0002</accelerometerRandomWalk>
+      <accelerometerBiasCorrelationTime>10000.0</accelerometerBiasCorrelationTime>
+      <accelerometerTurnOnBiasSigma>0.05</accelerometerTurnOnBiasSigma>
+    </plugin>
+
+    
+</model>
+</sdf>

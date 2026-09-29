@@ -42,6 +42,7 @@
 #include <px4_platform_common/tasks.h>
 #include <px4_platform_common/time.h>
 #include <uORB/topics/parameter_update.h>
+#include <uORB/topics/vehicle_status.h>
 #include <uORB/Subscription.hpp>
 
 #if defined(CONFIG_ARCH_BOARD_PX4_SITL)
@@ -86,6 +87,7 @@ private:
 
 	uORB::Publication<actuator_outputs_s> _actuator_outputs_sim_pub{ORB_ID(actuator_outputs_sim)};
 	uORB::Subscription _actuator_motors_sub{ORB_ID(actuator_motors)};
+	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
 
 	perf_counter_t	_cycle_perf{perf_alloc(PC_ELAPSED, MODULE_NAME": cycle")};
 	perf_counter_t	_interval_perf{perf_alloc(PC_INTERVAL, MODULE_NAME": interval")};

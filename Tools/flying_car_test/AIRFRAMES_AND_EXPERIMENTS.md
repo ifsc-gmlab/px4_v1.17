@@ -10,7 +10,7 @@ FS-FASMv8 是一类“飞行汽车”（Flying Car）实验平台：同一台车
 Commander 中切换飞控栈（`rover_differential` ↔ `control_allocator` + MC 控制器）。
 
 每个机型对应**独立的 Gazebo SDF 模型目录**，互不共享模型文件（绑定关系见第 2 节表格，
-规则详见 `Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/MODEL_BINDINGS.md`）。
+规则详见 `Tools/simulation/gazebo-classic/flying_car/MODEL_BINDINGS.md`）。
 
 ## 2. 机型总览
 
@@ -169,5 +169,5 @@ roslaunch px4 FS_flying_car_realsense.launch gui:=false
 
 - `Tools/flying_car_test/README.md`：手动实验（QGC / 实体遥控）操作手册
 - `launch/FS_flying_car_light.README.md`：80005 light 运行说明
-- `Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/MODEL_BINDINGS.md`：机型↔模型绑定表
+- `Tools/simulation/gazebo-classic/flying_car/MODEL_BINDINGS.md`：机型↔模型绑定表
 - fs-fasmv8 仓库 `docs/reference/airframes-and-experiments.md`：overlay 视角的机型与实验文档

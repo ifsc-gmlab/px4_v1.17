@@ -123,6 +123,8 @@ px4_add_romfs_files(
 	70000_gz_atmos
 
 	80003_gazebo-classic_fs_fasmv8_flying_car_quad
+	80004_gazebo-classic_fs_fasmv8_flying_car
+	80005_gazebo-classic_fs_fasmv8_flying_car_light
 
 	# [22000, 22999] Reserve for custom models
 )
